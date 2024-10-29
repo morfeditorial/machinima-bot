@@ -55,42 +55,61 @@ class MyBot extends tgLib
         $this->commandFactory = new CommandFactory($this, $this->container);
     }
 
-    public function handleUpdate($update)
+    public function handleUpdate($update) : void
     {
         $messageData = $this->extractMessageData($update);
         $message = $messageData['message'] ?? null;
 
         if ($message) {
-            $messages = explode(' ', trim(preg_replace("/\s+/", ' ', $message)));
-            if (! empty($messages) && in_array($messages[0][0], ['/', '!'])) {
-                $args = array_slice($messages, 1);
-                $cmd = ltrim(mb_strtolower($messages[0], 'utf-8'), '/!');
-                $userId = $messageData['userId'] !== $messageData['chatId'] ? $messageData['chatId'] : $messageData['userId'];
-                $commandArgs = [
-                    $message,
-                    $messageData['messageId'],
-                    $messageData['chatType'],
-                    $messageData['chatId'],
-                    $userId,
-                    $messageData['payload'],
-                    $messageData['replyMessageId'],
-                    $messageData['replyAuthor'],
-                    $messageData['firstName'],
-                    $messageData['currentPanel'],
-                    $messageData['currentPage'],
-                    $cmd,
-                    $args,
-                ];
+            $this->processMessage($messageData, $message);
+        } else {
+            $this->handlePanels($messageData);
+        }
+    }
 
-                $this->executeCommand($cmd, $commandArgs);
-
-                return;
-            }
-
+    private function processMessage(array $messageData, string $message) : void
+    {
+        $commandData = $this->parseCommand($message);
+        if ($commandData) {
+            $this->executeCommand($commandData, $messageData);
+        } else {
             $this->handleStates($messageData);
         }
+    }
 
-        $this->handlePanels($messageData);
+    private function parseCommand(string $message) : ?array
+    {
+        $parts = explode(' ', trim(preg_replace("/\s+/", ' ', $message)));
+        if (! empty($parts) && in_array($parts[0][0], ['/', '!'])) {
+            $cmd = ltrim(mb_strtolower($parts[0], 'utf-8'), '/!');
+            $args = array_slice($parts, 1);
+            return ['cmd' => $cmd, 'args' => $args];
+        }
+        return null;
+    }
+
+    private function executeCommand(array $commandData, array $messageData) : void
+    {
+        $command = $this->commandFactory->create($commandData['cmd']);
+        if ($command instanceof CommandInterface) {
+            $command->execute(
+                $messageData['message'],
+                $messageData['messageId'],
+                $messageData['chatType'],
+                $messageData['chatId'],
+                $messageData['userId'],
+                $messageData['payload'],
+                $messageData['replyMessageId'],
+                $messageData['replyAuthor'],
+                $messageData['firstName'],
+                $this->dbManager->getCurrentPanel($messageData['userId']),
+                $this->dbManager->getCurrentPage($messageData['userId']),
+                $commandData['cmd'],
+                $commandData['args']
+            );
+        } else {
+            $this->sendMessage($messageData['chatId'], $this->container->get('translator')->translate("unknown_command_message"));
+        }
     }
 
     private function handleStates($messageData)
@@ -509,16 +528,6 @@ class MyBot extends tgLib
             "replyAuthor" => $data["message"]["reply_to_message"]["from"]["id"] ?? null,
             "firstName" => $data["message"]["from"]["first_name"] ?? null
         ];
-    }
-
-    private function executeCommand(string $cmd, array $params): void
-    {
-        $command = $this->commandFactory->create($cmd);
-        if ($command instanceof CommandInterface) {
-            $command->execute(...array_values($params));
-        } else {
-            $this->sendMessage($params['chatId'], $this->container->get('translator')->translate("unknown_command_message"));
-        }
     }
 
     protected function createAvatar($authorName, $authorLink, $authorImage = "path/to/author_image.jpg")
