@@ -27,9 +27,11 @@ use morfeditorial\MyBot;
 use morfeditorial\CommandInterface;
 use morfeditorial\DependencyContainer;
 
-class StartCommand implements CommandInterface
+class CreateRoleCommand implements CommandInterface
 {
     private MyBot $bot;
+
+    private $dbManager;
 
     private $translator;
 
@@ -38,6 +40,7 @@ class StartCommand implements CommandInterface
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
         $this->bot = $bot;
+        $this->dbManager = $container->get('dbManager');
         $this->translator = $container->get('translator');
         $this->visualsLinks = $container->get('visualsLinks');
     }
@@ -57,6 +60,31 @@ class StartCommand implements CommandInterface
         string $cmd,
         array $args
     ) : void {
-        $this->bot->pictureReply($chatId, $this->translator->translate('welcome_message'), $this->visualsLinks[0]);
+        if (! $this->dbManager->hasHigherRole($userId, 'admin')) {
+            $this->bot->sendMessage($chatId, $this->translator->translate('no_permission_message'));
+
+            return;
+        }
+
+        if (2 > count($args)) {
+            $this->bot->sendMessage($chatId, $this->translator->translate('create_role_usage_message'));
+
+            return;
+        }
+
+        $roleName = $args[0];
+        $priority = intval($args[1]);
+
+        if ($this->dbManager->getRoleByName($roleName)) {
+            $this->sendMessage($chatId, str_replace('{roleName}', htmlspecialchars($roleName), $this->translator->translate('role_already_exist_message')));
+
+            return;
+        }
+
+        if ($this->dbManager->createRole($roleName, $priority)) {
+            $this->bot->sendMessage($chatId, str_replace(['{roleName}', '{priority}'], [htmlspecialchars($roleName), $priority], $this->translator->translate('create_role_message')));
+        } else {
+            $this->bot->sendMessage($chatId, $this->translator->translate('create_role_failure_message'));
+        }
     }
 }

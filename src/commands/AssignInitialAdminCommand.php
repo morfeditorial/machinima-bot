@@ -27,9 +27,11 @@ use morfeditorial\MyBot;
 use morfeditorial\CommandInterface;
 use morfeditorial\DependencyContainer;
 
-class StartCommand implements CommandInterface
+class AssignInitialAdminCommand implements CommandInterface
 {
     private MyBot $bot;
+
+    private $dbManager;
 
     private $translator;
 
@@ -38,6 +40,7 @@ class StartCommand implements CommandInterface
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
         $this->bot = $bot;
+        $this->dbManager = $container->get('dbManager');
         $this->translator = $container->get('translator');
         $this->visualsLinks = $container->get('visualsLinks');
     }
@@ -57,6 +60,18 @@ class StartCommand implements CommandInterface
         string $cmd,
         array $args
     ) : void {
-        $this->bot->pictureReply($chatId, $this->translator->translate('welcome_message'), $this->visualsLinks[0]);
+        if (! $this->dbManager->getRoleByName('admin')) {
+            $this->dbManager->createRole('admin', 100);
+        }
+
+        if (0 < $this->dbManager->getUsersCountByRole('admin')) {
+            $this->bot->sendMessage($chatId, $this->translator->translate('already_initialled_admin_message'));
+
+            return;
+        }
+
+        $this->dbManager->assignRole($userId, 'admin');
+
+        $this->bot->sendMessage($chatId, $this->translator->translate('success_initialled_admin_message'));
     }
 }

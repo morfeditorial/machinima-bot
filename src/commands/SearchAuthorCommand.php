@@ -27,18 +27,24 @@ use morfeditorial\MyBot;
 use morfeditorial\CommandInterface;
 use morfeditorial\DependencyContainer;
 
-class StartCommand implements CommandInterface
+class SearchAuthorCommand implements CommandInterface
 {
     private MyBot $bot;
 
+    private $dbManager;
+
     private $translator;
+
+    private $search;
 
     private $visualsLinks;
 
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
         $this->bot = $bot;
+        $this->dbManager = $container->get('dbManager');
         $this->translator = $container->get('translator');
+        $this->search = $container->get('fuzzySearch');
         $this->visualsLinks = $container->get('visualsLinks');
     }
 
@@ -57,6 +63,22 @@ class StartCommand implements CommandInterface
         string $cmd,
         array $args
     ) : void {
-        $this->bot->pictureReply($chatId, $this->translator->translate('welcome_message'), $this->visualsLinks[0]);
+        if (empty($args)) {
+            $this->bot->sendMessage($chatId, $this->translator->translate('search_author_usage_message'));
+
+            return;
+        }
+
+        $authors = $this->dbManager->getAllAuthors();
+        $searchQuery = implode(' ', $args);
+        $results = $this->search->fuzzySearch($searchQuery, $authors);
+
+        if (empty($results)) {
+            $this->bot->sendMessage($chatId, str_replace('{searchQuery}', htmlspecialchars($searchQuery), $this->translator->translate('no_search_results_message')));
+
+            return;
+        }
+
+        $this->bot->sendButton($chatId, str_replace(['{searchQuery}', '{count}'], [htmlspecialchars($searchQuery), count($results)], $this->translator->translate('search_author_message')), $this->bot->generateAuthorsKeyboard(1, 6, 1, 'profile_author_', 'search_author_' . $searchQuery, $results));
     }
 }

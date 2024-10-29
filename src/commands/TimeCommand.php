@@ -27,7 +27,7 @@ use morfeditorial\MyBot;
 use morfeditorial\CommandInterface;
 use morfeditorial\DependencyContainer;
 
-class StartCommand implements CommandInterface
+class TimeCommand implements CommandInterface
 {
     private MyBot $bot;
 
@@ -57,6 +57,8 @@ class StartCommand implements CommandInterface
         string $cmd,
         array $args
     ) : void {
-        $this->bot->pictureReply($chatId, $this->translator->translate('welcome_message'), $this->visualsLinks[0]);
+        $date = date('d.m.y H:i:s');
+
+        $this->bot->sendMessage($chatId, str_replace('{date}', $date, $this->translator->translate('time_message')));
     }
 }
