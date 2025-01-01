@@ -1,7 +1,5 @@
 # MachinimaBot
 
-## Introduction
-
 MachinimaBot is a Telegram bot written in PHP. It is designed to interact with users on Telegram, providing various functionalities based on the commands it receives.
 
 ## Features
