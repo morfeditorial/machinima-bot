@@ -1,8 +1,8 @@
-# MORF Editorial System
+# MachinimaBot
 
 ## Introduction
 
-Machinima-bot is a Telegram bot written in PHP. It is designed to interact with users on Telegram, providing various functionalities based on the commands it receives.
+MachinimaBot is a Telegram bot written in PHP. It is designed to interact with users on Telegram, providing various functionalities based on the commands it receives.
 
 ## Features
 
