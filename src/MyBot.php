@@ -710,7 +710,7 @@ class MyBot extends tgLib
         $this->sendUpdateRolesPriorityPanel($chatId, $userId, $callbackQueryId);
     }
 
-    public function updateRolePriorityAndLevel(int $chatId, int $userId, $callbackQueryId, string $selectedRoleName, string $selectedRoleLevel, string|null $targetRoleName, string $targetRoleLevel, int $newPriority = null) : void
+    public function updateRolePriorityAndLevel(int $chatId, int $userId, $callbackQueryId, string $selectedRoleName, string $selectedRoleLevel, string|null $targetRoleName, string $targetRoleLevel, ?int $newPriority) : void
     {
         $primaryRolesPriorities = $dbManager->getRolesPriorities("primary");
 
@@ -761,7 +761,7 @@ class MyBot extends tgLib
         }
     }
 
-    private function handleRoleLevelChange(string $selectedRoleLevel, string $targetRoleLevel, string $selectedRoleName, int $newPriority = null) : void
+    private function handleRoleLevelChange(string $selectedRoleLevel, string $targetRoleLevel, string $selectedRoleName, ?int $newPriority) : void
     {
         $dbManager = $this->container->get('dbManager');
 
