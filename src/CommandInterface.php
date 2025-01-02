@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /*
  *
@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial\commands;
+namespace morfeditorial;
 
 interface CommandInterface
 {

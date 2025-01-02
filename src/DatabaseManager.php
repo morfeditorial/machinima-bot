@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /*
  *
@@ -123,12 +123,12 @@ class DatabaseManager
      */
     public function createAuthor(string $name) : int
     {
-        $stmt = $this->connection->prepare('INSERT INTO authors (name, state) VALUES (:name, :state)');
+        $stmt = $this->db->prepare('INSERT INTO authors (name, state) VALUES (:name, :state)');
         $stmt->bindValue(':name', trim($name), SQLITE3_TEXT);
         $stmt->bindValue(':state', self::STATE_PRIVATE, SQLITE3_TEXT);
         $stmt->execute();
 
-        return $this->connection->lastInsertRowID();
+        return $this->db->lastInsertRowID();
     }
 
     /**
@@ -138,7 +138,7 @@ class DatabaseManager
      */
     public function deleteAuthor(int $authorId) : void
     {
-        $stmt = $this->connection->prepare('DELETE FROM authors WHERE id = :author_id');
+        $stmt = $this->db->prepare('DELETE FROM authors WHERE id = :author_id');
         $stmt->bindValue(':author_id', $authorId, SQLITE3_INTEGER);
         $stmt->execute();
     }
@@ -151,7 +151,7 @@ class DatabaseManager
      */
     public function getAuthorById(int $authorId) : ?array
     {
-        $stmt = $this->connection->prepare('SELECT * FROM authors WHERE id = :author_id');
+        $stmt = $this->db->prepare('SELECT * FROM authors WHERE id = :author_id');
         $stmt->bindValue(':author_id', $authorId, SQLITE3_INTEGER);
         $result = $stmt->execute();
 
@@ -165,7 +165,7 @@ class DatabaseManager
      */
     public function getAllAuthors() : array
     {
-        $result = $this->connection->query('SELECT * FROM authors');
+        $result = $this->db->query('SELECT * FROM authors');
         $authors = [];
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             $authors[] = $row;
@@ -183,7 +183,7 @@ class DatabaseManager
     public function getContentByAuthorId(int $authorId) : array
     {
         $content = [];
-        $stmt = $this->connection->prepare('SELECT title, description FROM content WHERE author_id = :author_id');
+        $stmt = $this->db->prepare('SELECT title, description FROM content WHERE author_id = :author_id');
         $stmt->bindValue(':author_id', $authorId, SQLITE3_INTEGER);
         $result = $stmt->execute();
 
@@ -202,7 +202,7 @@ class DatabaseManager
      */
     public function updateAuthorName(int $authorId, string $name) : void
     {
-        $stmt = $this->connection->prepare('UPDATE authors SET name = :name WHERE id = :author_id');
+        $stmt = $this->db->prepare('UPDATE authors SET name = :name WHERE id = :author_id');
         $stmt->bindValue(':author_id', $authorId, SQLITE3_INTEGER);
         $stmt->bindValue(':name', trim($name), SQLITE3_TEXT);
         $stmt->execute();
@@ -216,7 +216,7 @@ class DatabaseManager
      */
     public function setBiography(int $authorId, string $biography) : void
     {
-        $stmt = $this->connection->prepare('UPDATE authors SET biography = :biography WHERE id = :author_id');
+        $stmt = $this->db->prepare('UPDATE authors SET biography = :biography WHERE id = :author_id');
         $stmt->bindValue(':author_id', $authorId, SQLITE3_INTEGER);
         $stmt->bindValue(':biography', trim($biography), SQLITE3_TEXT);
         $stmt->execute();
@@ -230,7 +230,7 @@ class DatabaseManager
      */
     public function setChannelLink(int $authorId, string $link) : void
     {
-        $stmt = $this->connection->prepare('UPDATE authors SET channel_link = :link WHERE id = :author_id');
+        $stmt = $this->db->prepare('UPDATE authors SET channel_link = :link WHERE id = :author_id');
         $stmt->bindValue(':author_id', $authorId, SQLITE3_INTEGER);
         $stmt->bindValue(':link', trim($link), SQLITE3_TEXT);
         $stmt->execute();
@@ -245,7 +245,7 @@ class DatabaseManager
     public function setPrivate(int $authorId, bool $private = true) : void
     {
         $state = $private ? self::STATE_PRIVATE : self::STATE_PUBLIC;
-        $stmt = $this->connection->prepare('UPDATE authors SET state = :state WHERE id = :author_id');
+        $stmt = $this->db->prepare('UPDATE authors SET state = :state WHERE id = :author_id');
         $stmt->bindValue(':author_id', $authorId, SQLITE3_INTEGER);
         $stmt->bindValue(':state', $state, SQLITE3_TEXT);
         $stmt->execute();
@@ -259,7 +259,7 @@ class DatabaseManager
      */
     public function isPrivate(int $authorId) : bool
     {
-        $stmt = $this->connection->prepare('SELECT state FROM authors WHERE id = :author_id');
+        $stmt = $this->db->prepare('SELECT state FROM authors WHERE id = :author_id');
         $stmt->bindValue(':author_id', $authorId, SQLITE3_INTEGER);
         $result = $stmt->execute();
 
@@ -274,7 +274,7 @@ class DatabaseManager
      */
     public function getAuthorCreationTime(int $authorId) : ?string
     {
-        $stmt = $this->connection->prepare('SELECT created_at FROM authors WHERE id = :author_id');
+        $stmt = $this->db->prepare('SELECT created_at FROM authors WHERE id = :author_id');
         $stmt->bindValue(':author_id', $authorId, SQLITE3_INTEGER);
         $result = $stmt->execute();
 
@@ -288,7 +288,7 @@ class DatabaseManager
      */
     public function countAuthors() : int
     {
-        return (int) $this->connection->querySingle('SELECT COUNT(*) FROM authors');
+        return (int) $this->db->querySingle('SELECT COUNT(*) FROM authors');
     }
 
     /**
@@ -300,7 +300,7 @@ class DatabaseManager
      */
     public function setState(int $userId, $value, string $key = 'default') : void
     {
-        $stmt = $this->connection->prepare('INSERT INTO user_states (user_id, state_key, state_value) VALUES (:user_id, :state_key, :state_value) 
+        $stmt = $this->db->prepare('INSERT INTO user_states (user_id, state_key, state_value) VALUES (:user_id, :state_key, :state_value) 
                                     ON CONFLICT(user_id, state_key) DO UPDATE SET state_value = :state_value');
         $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
         $stmt->bindValue(':state_key', $key, SQLITE3_TEXT);
@@ -317,7 +317,7 @@ class DatabaseManager
      */
     public function getState(int $userId, string $key = 'default') : mixed
     {
-        $stmt = $this->connection->prepare('SELECT state_value FROM user_states WHERE user_id = :user_id AND state_key = :state_key');
+        $stmt = $this->db->prepare('SELECT state_value FROM user_states WHERE user_id = :user_id AND state_key = :state_key');
         $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
         $stmt->bindValue(':state_key', $key, SQLITE3_TEXT);
         $result = $stmt->execute();
@@ -335,11 +335,11 @@ class DatabaseManager
     public function clearState(int $userId, ?string $key = null) : void
     {
         if ($key) {
-            $stmt = $this->connection->prepare('DELETE FROM user_states WHERE user_id = :user_id AND state_key = :state_key');
+            $stmt = $this->db->prepare('DELETE FROM user_states WHERE user_id = :user_id AND state_key = :state_key');
             $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
             $stmt->bindValue(':state_key', $key, SQLITE3_TEXT);
         } else {
-            $stmt = $this->connection->prepare('DELETE FROM user_states WHERE user_id = :user_id');
+            $stmt = $this->db->prepare('DELETE FROM user_states WHERE user_id = :user_id');
             $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
         }
         $stmt->execute();
@@ -353,7 +353,7 @@ class DatabaseManager
      */
     public function setCurrentPanel(int $userId, int $messageId) : void
     {
-        $stmt = $this->connection->prepare('INSERT OR REPLACE INTO user_data (user_id, current_panel) VALUES (:user_id, :message_id)');
+        $stmt = $this->db->prepare('INSERT OR REPLACE INTO user_data (user_id, current_panel) VALUES (:user_id, :message_id)');
         $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
         $stmt->bindValue(':message_id', $messageId, SQLITE3_INTEGER);
         $stmt->execute();
@@ -367,7 +367,7 @@ class DatabaseManager
      */
     public function getCurrentPanel(int $userId) : ?int
     {
-        $stmt = $this->connection->prepare('SELECT current_panel FROM user_data WHERE user_id = :user_id');
+        $stmt = $this->db->prepare('SELECT current_panel FROM user_data WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
         $result = $stmt->execute();
         $row = $result->fetchArray(SQLITE3_ASSOC);
@@ -383,7 +383,7 @@ class DatabaseManager
      */
     public function setCurrentPage(int $userId, string $page) : void
     {
-        $stmt = $this->connection->prepare('UPDATE user_data SET current_page = :page WHERE user_id = :user_id');
+        $stmt = $this->db->prepare('UPDATE user_data SET current_page = :page WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
         $stmt->bindValue(':page', $page, SQLITE3_TEXT);
         $stmt->execute();
@@ -397,7 +397,7 @@ class DatabaseManager
      */
     public function getCurrentPage(int $userId) : ?string
     {
-        $stmt = $this->connection->prepare('SELECT current_page FROM user_data WHERE user_id = :user_id');
+        $stmt = $this->db->prepare('SELECT current_page FROM user_data WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
         $result = $stmt->execute();
         $row = $result->fetchArray(SQLITE3_ASSOC);
@@ -412,7 +412,7 @@ class DatabaseManager
      */
     public function resetCurrentPage(int $userId) : void
     {
-        $stmt = $this->connection->prepare('UPDATE user_data SET current_page = NULL WHERE user_id = :user_id');
+        $stmt = $this->db->prepare('UPDATE user_data SET current_page = NULL WHERE user_id = :user_id');
         $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
         $stmt->execute();
     }
@@ -426,7 +426,7 @@ class DatabaseManager
      */
     public function createRole(string $roleName, int $priority) : bool
     {
-        $stmt = $this->connection->prepare('INSERT INTO roles (role_name, priority) VALUES (:role_name, :priority)');
+        $stmt = $this->db->prepare('INSERT INTO roles (role_name, priority) VALUES (:role_name, :priority)');
         $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
         $stmt->bindValue(':priority', $priority, SQLITE3_INTEGER);
 
@@ -441,7 +441,7 @@ class DatabaseManager
      */
     public function deleteRole(string $roleName) : bool
     {
-        $stmt = $this->connection->prepare('DELETE FROM roles WHERE role_name = :role_name');
+        $stmt = $this->db->prepare('DELETE FROM roles WHERE role_name = :role_name');
         $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
 
         return $stmt->execute() ? true : false;
@@ -460,7 +460,7 @@ class DatabaseManager
         if (! $role) {
             return false;
         }
-        $stmt = $this->connection->prepare('INSERT INTO user_roles (user_id, role_id) VALUES (:user_id, :role_id)');
+        $stmt = $this->db->prepare('INSERT INTO user_roles (user_id, role_id) VALUES (:user_id, :role_id)');
         $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
         $stmt->bindValue(':role_id', $role['id'], SQLITE3_INTEGER);
 
@@ -480,7 +480,7 @@ class DatabaseManager
         if (! $role) {
             return false;
         }
-        $stmt = $this->connection->prepare('DELETE FROM user_roles WHERE user_id = :user_id AND role_id = :role_id');
+        $stmt = $this->db->prepare('DELETE FROM user_roles WHERE user_id = :user_id AND role_id = :role_id');
         $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
         $stmt->bindValue(':role_id', $role['id'], SQLITE3_INTEGER);
 
@@ -496,7 +496,7 @@ class DatabaseManager
      */
     public function hasRole(int $userId, string $roleName) : bool
     {
-        $stmt = $this->connection->prepare('
+        $stmt = $this->db->prepare('
             SELECT ur.user_id FROM user_roles ur 
             JOIN roles r ON ur.role_id = r.id 
             WHERE ur.user_id = :user_id AND r.role_name = :role_name
@@ -517,14 +517,14 @@ class DatabaseManager
      */
     public function hasHigherRole(int $userId, string $roleName) : bool
     {
-        $stmt = $this->connection->prepare('SELECT priority FROM roles WHERE role_name = :role_name');
+        $stmt = $this->db->prepare('SELECT priority FROM roles WHERE role_name = :role_name');
         $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
         $role = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
 
         if ($role) {
             $requiredPriority = $role['priority'];
 
-            $stmt = $this->connection->prepare('
+            $stmt = $this->db->prepare('
                 SELECT MAX(r.priority) as max_priority FROM user_roles ur 
                 JOIN roles r ON ur.role_id = r.id 
                 WHERE ur.user_id = :user_id
@@ -549,7 +549,7 @@ class DatabaseManager
      */
     public function getAllRoles() : array
     {
-        $result = $this->connection->query('SELECT * FROM roles ORDER BY priority DESC');
+        $result = $this->db->query('SELECT * FROM roles ORDER BY priority DESC');
         $roles = [];
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             $roles[] = $row;
@@ -566,7 +566,7 @@ class DatabaseManager
      */
     public function getUsersCountByRole(string $roleName) : int
     {
-        $stmt = $this->connection->prepare('SELECT COUNT(ur.user_id) AS user_count 
+        $stmt = $this->db->prepare('SELECT COUNT(ur.user_id) AS user_count 
                   FROM user_roles ur
                   JOIN roles r ON ur.role_id = r.id
                   WHERE r.role_name = :role_name');
@@ -584,7 +584,7 @@ class DatabaseManager
      */
     public function getRoleByName(string $roleName) : ?array
     {
-        $stmt = $this->connection->prepare('SELECT * FROM roles WHERE role_name = :role_name');
+        $stmt = $this->db->prepare('SELECT * FROM roles WHERE role_name = :role_name');
         $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
         $result = $stmt->execute();
 
@@ -600,7 +600,7 @@ class DatabaseManager
     public function getRolesPriorities(string $level) : array
     {
         $rolesPriorities = [];
-        $result = $this->connection->query("SELECT role_name, priority FROM roles WHERE level = '$level' ORDER BY priority ASC");
+        $result = $this->db->query("SELECT role_name, priority FROM roles WHERE level = '$level' ORDER BY priority ASC");
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             $rolesPriorities[$row['priority']] = $row['role_name'];
         }
@@ -631,7 +631,7 @@ class DatabaseManager
      */
     public function getRolePriority(string $roleName) : int
     {
-        $stmt = $this->connection->prepare('SELECT priority FROM roles WHERE role_name = :role_name');
+        $stmt = $this->db->prepare('SELECT priority FROM roles WHERE role_name = :role_name');
         $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
 
         return $stmt->execute()->fetchArray(SQLITE3_ASSOC)['priority'];
@@ -645,7 +645,7 @@ class DatabaseManager
      */
     public function getRolesCount(string $level) : int
     {
-        return $this->connection->querySingle("SELECT COUNT(*) FROM roles WHERE level = '$level'");
+        return $this->db->querySingle("SELECT COUNT(*) FROM roles WHERE level = '$level'");
     }
 
     /**
@@ -657,7 +657,7 @@ class DatabaseManager
      */
     public function updateRolePriority(string $roleName, int $priority) : bool
     {
-        $stmt = $this->connection->prepare('UPDATE roles SET priority = :priority WHERE role_name = :role_name');
+        $stmt = $this->db->prepare('UPDATE roles SET priority = :priority WHERE role_name = :role_name');
         $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
         $stmt->bindValue(':priority', $priority, SQLITE3_INTEGER);
 
@@ -694,7 +694,7 @@ class DatabaseManager
             $step = 100 / ($count - 1);
             foreach ($rolesPriorities as $priority => $roleName) {
                 $newPriority = round(array_search($priority, array_keys($rolesPriorities)) * $step);
-                $stmt = $this->connection->prepare('UPDATE roles SET priority = :priority WHERE role_name = :role_name');
+                $stmt = $this->db->prepare('UPDATE roles SET priority = :priority WHERE role_name = :role_name');
                 $stmt->bindValue(':priority', $newPriority, SQLITE3_INTEGER);
                 $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
                 $stmt->execute();
@@ -712,9 +712,9 @@ class DatabaseManager
     public function updateRolePriorities(int $selectedRolePriority, int $targetPriority, string $roleLevel) : void
     {
         if ($selectedRolePriority < $targetPriority) {
-            $stmt = $this->connection->prepare('UPDATE roles SET priority = priority - 1 WHERE priority > :selected_role_priority AND priority <= :target_priority AND level = :target_role_level');
+            $stmt = $this->db->prepare('UPDATE roles SET priority = priority - 1 WHERE priority > :selected_role_priority AND priority <= :target_priority AND level = :target_role_level');
         } else {
-            $stmt = $this->connection->prepare('UPDATE roles SET priority = priority + 1 WHERE priority < :selected_role_priority AND priority >= :target_priority AND level = :target_role_level');
+            $stmt = $this->db->prepare('UPDATE roles SET priority = priority + 1 WHERE priority < :selected_role_priority AND priority >= :target_priority AND level = :target_role_level');
         }
         $stmt->bindValue(':selected_role_priority', $selectedRolePriority, SQLITE3_INTEGER);
         $stmt->bindValue(':target_priority', $targetPriority, SQLITE3_INTEGER);

@@ -55,21 +55,18 @@ class tgLib
         return $out;
     }
 
-    public function getUpdates($timeout = 30)
-    {
-        $params = [
-            'timeout' => $timeout,
-            'offset' => $this->offset,
-        ];
-        $updates = $this->request('getUpdates', $params);
-
-        if (isset($updates['result'])) {
-            foreach ($updates['result'] as $update) {
-                $this->offset = $update['update_id'] + 1;
-                $this->handleUpdate($update);
-            }
+public function getUpdates()
+{
+    $updates = $this->request('getUpdates', ['offset' => $this->offset]);
+    $result = [];
+    if (isset($updates['result'])) {
+        foreach ($updates['result'] as $update) {
+            $this->offset = $update['update_id'] + 1;
+            $result[] = $update;
         }
     }
+    return $result;
+}
 
     public function keyboardMakeup($type, $buttonsArray, $additional_params = null)
     {

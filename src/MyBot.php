@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /*
  *
@@ -25,6 +25,10 @@ namespace morfeditorial;
 
 class MyBot extends tgLib
 {
+    private const DATABASE_FILE = __DIR__ . '/../machinimators.db';
+
+    private const TRANSLATIONS_FILE = __DIR__ . '/../translations.json';
+
     private CommandFactory $commandFactory;
 
     private DependencyContainer $container;
@@ -34,8 +38,7 @@ class MyBot extends tgLib
         parent::__construct($token);
 
         $this->container = new DependencyContainer();
-        $this->container->set('dbManager', new DatabaseManager("machinimators.db"));
-        $this->container->set('translator', new Translator(json_decode(file_get_contents("translations.json"), true), "en"));
+        $this->container->set('dbManager', new DatabaseManager(self::DATABASE_FILE));
         $this->container->set('fuzzySearch', new FuzzySearch());
         $this->container->set('visualsLinks', [
             "https://i.ibb.co/mC7sv0W/01.png",
@@ -59,6 +62,8 @@ class MyBot extends tgLib
     {
         $messageData = $this->extractMessageData($update);
         $message = $messageData['message'] ?? null;
+
+        $this->container->set('translator', new Translator(json_decode(file_get_contents(self::TRANSLATIONS_FILE), true), $messageData["language"] ?? "en"));
 
         if ($message) {
             $this->processMessage($messageData, $message);
@@ -102,8 +107,8 @@ class MyBot extends tgLib
                 $messageData['replyMessageId'],
                 $messageData['replyAuthor'],
                 $messageData['firstName'],
-                $this->dbManager->getCurrentPanel($messageData['userId']),
-                $this->dbManager->getCurrentPage($messageData['userId']),
+                $this->container->get('dbManager')->getCurrentPanel($messageData['userId']),
+                $this->container->get('dbManager')->getCurrentPage($messageData['userId']),
                 $commandData['cmd'],
                 $commandData['args']
             );
@@ -282,10 +287,11 @@ class MyBot extends tgLib
         $dbManager = $this->container->get('dbManager');
         $translator = $this->container->get('translator');
         $visualsLinks = $this->container->get('visualsLinks');
-        $currentPanel = $dbManager->getCurrentPanel($userId);
-        $currentPage = $dbManager->getCurrentPage($userId);
 
         if (null !== $payload) {
+            $currentPanel = $dbManager->getCurrentPanel($userId);
+            $currentPage = $dbManager->getCurrentPage($userId);
+
             if ("control_panel" === $payload) {
                 if ($dbManager->hasHigherRole($userId, "moderator")) {
                     $dbManager->clearState($userId);
@@ -632,7 +638,7 @@ class MyBot extends tgLib
         $visualsLinks = $this->container->get('visualsLinks');
 
         if ($dbManager->hasHigherRole($userId, "admin")) {
-            $result = $this->db->query("SELECT * FROM roles ORDER BY priority DESC, level ASC");
+            $result = $dbManager->db->query("SELECT * FROM roles ORDER BY priority DESC, level ASC");
             $roles = [];
             while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
                 $roles[] = [
@@ -757,13 +763,15 @@ class MyBot extends tgLib
 
     private function handleRoleLevelChange(string $selectedRoleLevel, string $targetRoleLevel, string $selectedRoleName, int $newPriority = null) : void
     {
+        $dbManager = $this->container->get('dbManager');
+
         if ($selectedRoleLevel === "primary" && $selectedRoleLevel !== $targetRoleLevel) {
-            $this->db->exec("BEGIN TRANSACTION");
+            $dbManager->db->exec("BEGIN TRANSACTION");
 
             try {
                 // Зберігаємо первинні ролі та їх пріоритети, виключаючи вибрану роль
                 $primaryRolesPriorities = [];
-                $stmt = $this->db->prepare("SELECT role_name, priority FROM roles WHERE level = 'primary' AND role_name != :selected_role_name ORDER BY priority ASC");
+                $stmt = $dbManager->db->prepare("SELECT role_name, priority FROM roles WHERE level = 'primary' AND role_name != :selected_role_name ORDER BY priority ASC");
                 $stmt->bindValue(":selected_role_name", $selectedRoleName, SQLITE3_TEXT);
                 $result = $stmt->execute();
 
@@ -779,19 +787,19 @@ class MyBot extends tgLib
                 foreach ($primaryRolesPriorities as $oldPriority => $roleName) {
                     $newPriority = round(array_search($oldPriority, array_keys($primaryRolesPriorities)) * $step);
                     $oldToNewPriorities[$oldPriority] = $newPriority;
-                    $stmt = $this->db->prepare("UPDATE roles SET priority = :priority WHERE role_name = :role_name");
+                    $stmt = $dbManager->db->prepare("UPDATE roles SET priority = :priority WHERE role_name = :role_name");
                     $stmt->bindValue(":priority", $newPriority, SQLITE3_INTEGER);
                     $stmt->bindValue(":role_name", $roleName, SQLITE3_TEXT);
                     $this->executeWithRetry($stmt);
                 }
 
                 // Оновлюємо пріоритети другорядних ролей, враховуючи відповідність старих та нових пріоритетів
-                $stmt = $this->db->query("SELECT role_name, priority FROM roles WHERE level = 'secondary' ORDER BY priority ASC");
+                $stmt = $dbManager->db->query("SELECT role_name, priority FROM roles WHERE level = 'secondary' ORDER BY priority ASC");
                 while ($row = $stmt->fetchArray(SQLITE3_ASSOC)) {
                     $oldPriority = $row["priority"];
                     $newPriority = $oldToNewPriorities[$oldPriority] ?? $oldPriority;
                     $roleName = $row["role_name"];
-                    $stmtUpdate = $this->db->prepare("UPDATE roles SET priority = :priority WHERE role_name = :role_name");
+                    $stmtUpdate = $dbManager->db->prepare("UPDATE roles SET priority = :priority WHERE role_name = :role_name");
                     $stmtUpdate->bindValue(":priority", $newPriority, SQLITE3_INTEGER);
                     $stmtUpdate->bindValue(":role_name", $roleName, SQLITE3_TEXT);
                     $this->executeWithRetry($stmtUpdate);
@@ -799,15 +807,15 @@ class MyBot extends tgLib
 
                 // Додаємо вибрану роль до другорядних ролей з новим пріоритетом
                 $newPriority = $newPriority ?? (max($oldToNewPriorities) + 1);
-                $stmt = $this->db->prepare("UPDATE roles SET level = :role_level, priority = :priority WHERE role_name = :role_name");
+                $stmt = $dbManager->db->prepare("UPDATE roles SET level = :role_level, priority = :priority WHERE role_name = :role_name");
                 $stmt->bindValue(":role_name", $selectedRoleName, SQLITE3_TEXT);
                 $stmt->bindValue(":role_level", $targetRoleLevel, SQLITE3_TEXT);
                 $stmt->bindValue(":priority", $newPriority, SQLITE3_INTEGER);
                 $this->executeWithRetry($stmt);
 
-                $this->db->exec("COMMIT");
+                $dbManager->db->exec("COMMIT");
             } catch (Exception $e) {
-                $this->db->exec("ROLLBACK");
+                $dbManager->db->exec("ROLLBACK");
                 throw $e;
             }
         } else {
