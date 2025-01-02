@@ -673,6 +673,12 @@ public function toggleRoleSelection(int $chatId, int $userId, mixed $callbackQue
         $dbManager->setState($userId, ["role_name" => $roleName], "selected_role");
         $this->callbackAnswer($callbackQueryId, "Ви вибрали роль «" . $roleName . "» для зміни пріоритету.");
     }
+
+    // Виклик функції recalculatePriorities
+    $roles = $dbManager->queryRolesOrderedByPriority();
+    $rolesPriorities = array_column($roles, 'role_name', 'priority');
+    $dbManager->recalculatePriorities($rolesPriorities);
+
     $this->sendUpdateRolesPriorityPanel($chatId, $userId, $callbackQueryId);
 }
 
@@ -694,6 +700,11 @@ public function updateRolePriority(int $chatId, int $userId, mixed $callbackQuer
     $targetPriority = $dbManager->getRolePriority($targetRoleName);
 
     $dbManager->updateRolePriorities($selectedRolePriority, $targetPriority);
+
+    // Виклик функції recalculatePriorities
+    $roles = $dbManager->queryRolesOrderedByPriority();
+    $rolesPriorities = array_column($roles, 'role_name', 'priority');
+    $dbManager->recalculatePriorities($rolesPriorities);
 
     $dbManager->clearState($userId, "selected_role");
     $this->callbackAnswer($callbackQueryId, "Роль «" . $selectedRoleName . "» оновлена.");
