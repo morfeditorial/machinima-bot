@@ -770,6 +770,11 @@ private function handleRoleLevelChange(string $selectedRoleLevel, string $target
     }
 }
 
+private function cannotMoveToSecondary(string $selectedRoleLevel, string $targetRoleLevel, int $secondaryCount, int $primaryCount) : bool
+{
+    return $selectedRoleLevel === "primary" && $targetRoleLevel === "secondary" && $secondaryCount >= $primaryCount;
+}
+
 private function executeWithRetry($stmt, $retries = 5, $delay = 100)
 {
     for ($i = 0; $i < $retries; $i++) {
