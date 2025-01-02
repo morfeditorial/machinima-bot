@@ -706,6 +706,9 @@ public function updateRolePriorityAndLevel(int $chatId, int $userId, mixed $call
 
     $dbManager->recalculatePriorities($primaryRolesPriorities);
 
+    $selectedRolePriority = $dbManager->getRolePriority($selectedRoleName);
+    $secondaryCount = $dbManager->getRolesCount("secondary");
+
     if ($this->cannotMoveToSecondary($selectedRoleLevel, $targetRoleLevel, $secondaryCount, count($primaryRolesPriorities))) {
         $this->callbackAnswer($callbackQueryId, "Не можна переміщувати більше ролей до другорядних.");
         return;
@@ -750,7 +753,7 @@ private function handleRoleLevelChange(string $selectedRoleLevel, string $target
 
         try {
             // Переміщення ролі та коригування її пріоритету
-            $newPriority = $newPriority ?? (max($oldToNewPriorities) + 1);
+            $newPriority = $newPriority ?? ($dbManager->getMaxPriority($targetRoleLevel) + 1);
             $stmt = $dbManager->prepareStatement("UPDATE roles SET level = :role_level, priority = :priority WHERE role_name = :role_name");
             $stmt->bindValue(":role_name", $selectedRoleName, SQLITE3_TEXT);
             $stmt->bindValue(":role_level", $targetRoleLevel, SQLITE3_TEXT);
@@ -767,24 +770,19 @@ private function handleRoleLevelChange(string $selectedRoleLevel, string $target
     }
 }
 
-    private function cannotMoveToSecondary(string $selectedRoleLevel, string $targetRoleLevel, int $secondaryCount, int $primaryCount) : bool
-    {
-        return $selectedRoleLevel === "primary" && $targetRoleLevel === "secondary" && $secondaryCount >= $primaryCount;
-    }
-
-    private function executeWithRetry($stmt, $retries = 5, $delay = 100)
-    {
-        for ($i = 0; $i < $retries; $i++) {
-            try {
-                $stmt->execute();
-                return;
-            } catch (Exception $e) {
-                if ($i < $retries - 1 && $e->getMessage() == "database is locked") {
-                    usleep($delay * 1000);
-                    continue;
-                }
-                throw $e;
+private function executeWithRetry($stmt, $retries = 5, $delay = 100)
+{
+    for ($i = 0; $i < $retries; $i++) {
+        try {
+            $stmt->execute();
+            return;
+        } catch (Exception $e) {
+            if ($i < $retries - 1 && $e->getMessage() == "database is locked") {
+                usleep($delay * 1000);
+                continue;
             }
+            throw $e;
         }
     }
+}
 }
