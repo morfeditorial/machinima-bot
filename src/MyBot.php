@@ -691,15 +691,9 @@ private function buildRoleButton(array &$keyboardRow, ?array $selectedRole, arra
 public function updateRolePriority(int $chatId, int $userId, mixed $callbackQueryId, string $selectedRoleName, string $targetRoleName) : void
 {
     $dbManager = $this->container->get('dbManager');
-    $selectedRolePriority = $dbManager->getRolePriority($selectedRoleName);
     $targetPriority = $dbManager->getRolePriority($targetRoleName);
 
-    $dbManager->updateRolePriorities($selectedRolePriority, $targetPriority);
-
-    // Виклик функції recalculatePriorities після зміни пріоритету
-    $roles = $dbManager->queryRolesOrderedByPriority();
-    $rolesPriorities = array_column($roles, 'role_name', 'priority');
-    $dbManager->recalculatePriorities($rolesPriorities);
+    $dbManager->updateRolePriorities($selectedRoleName, $targetPriority);
 
     $dbManager->clearState($userId, "selected_role");
     $this->callbackAnswer($callbackQueryId, "Роль «" . $selectedRoleName . "» оновлена.");
