@@ -701,7 +701,7 @@ public function updateRolePriority(int $chatId, int $userId, mixed $callbackQuer
 
     $dbManager->updateRolePriorities($selectedRolePriority, $targetPriority);
 
-    // Виклик функції recalculatePriorities
+    // Виклик функції recalculatePriorities після зміни пріоритету
     $roles = $dbManager->queryRolesOrderedByPriority();
     $rolesPriorities = array_column($roles, 'role_name', 'priority');
     $dbManager->recalculatePriorities($rolesPriorities);
