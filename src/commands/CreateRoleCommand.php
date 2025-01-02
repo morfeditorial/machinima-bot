@@ -76,7 +76,7 @@ class CreateRoleCommand implements CommandInterface
         $priority = intval($args[1]);
 
         if ($this->dbManager->getRoleByName($roleName)) {
-            $this->sendMessage($chatId, str_replace('{roleName}', htmlspecialchars($roleName), $this->translator->translate('role_already_exist_message')));
+            $this->bot->sendMessage($chatId, str_replace('{roleName}', htmlspecialchars($roleName), $this->translator->translate('role_already_exist_message')));
 
             return;
         }
