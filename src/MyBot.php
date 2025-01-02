@@ -631,6 +631,7 @@ class MyBot extends tgLib
         return $keyboard;
     }
 
+
     public function sendUpdateRolesPriorityPanel(int $chatId, int $userId, $callbackQueryId) : void
     {
         $dbManager = $this->container->get('dbManager');
@@ -638,16 +639,7 @@ class MyBot extends tgLib
         $visualsLinks = $this->container->get('visualsLinks');
 
         if ($dbManager->hasHigherRole($userId, "admin")) {
-            $result = $dbManager->db->query("SELECT * FROM roles ORDER BY priority DESC, level ASC");
-            $roles = [];
-            while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-                $roles[] = [
-                    "role_name" => $row["role_name"],
-                    "priority" => $row["priority"],
-                    "level" => $row["level"]
-                ];
-            }
-
+            $roles = $dbManager->queryRolesOrderedByPriorityAndLevel();
             $selectedRole = $dbManager->getState($userId, "selected_role");
 
             $rolesByPriority = [];
@@ -659,10 +651,11 @@ class MyBot extends tgLib
 
             foreach ($rolesByPriority as $priority => $levels) {
                 $keyboardRow = [];
-
                 if (isset($levels["primary"][0])) {
                     $primaryRole = $levels["primary"][0];
-                    $primaryButtonText = ($selectedRole && $selectedRole["role_name"] === $primaryRole["role_name"]) ? "✔ {$primaryRole["role_name"]} ({$primaryRole["priority"]})" : "{$primaryRole["role_name"]} ({$primaryRole["priority"]})";
+                    $primaryButtonText = ($selectedRole && $selectedRole["role_name"] === $primaryRole["role_name"]) ? 
+                        "✔ {$primaryRole["role_name"]} ({$primaryRole["priority"]})" : 
+                        "{$primaryRole["role_name"]} ({$primaryRole["priority"]})";
                     $keyboardRow[] = [
                         "text" => $primaryButtonText,
                         "callback_data" => "select_role:{$primaryRole["role_name"]}:primary"
@@ -673,13 +666,15 @@ class MyBot extends tgLib
 
                 if (isset($levels["secondary"][0])) {
                     $secondaryRole = $levels["secondary"][0];
-                    $secondaryButtonText = ($selectedRole && $selectedRole["role_name"] === $secondaryRole["role_name"]) ? "✔ {$secondaryRole["role_name"]} ({$secondaryRole["priority"]})" : "{$secondaryRole["role_name"]} ({$secondaryRole["priority"]})";
+                    $secondaryButtonText = ($selectedRole && $selectedRole["role_name"] === $secondaryRole["role_name"]) ? 
+                        "✔ {$secondaryRole["role_name"]} ({$secondaryRole["priority"]})" : 
+                        "{$secondaryRole["role_name"]} ({$secondaryRole["priority"]})";
                     $keyboardRow[] = [
-                        "text" => $secondaryButtonText,
+                    "text" => $secondaryButtonText,
                         "callback_data" => "select_role:{$secondaryRole["role_name"]}:secondary"
                     ];
                 } else {
-                    $keyboardRow[] = ["text" => " ", "callback_data" => "noop:{$primaryRole["priority"]}"];
+                    $keyboardRow[] = ["text" => " ", "callback_data" => "noop:{$priority}"];
                 }
 
                 $keyboard["inline_keyboard"][] = $keyboardRow;
@@ -695,8 +690,10 @@ class MyBot extends tgLib
         }
     }
 
-    public function toggleRoleSelection(int $chatId, int $userId, $callbackQueryId, string $roleName, string $roleLevel) : void
+
+    public function toggleRoleSelection(int $chatId, int $userId, mixed $callbackQueryId, string $roleName, string $roleLevel) : void
     {
+        $dbManager = $this->container->get('dbManager');
         $selectedRole = $dbManager->getState($userId, "selected_role");
         if ($selectedRole && $selectedRole["role_name"] === $roleName) {
             $dbManager->clearState($userId, "selected_role");
@@ -710,8 +707,9 @@ class MyBot extends tgLib
         $this->sendUpdateRolesPriorityPanel($chatId, $userId, $callbackQueryId);
     }
 
-    public function updateRolePriorityAndLevel(int $chatId, int $userId, $callbackQueryId, string $selectedRoleName, string $selectedRoleLevel, string|null $targetRoleName, string $targetRoleLevel, ?int $newPriority) : void
+    public function updateRolePriorityAndLevel(int $chatId, int $userId, mixed $callbackQueryId, string $selectedRoleName, string $selectedRoleLevel, ?string $targetRoleName, string $targetRoleLevel, ?int $newPriority) : void
     {
+        $dbManager = $this->container->get('dbManager');
         $primaryRolesPriorities = $dbManager->getRolesPriorities("primary");
 
         $dbManager->recalculatePriorities($primaryRolesPriorities);
@@ -766,12 +764,12 @@ class MyBot extends tgLib
         $dbManager = $this->container->get('dbManager');
 
         if ($selectedRoleLevel === "primary" && $selectedRoleLevel !== $targetRoleLevel) {
-            $dbManager->db->exec("BEGIN TRANSACTION");
+            $dbManager->beginTransaction();
 
             try {
                 // Зберігаємо первинні ролі та їх пріоритети, виключаючи вибрану роль
                 $primaryRolesPriorities = [];
-                $stmt = $dbManager->db->prepare("SELECT role_name, priority FROM roles WHERE level = 'primary' AND role_name != :selected_role_name ORDER BY priority ASC");
+                $stmt = $dbManager->prepareStatement("SELECT role_name, priority FROM roles WHERE level = 'primary' AND role_name != :selected_role_name ORDER BY priority ASC");
                 $stmt->bindValue(":selected_role_name", $selectedRoleName, SQLITE3_TEXT);
                 $result = $stmt->execute();
 
@@ -787,19 +785,20 @@ class MyBot extends tgLib
                 foreach ($primaryRolesPriorities as $oldPriority => $roleName) {
                     $newPriority = round(array_search($oldPriority, array_keys($primaryRolesPriorities)) * $step);
                     $oldToNewPriorities[$oldPriority] = $newPriority;
-                    $stmt = $dbManager->db->prepare("UPDATE roles SET priority = :priority WHERE role_name = :role_name");
+                    $stmt = $dbManager->prepareStatement("UPDATE roles SET priority = :priority WHERE role_name = :role_name");
                     $stmt->bindValue(":priority", $newPriority, SQLITE3_INTEGER);
                     $stmt->bindValue(":role_name", $roleName, SQLITE3_TEXT);
                     $this->executeWithRetry($stmt);
                 }
 
                 // Оновлюємо пріоритети другорядних ролей, враховуючи відповідність старих та нових пріоритетів
-                $stmt = $dbManager->db->query("SELECT role_name, priority FROM roles WHERE level = 'secondary' ORDER BY priority ASC");
-                while ($row = $stmt->fetchArray(SQLITE3_ASSOC)) {
+                $stmt = $dbManager->prepareStatement("SELECT role_name, priority FROM roles WHERE level = 'secondary' ORDER BY priority ASC");
+                $result = $stmt->execute();
+                while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
                     $oldPriority = $row["priority"];
                     $newPriority = $oldToNewPriorities[$oldPriority] ?? $oldPriority;
                     $roleName = $row["role_name"];
-                    $stmtUpdate = $dbManager->db->prepare("UPDATE roles SET priority = :priority WHERE role_name = :role_name");
+                    $stmtUpdate = $dbManager->prepareStatement("UPDATE roles SET priority = :priority WHERE role_name = :role_name");
                     $stmtUpdate->bindValue(":priority", $newPriority, SQLITE3_INTEGER);
                     $stmtUpdate->bindValue(":role_name", $roleName, SQLITE3_TEXT);
                     $this->executeWithRetry($stmtUpdate);
@@ -807,15 +806,15 @@ class MyBot extends tgLib
 
                 // Додаємо вибрану роль до другорядних ролей з новим пріоритетом
                 $newPriority = $newPriority ?? (max($oldToNewPriorities) + 1);
-                $stmt = $dbManager->db->prepare("UPDATE roles SET level = :role_level, priority = :priority WHERE role_name = :role_name");
+                $stmt = $dbManager->prepareStatement("UPDATE roles SET level = :role_level, priority = :priority WHERE role_name = :role_name");
                 $stmt->bindValue(":role_name", $selectedRoleName, SQLITE3_TEXT);
                 $stmt->bindValue(":role_level", $targetRoleLevel, SQLITE3_TEXT);
                 $stmt->bindValue(":priority", $newPriority, SQLITE3_INTEGER);
                 $this->executeWithRetry($stmt);
 
-                $dbManager->db->exec("COMMIT");
+                $dbManager->commitTransaction();
             } catch (Exception $e) {
-                $dbManager->db->exec("ROLLBACK");
+                $dbManager->rollbackTransaction();
                 throw $e;
             }
         } else {

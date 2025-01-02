@@ -721,4 +721,38 @@ class DatabaseManager
         $stmt->bindValue(':target_role_level', $roleLevel, SQLITE3_TEXT);
         $stmt->execute();
     }
+
+    public function queryRolesOrderedByPriorityAndLevel() : array
+    {
+        $result = $this->db->query("SELECT * FROM roles ORDER BY priority DESC, level ASC");
+        $roles = [];
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $roles[] = [
+                "role_name" => $row["role_name"],
+                "priority" => $row["priority"],
+                "level" => $row["level"]
+            ];
+        }
+        return $roles;
+    }
+
+    public function beginTransaction()
+    {
+        $this->db->exec("BEGIN TRANSACTION");
+    }
+
+    public function commitTransaction()
+    {
+        $this->db->exec("COMMIT");
+    }
+
+    public function rollbackTransaction()
+    {
+        $this->db->exec("ROLLBACK");
+    }
+
+    public function prepareStatement(string $query)
+    {
+        return $this->db->prepare($query);
+    }
 }
