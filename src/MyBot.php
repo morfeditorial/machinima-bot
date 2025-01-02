@@ -659,17 +659,6 @@ public function sendUpdateRolesPriorityPanel(int $chatId, int $userId, $callback
     }
 }
 
-private function buildRoleButton(array &$keyboardRow, ?array $selectedRole, array $role) : void
-{
-    $buttonText = ($selectedRole && $selectedRole["role_name"] === $role["role_name"]) ?
-        "✔ {$role["role_name"]} ({$role["priority"]})" :
-        "{$role["role_name"]} ({$role["priority"]})";
-    $keyboardRow[] = [
-        "text" => $buttonText,
-        "callback_data" => "select_role:{$role["role_name"]}"
-    ];
-}
-
 public function toggleRoleSelection(int $chatId, int $userId, mixed $callbackQueryId, string $roleName) : void
 {
     $dbManager = $this->container->get('dbManager');
@@ -685,6 +674,17 @@ public function toggleRoleSelection(int $chatId, int $userId, mixed $callbackQue
         $this->callbackAnswer($callbackQueryId, "Ви вибрали роль «" . $roleName . "» для зміни пріоритету.");
     }
     $this->sendUpdateRolesPriorityPanel($chatId, $userId, $callbackQueryId);
+}
+
+private function buildRoleButton(array &$keyboardRow, ?array $selectedRole, array $role) : void
+{
+    $buttonText = ($selectedRole && $selectedRole["role_name"] === $role["role_name"]) ?
+        "✔ {$role["role_name"]} ({$role["priority"]})" :
+        "{$role["role_name"]} ({$role["priority"]})";
+    $keyboardRow[] = [
+        "text" => $buttonText,
+        "callback_data" => "select_role:{$role["role_name"]}"
+    ];
 }
 
 public function updateRolePriority(int $chatId, int $userId, mixed $callbackQueryId, string $selectedRoleName, string $targetRoleName) : void

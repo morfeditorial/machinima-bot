@@ -639,9 +639,9 @@ class DatabaseManager
     {
         $count = count($rolesPriorities);
         if ($count > 0) {
-            $step = 100 / ($count - 1);
-            foreach ($rolesPriorities as $priority => $roleName) {
-                $newPriority = round(array_search($priority, array_keys($rolesPriorities)) * $step);
+            $step = 100 / $count;
+            foreach ($rolesPriorities as $index => $roleName) {
+                $newPriority = round(($index + 1) * $step);
                 $stmt = $this->db->prepare('UPDATE roles SET priority = :priority WHERE role_name = :role_name');
                 $stmt->bindValue(':priority', $newPriority, SQLITE3_INTEGER);
                 $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
