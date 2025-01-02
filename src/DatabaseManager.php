@@ -83,8 +83,7 @@ class DatabaseManager
             CREATE TABLE IF NOT EXISTS roles (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 role_name TEXT NOT NULL UNIQUE,
-                priority INTEGER NOT NULL,
-                level TEXT DEFAULT 'primary'
+                priority INTEGER NOT NULL
             );
 
             CREATE TABLE IF NOT EXISTS user_roles (
@@ -592,38 +591,6 @@ class DatabaseManager
     }
 
     /**
-     * Retrieve roles and priorities by level.
-     *
-     * @param  string  $level  The level for which roles and priorities are to be retrieved.
-     * @return array An array of roles and priorities by level.
-     */
-    public function getRolesPriorities(string $level) : array
-    {
-        $rolesPriorities = [];
-        $result = $this->db->query("SELECT role_name, priority FROM roles WHERE level = '$level' ORDER BY priority ASC");
-        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-            $rolesPriorities[$row['priority']] = $row['role_name'];
-        }
-
-        return $rolesPriorities;
-    }
-
-    /**
-     * Retrieve the maximum priority value for a specified role level.
-     *
-     * @param  string  $level  The level for which to find the maximum priority.
-     * @return int The maximum priority value for the specified level, or 0 if no roles exist.
-     */
-    public function getMaxPriority(string $level) : int
-    {
-        $stmt = $this->db->prepare('SELECT MAX(priority) FROM roles WHERE level = :role_level');
-        $stmt->bindValue(':role_level', $level, SQLITE3_TEXT);
-        $result = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
-
-        return $result ? (int) $result['MAX(priority)'] : 0;
-    }
-
-    /**
      * Retrieve priority of a specified role.
      *
      * @param  string  $roleName  The name of the role for which priority is to be retrieved.
@@ -638,14 +605,13 @@ class DatabaseManager
     }
 
     /**
-     * Count roles by level.
+     * Count roles.
      *
-     * @param  string  $level  The level for which roles are to be counted.
-     * @return int The count of roles by level.
+     * @return int The count of roles.
      */
-    public function getRolesCount(string $level) : int
+    public function getRolesCount() : int
     {
-        return $this->db->querySingle("SELECT COUNT(*) FROM roles WHERE level = '$level'");
+        return $this->db->querySingle("SELECT COUNT(*) FROM roles");
     }
 
     /**
@@ -659,24 +625,6 @@ class DatabaseManager
     {
         $stmt = $this->db->prepare('UPDATE roles SET priority = :priority WHERE role_name = :role_name');
         $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
-        $stmt->bindValue(':priority', $priority, SQLITE3_INTEGER);
-
-        return $stmt->execute() ? true : false;
-    }
-
-    /**
-     * Update the level and priority of a specified role in the roles table.
-     *
-     * @param  string  $roleName  The name of the role to be updated.
-     * @param  string  $level  The new level to assign to the role.
-     * @param  int  $priority  The new priority to assign to the role.
-     * @return bool Returns true on success, false on failure.
-     */
-    public function updateRoleLevelAndPriority(string $roleName, string $level, int $priority) : bool
-    {
-        $stmt = $this->db->prepare('UPDATE roles SET level = :role_level, priority = :priority WHERE role_name = :role_name');
-        $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
-        $stmt->bindValue(':role_level', $level, SQLITE3_TEXT);
         $stmt->bindValue(':priority', $priority, SQLITE3_INTEGER);
 
         return $stmt->execute() ? true : false;
@@ -707,45 +655,27 @@ class DatabaseManager
      *
      * @param  int  $selectedRolePriority  The priority of the selected role.
      * @param  int  $targetPriority  The target priority level.
-     * @param  string  $roleLevel  The level of the roles for which priorities are to be updated.
      */
-public function updateRolePriorities(int $selectedRolePriority, int $targetPriority, string $roleLevel) : void
-{
-    // Get all roles at the same level ordered by priority
-    $roles = [];
-    $stmt = $this->db->prepare("SELECT role_name, priority FROM roles WHERE level = :role_level ORDER BY priority ASC");
-    $stmt->bindValue(':role_level', $roleLevel, SQLITE3_TEXT);
-    $result = $stmt->execute();
-
-    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-        $roles[] = $row;
-    }
-
-    // Determine new priorities based on positions
-    $newPriorities = [];
-    $step = 100 / (count($roles) - 1);
-    foreach ($roles as $index => $role) {
-        $newPriorities[$role['role_name']] = round($index * $step);
-    }
-
-    // Update priorities in the database
-    foreach ($newPriorities as $roleName => $priority) {
-        $stmt = $this->db->prepare('UPDATE roles SET priority = :priority WHERE role_name = :role_name');
-        $stmt->bindValue(':priority', $priority, SQLITE3_INTEGER);
-        $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
+    public function updateRolePriorities(int $selectedRolePriority, int $targetPriority) : void
+    {
+        if ($selectedRolePriority < $targetPriority) {
+            $stmt = $this->db->prepare('UPDATE roles SET priority = priority - 1 WHERE priority > :selected_role_priority AND priority <= :target_priority');
+        } else {
+            $stmt = $this->db->prepare('UPDATE roles SET priority = priority + 1 WHERE priority < :selected_role_priority AND priority >= :target_priority');
+        }
+        $stmt->bindValue(':selected_role_priority', $selectedRolePriority, SQLITE3_INTEGER);
+        $stmt->bindValue(':target_priority', $targetPriority, SQLITE3_INTEGER);
         $stmt->execute();
     }
-}
 
-    public function queryRolesOrderedByPriorityAndLevel() : array
+    public function queryRolesOrderedByPriority() : array
     {
-        $result = $this->db->query("SELECT * FROM roles ORDER BY priority DESC, level ASC");
+        $result = $this->db->query("SELECT * FROM roles ORDER BY priority DESC");
         $roles = [];
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             $roles[] = [
                 "role_name" => $row["role_name"],
-                "priority" => $row["priority"],
-                "level" => $row["level"]
+                "priority" => $row["priority"]
             ];
         }
         return $roles;

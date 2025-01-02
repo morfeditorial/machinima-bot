@@ -638,21 +638,14 @@ public function sendUpdateRolesPriorityPanel(int $chatId, int $userId, $callback
     $visualsLinks = $this->container->get('visualsLinks');
 
     if ($dbManager->hasHigherRole($userId, "admin")) {
-        $roles = $dbManager->queryRolesOrderedByPriorityAndLevel();
+        $roles = $dbManager->queryRolesOrderedByPriority();
         $selectedRole = $dbManager->getState($userId, "selected_role");
-
-        $rolesByPriority = [];
-        foreach ($roles as $role) {
-            $rolesByPriority[$role["priority"]][$role["level"]][] = $role;
-        }
 
         $keyboard = ["inline_keyboard" => []];
 
-        foreach ($rolesByPriority as $priority => $levels) {
+        foreach ($roles as $role) {
             $keyboardRow = [];
-            $this->buildRoleButton($keyboardRow, $selectedRole, $levels, "primary");
-            $this->buildRoleButton($keyboardRow, $selectedRole, $levels, "secondary");
-
+            $this->buildRoleButton($keyboardRow, $selectedRole, $role);
             $keyboard["inline_keyboard"][] = $keyboardRow;
         }
 
@@ -666,23 +659,18 @@ public function sendUpdateRolesPriorityPanel(int $chatId, int $userId, $callback
     }
 }
 
-private function buildRoleButton(array &$keyboardRow, ?array $selectedRole, array $levels, string $level) : void
+private function buildRoleButton(array &$keyboardRow, ?array $selectedRole, array $role) : void
 {
-    if (isset($levels[$level][0])) {
-        $role = $levels[$level][0];
-        $buttonText = ($selectedRole && $selectedRole["role_name"] === $role["role_name"]) ?
-            "✔ {$role["role_name"]} ({$role["priority"]})" :
-            "{$role["role_name"]} ({$role["priority"]})";
-        $keyboardRow[] = [
-            "text" => $buttonText,
-            "callback_data" => "select_role:{$role["role_name"]}:{$level}"
-        ];
-    } else {
-        $keyboardRow[] = ["text" => " ", "callback_data" => "noop"];
-    }
+    $buttonText = ($selectedRole && $selectedRole["role_name"] === $role["role_name"]) ?
+        "✔ {$role["role_name"]} ({$role["priority"]})" :
+        "{$role["role_name"]} ({$role["priority"]})";
+    $keyboardRow[] = [
+        "text" => $buttonText,
+        "callback_data" => "select_role:{$role["role_name"]}"
+    ];
 }
 
-public function toggleRoleSelection(int $chatId, int $userId, mixed $callbackQueryId, string $roleName, string $roleLevel) : void
+public function toggleRoleSelection(int $chatId, int $userId, mixed $callbackQueryId, string $roleName) : void
 {
     $dbManager = $this->container->get('dbManager');
     $selectedRole = $dbManager->getState($userId, "selected_role");
@@ -691,88 +679,25 @@ public function toggleRoleSelection(int $chatId, int $userId, mixed $callbackQue
         $dbManager->clearState($userId, "selected_role");
         $this->callbackAnswer($callbackQueryId, "Ви зняли виділення з ролі «" . $roleName . "».");
     } elseif ($selectedRole) {
-        $this->updateRolePriorityAndLevel($chatId, $userId, $callbackQueryId, $selectedRole["role_name"], $selectedRole["role_level"], $roleName, $roleLevel, null);
+        $this->updateRolePriority($chatId, $userId, $callbackQueryId, $selectedRole["role_name"], $roleName);
     } else {
-        $dbManager->setState($userId, ["role_name" => $roleName, "role_level" => $roleLevel], "selected_role");
+        $dbManager->setState($userId, ["role_name" => $roleName], "selected_role");
         $this->callbackAnswer($callbackQueryId, "Ви вибрали роль «" . $roleName . "» для зміни пріоритету.");
     }
     $this->sendUpdateRolesPriorityPanel($chatId, $userId, $callbackQueryId);
 }
 
-public function updateRolePriorityAndLevel(int $chatId, int $userId, mixed $callbackQueryId, string $selectedRoleName, string $selectedRoleLevel, ?string $targetRoleName, string $targetRoleLevel, ?int $newPriority) : void
+public function updateRolePriority(int $chatId, int $userId, mixed $callbackQueryId, string $selectedRoleName, string $targetRoleName) : void
 {
     $dbManager = $this->container->get('dbManager');
-    $primaryRolesPriorities = $dbManager->getRolesPriorities("primary");
-
-    $dbManager->recalculatePriorities($primaryRolesPriorities);
-
     $selectedRolePriority = $dbManager->getRolePriority($selectedRoleName);
-    $secondaryCount = $dbManager->getRolesCount("secondary");
+    $targetPriority = $dbManager->getRolePriority($targetRoleName);
 
-    if ($this->cannotMoveToSecondary($selectedRoleLevel, $targetRoleLevel, $secondaryCount, count($primaryRolesPriorities))) {
-        $this->callbackAnswer($callbackQueryId, "Не можна переміщувати більше ролей до другорядних.");
-        return;
-    }
-
-    if ($targetRoleName) {
-        $this->handleRolePriorityUpdate($selectedRoleLevel, $targetRoleLevel, $selectedRoleName, $targetRoleName);
-    } else {
-        $this->handleRoleLevelChange($selectedRoleLevel, $targetRoleLevel, $selectedRoleName, $newPriority);
-    }
+    $dbManager->updateRolePriorities($selectedRolePriority, $targetPriority);
 
     $dbManager->clearState($userId, "selected_role");
     $this->callbackAnswer($callbackQueryId, "Роль «" . $selectedRoleName . "» оновлена.");
     $this->sendUpdateRolesPriorityPanel($chatId, $userId, $callbackQueryId);
-}
-
-private function handleRolePriorityUpdate(string $selectedRoleLevel, string $targetRoleLevel, string $selectedRoleName, string $targetRoleName) : void
-{
-    $dbManager = $this->container->get('dbManager');
-    $selectedRole = $dbManager->getRoleByName($selectedRoleName);
-    $targetRole = $dbManager->getRoleByName($targetRoleName);
-
-    $selectedRolePriority = $selectedRole["priority"];
-    $targetPriority = $targetRole["priority"];
-
-    if ($selectedRoleLevel === $targetRoleLevel) {
-        $dbManager->updateRolePriorities($selectedRolePriority, $targetPriority, $targetRoleLevel);
-        $dbManager->updateRolePriority($selectedRoleName, $targetPriority);
-    } else {
-        $dbManager->decrementPrioritiesAbove($selectedRoleLevel, $selectedRolePriority);
-        $newPriority = $dbManager->getMaxPriority($targetRoleLevel) + 1;
-        $dbManager->updateRoleLevelAndPriority($selectedRoleName, $targetRoleLevel, $newPriority);
-    }
-}
-
-private function handleRoleLevelChange(string $selectedRoleLevel, string $targetRoleLevel, string $selectedRoleName, ?int $newPriority) : void
-{
-    $dbManager = $this->container->get('dbManager');
-
-    if ($selectedRoleLevel === "primary" && $selectedRoleLevel !== $targetRoleLevel) {
-        $dbManager->beginTransaction();
-
-        try {
-            // Переміщення ролі та коригування її пріоритету
-            $newPriority = $newPriority ?? ($dbManager->getMaxPriority($targetRoleLevel) + 1);
-            $stmt = $dbManager->prepareStatement("UPDATE roles SET level = :role_level, priority = :priority WHERE role_name = :role_name");
-            $stmt->bindValue(":role_name", $selectedRoleName, SQLITE3_TEXT);
-            $stmt->bindValue(":role_level", $targetRoleLevel, SQLITE3_TEXT);
-            $stmt->bindValue(":priority", $newPriority, SQLITE3_INTEGER);
-            $this->executeWithRetry($stmt);
-
-            $dbManager->commitTransaction();
-        } catch (Exception $e) {
-            $dbManager->rollbackTransaction();
-            throw $e;
-        }
-    } else {
-        $dbManager->updateRoleLevelAndPriority($selectedRoleName, $targetRoleLevel, $newPriority);
-    }
-}
-
-private function cannotMoveToSecondary(string $selectedRoleLevel, string $targetRoleLevel, int $secondaryCount, int $primaryCount) : bool
-{
-    return $selectedRoleLevel === "primary" && $targetRoleLevel === "secondary" && $secondaryCount >= $primaryCount;
 }
 
 private function executeWithRetry($stmt, $retries = 5, $delay = 100)
