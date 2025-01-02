@@ -709,18 +709,33 @@ class DatabaseManager
      * @param  int  $targetPriority  The target priority level.
      * @param  string  $roleLevel  The level of the roles for which priorities are to be updated.
      */
-    public function updateRolePriorities(int $selectedRolePriority, int $targetPriority, string $roleLevel) : void
-    {
-        if ($selectedRolePriority < $targetPriority) {
-            $stmt = $this->db->prepare('UPDATE roles SET priority = priority - 1 WHERE priority > :selected_role_priority AND priority <= :target_priority AND level = :target_role_level');
-        } else {
-            $stmt = $this->db->prepare('UPDATE roles SET priority = priority + 1 WHERE priority < :selected_role_priority AND priority >= :target_priority AND level = :target_role_level');
-        }
-        $stmt->bindValue(':selected_role_priority', $selectedRolePriority, SQLITE3_INTEGER);
-        $stmt->bindValue(':target_priority', $targetPriority, SQLITE3_INTEGER);
-        $stmt->bindValue(':target_role_level', $roleLevel, SQLITE3_TEXT);
+public function updateRolePriorities(int $selectedRolePriority, int $targetPriority, string $roleLevel) : void
+{
+    // Get all roles at the same level ordered by priority
+    $roles = [];
+    $stmt = $this->db->prepare("SELECT role_name, priority FROM roles WHERE level = :role_level ORDER BY priority ASC");
+    $stmt->bindValue(':role_level', $roleLevel, SQLITE3_TEXT);
+    $result = $stmt->execute();
+
+    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+        $roles[] = $row;
+    }
+
+    // Determine new priorities based on positions
+    $newPriorities = [];
+    $step = 100 / (count($roles) - 1);
+    foreach ($roles as $index => $role) {
+        $newPriorities[$role['role_name']] = round($index * $step);
+    }
+
+    // Update priorities in the database
+    foreach ($newPriorities as $roleName => $priority) {
+        $stmt = $this->db->prepare('UPDATE roles SET priority = :priority WHERE role_name = :role_name');
+        $stmt->bindValue(':priority', $priority, SQLITE3_INTEGER);
+        $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
         $stmt->execute();
     }
+}
 
     public function queryRolesOrderedByPriorityAndLevel() : array
     {
