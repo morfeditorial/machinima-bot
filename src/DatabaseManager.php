@@ -656,19 +656,23 @@ public function recalculatePriorities(array $rolesPriorities) : void
      * @param  int  $selectedRolePriority  The priority of the selected role.
      * @param  int  $targetPriority  The target priority level.
      */
-public function updateRolePriorities(int $selectedRolePriority, int $targetPriority) : void
+public function recalculatePriorities(array $rolesPriorities) : void
 {
-    if ($selectedRolePriority < $targetPriority) {
-        $stmt = $this->db->prepare('UPDATE roles SET priority = priority - 1 WHERE priority > :selected_role_priority AND priority <= :target_priority');
-    } elseif ($selectedRolePriority > $targetPriority) {
-        $stmt = $this->db->prepare('UPDATE roles SET priority = priority + 1 WHERE priority < :selected_role_priority AND priority >= :target_priority');
-    } else {
-        // Якщо пріоритети однакові, нічого не робимо
-        return;
+    $count = count($rolesPriorities);
+    if ($count > 0) {
+        $step = 100 / ($count - 1);
+        $i = 0;
+        foreach ($rolesPriorities as $roleName) {
+            $newPriority = round($i * $step);
+            $stmt = $this->db->prepare('UPDATE roles SET priority = :priority WHERE role_name = :role_name');
+            $stmt->bindValue(':priority', $newPriority, SQLITE3_INTEGER);
+            $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to update priority for role: $roleName");
+            }
+            $i++;
+        }
     }
-    $stmt->bindValue(':selected_role_priority', $selectedRolePriority, SQLITE3_INTEGER);
-    $stmt->bindValue(':target_priority', $targetPriority, SQLITE3_INTEGER);
-    $stmt->execute();
 }
 
     public function queryRolesOrderedByPriority() : array
