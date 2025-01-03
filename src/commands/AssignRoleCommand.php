@@ -75,7 +75,7 @@ class AssignRoleCommand implements CommandInterface
         $targetUserId = intval($args[0]);
         $roleName = $args[1];
 
-        if ($this->dbManager->getRoleByName($roleName)) {
+        if (! $this->dbManager->getRoleByName($roleName)) {
             $this->bot->sendMessage($chatId, str_replace('{roleName}', htmlspecialchars($roleName), $this->translator->translate('role_not_found_message')));
 
             return;
