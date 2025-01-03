@@ -58,7 +58,7 @@ If you want the bot to work on Webhook, uncomment the Webhook section in `bot.ph
 
 The following screenshot shows the initialization process of the MORF Editorial System, which serves as the backbone of MachinimaBot. It verifies the configuration, environment variables, and initializes the bot core before entering the main loop.
 
-![MORF Editorial System Initialization](https://github.com/user-attachments/assets/15041068-5e54-4806-815b-7a37432472e5)
+![MORF Editorial System Initialization](https://github.com/user-attachments/assets/f6aca24c-bc4d-4378-bbb5-e9ca3db4ddf5)
 
 ## .gitignore
 
