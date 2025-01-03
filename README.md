@@ -7,6 +7,7 @@
 - Real-time interaction with users on Telegram.
 - Easy configuration using environment variables.
 - Can work in Webhook mode or in a loop to get updates continuously.
+- Various commands for managing machinimators.
 
 ## Requirements
 
