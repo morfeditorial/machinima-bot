@@ -286,13 +286,6 @@
         "be": "🔙 Вярнуцца",
         "uk": "🔙 Повернутися назад"
     },
-    "access_control": {
-        "en": "Access Control 🔐",
-        "pl": "Kontrola dostępu 🔐",
-        "ru": "Контроль доступа 🔐",
-        "be": "Кантроль доступу 🔐",
-        "uk": "Управління доступом 🔐"
-    },
     "unknown_command_message": {
         "en": "I'm sorry, but I don't recognize that command. Please try a different command.",
         "pl": "Przepraszam, ale nie rozpoznaję tej komendy. Proszę spróbuj innej komendy.",
@@ -306,6 +299,20 @@
         "ru": "У вас нет прав для выполнения этой команды.",
         "be": "У вас няма правоў для выканання гэтай каманды.",
         "uk": "У вас немає прав для виконання цієї команди."
+    },
+    "access_control": {
+        "en": "Access Control 🔐",
+        "pl": "Kontrola dostępu 🔐",
+        "ru": "Контроль доступа 🔐",
+        "be": "Кантроль доступу 🔐",
+        "uk": "Управління доступом 🔐"
+    },
+    "access_control_panel_message": {
+        "en": "Here you can manage access to the bot.",
+        "pl": "Tutaj możesz zarządzać dostępem do bota.",
+        "ru": "Здесь вы можете управлять доступом к боту.",
+        "be": "Тут вы можаце кіраваць доступам да бота.",
+        "uk": "Тут ви можете керувати доступом до бота."
     },
     "create_role": {
         "en": "Create role",
@@ -362,6 +369,13 @@
         "ru": "Роль «{roleName}» была назначена пользователю {userId}.",
         "be": "Роля «{roleName}» была прызначаная карыстальніку {userId}.",
         "uk": "Роль «{roleName}» була призначена користувачу {userId}."
+    },
+    "role_assignment_failure_message": {
+        "en": "Failed to assign role «{roleName}» to user {userId}.",
+        "pl": "Nie udało się przypisać roli «{roleName}» użytkownikowi {userId}.",
+        "ru": "Не удалось назначить роль «{roleName}» пользователю {userId}.",
+        "be": "Не атрымалася прызначыць ролю «{roleName}» карыстальніку {userId}.",
+        "uk": "Не вдалося призначити роль «{roleName}» користувачу {userId}."
     },
     "role_not_found_message": {
         "en": "Role «{roleName}» not found.",
