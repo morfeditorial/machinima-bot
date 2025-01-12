@@ -459,6 +459,16 @@ class DatabaseManager
         if (! $role) {
             return false;
         }
+
+        $checkStmt = $this->db->prepare('SELECT COUNT(*) FROM user_roles WHERE user_id = :user_id AND role_id = :role_id');
+        $checkStmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
+        $checkStmt->bindValue(':role_id', $role['id'], SQLITE3_INTEGER);
+        $exists = $checkStmt->execute()->fetchArray(SQLITE3_NUM)[0];
+
+        if ($exists > 0) {
+            return false;
+        }
+
         $stmt = $this->db->prepare('INSERT INTO user_roles (user_id, role_id) VALUES (:user_id, :role_id)');
         $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
         $stmt->bindValue(':role_id', $role['id'], SQLITE3_INTEGER);
