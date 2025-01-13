@@ -41,6 +41,34 @@
         "be": "🕰️ Час сервера: {date}",
         "uk": "🕰️ Серверний час: {date}"
     },
+    "weather_no_city_specified_message": {
+        "en": "☔ You did not specify a city.",
+        "pl": "☔ Nie podałeś miasta.",
+        "ru": "☔ Вы не указали населенный пункт.",
+        "be": "☔ Вы не ўказалі населены пункт.",
+        "uk": "☔ Ви не вказали населений пункт."
+    },
+    "weather_usage_message": {
+        "en": "Usage: /weather <city>",
+        "pl": "Użycie: !weather <miasto>",
+        "ru": "Использование: /weather <населённый пункт>",
+        "be": "Выкарыстанне: /weather <населены пункт>",
+        "uk": "Використання: /weather <населений пункт>"
+    },
+    "weather_fetch_fail_message": {
+        "en": "☔ Failed to get weather forecast for the specified city.",
+        "pl": "☔ Nie udało się uzyskać prognozy pogody dla podanego miasta.",
+        "ru": "☔ Не удалось получить прогноз погоды для указанного населённого пункта.",
+        "be": "☔ Не ўдалося атрымаць прагноз надвор'я для ўказанага населенага пункта.",
+        "uk": "☔ Не вдалося отримати прогноз погоди для зазначеного населеного пункту."
+    },
+    "weather_report_message": {
+        "en": "☔ Weather forecast for {city}, {country}:\n\n🔮 Weather › {description}\n💨 Wind › {wind_speed} m/s\n☁ Cloudiness › {cloudiness}%\n🌀 Pressure › {pressure} mmHg\n💧 Humidity › {humidity}%\n\n🌄 Sunrise › {sunrise}\n🌆 Sunset › {sunset}\n\n🌡 Temperature › {temp}°C\n⚡ Feels like › {feels_like}°C",
+        "pl": "☔ Prognoza pogody dla {city}, {country}:\n\n🔮 Pogoda › {description}\n💨 Wiatr › {wind_speed} m/s\n☁ Zachmurzenie › {cloudiness}%\n🌀 Ciśnienie › {pressure} mmHg\n💧 Wilgotność › {humidity}%\n\n🌄 Wschód › {sunrise}\n🌆 Zachód › {sunset}\n\n🌡 Temperatura › {temp}°C\n⚡ Odczuwalna › {feels_like}°C",
+        "ru": "☔ Прогноз погоды в городе {city}, {country}:\n\n🔮 Погода › {description}\n💨 Ветер › {wind_speed} м/с\n☁ Облачность › {cloudiness}%\n🌀 Давление › {pressure} мм.рт.ст\n💧 Влажность › {humidity}%\n\n🌄 Восход › {sunrise}\n🌆 Закат › {sunset}\n\n🌡 Температура › {temp}°C\n⚡ Ощущается как › {feels_like}°C",
+        "be": "☔ Прагноз надвор'я ў горадзе {city}, {country}:\n\n🔮 Надвор'е › {description}\n💨 Вецер › {wind_speed} м/с\n☁ Воблачнасць › {cloudiness}%\n🌀 Ціск › {pressure} мм.рт.ст\n💧 Вільготнасць › {humidity}%\n\n🌄 Усход › {sunrise}\n🌆 Захад › {sunset}\n\n🌡 Тэмпература › {temp}°C\n⚡ Адчуваецца як › {feels_like}°C",
+        "uk": "☔ Прогноз погоди в місті {city}, {country}:\n\n🔮 Погода › {description}\n💨 Вітер › {wind_speed} м/с\n☁ Хмарність › {cloudiness}%\n🌀 Тиск › {pressure} мм.рт.ст\n💧 Вологість › {humidity}%\n\n🌄 Схід › {sunrise}\n🌆 Захід › {sunset}\n\n🌡 Температура › {temp}°C\n⚡ Відчувається як › {feels_like}°C"
+    },
     "update_message": {
         "en": "I successfully updated the bot`s data! 🔄",
         "pl": "Pomyślnie zaktualizowałem dane bota! 🔄",
