@@ -58,4 +58,14 @@ class Translator
 
         return "Translation not found for key: $key";
     }
+
+    /**
+     * Returns the user's locale used for translations.
+     *
+     * @return string The user's locale in IETF BCP 47 format (e.g., 'uk' for Ukrainian, 'en' for English).
+     */
+    public function getUserLocale() : string
+    {
+        return $this->userLocale;
+    }
 }
