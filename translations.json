@@ -49,11 +49,11 @@
         "uk": "☔ Ви не вказали населений пункт."
     },
     "weather_usage_message": {
-        "en": "Usage: /weather <city>",
-        "pl": "Użycie: !weather <miasto>",
-        "ru": "Использование: /weather <населённый пункт>",
-        "be": "Выкарыстанне: /weather <населены пункт>",
-        "uk": "Використання: /weather <населений пункт>"
+        "en": "Usage: /weather &lt;city&gt;",
+        "pl": "Użycie: /weather &lt;miasto&gt;",
+        "ru": "Использование: /weather &lt;населённый пункт&gt;",
+        "be": "Выкарыстанне: /weather &lt;населены пункт&gt;",
+        "uk": "Використання: /weather &lt;населений пункт&gt;"
     },
     "weather_fetch_fail_message": {
         "en": "☔ Failed to get weather forecast for the specified city.",
