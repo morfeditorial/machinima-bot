@@ -71,7 +71,9 @@ class WeatherCommand implements CommandInterface
         }
 
         $OWApi_key = $_ENV['OPENWEATHERMAP_API_KEY'];
-        $weather = json_decode(file_get_contents("https://api.openweathermap.org/data/2.5/weather?q={$city}&units=metric&appid={$OWApi_key}&lang=ru"));
+        $language = $this->translator->getUserLocale() ?: 'en';
+
+        $weather = json_decode(file_get_contents("https://api.openweathermap.org/data/2.5/weather?q={$city}&units=metric&appid={$OWApi_key}&lang={$language}"));
 
         if (empty($weather)) {
             $this->bot->sendMessage($chatId, $this->translator->translate('weather_fetch_fail_message'));
