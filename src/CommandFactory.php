@@ -42,6 +42,7 @@ class CommandFactory
             'help' => new \morfeditorial\commands\HelpCommand($this->bot, $this->container),
             'time' => new \morfeditorial\commands\TimeCommand($this->bot, $this->container),
             'weather' => new \morfeditorial\commands\WeatherCommand($this->bot, $this->container),
+            'whois' => new \morfeditorial\commands\WhoisCommand($this->bot, $this->container),
             'update' => new \morfeditorial\commands\UpdateCommand($this->bot, $this->container),
             'admin_panel' => new \morfeditorial\commands\AdminPanelCommand($this->bot, $this->container),
             'search_author' => new \morfeditorial\commands\SearchAuthorCommand($this->bot, $this->container),
