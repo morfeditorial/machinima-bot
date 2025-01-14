@@ -69,6 +69,27 @@
         "be": "☔ Прагноз надвор'я ў горадзе {city}, {country}:\n\n🔮 Надвор'е › {description}\n💨 Вецер › {wind_speed} м/с\n☁ Воблачнасць › {cloudiness}%\n🌀 Ціск › {pressure} мм.рт.ст\n💧 Вільготнасць › {humidity}%\n\n🌄 Усход › {sunrise}\n🌆 Захад › {sunset}\n\n🌡 Тэмпература › {temp}°C\n⚡ Адчуваецца як › {feels_like}°C",
         "uk": "☔ Прогноз погоди в місті {city}, {country}:\n\n🔮 Погода › {description}\n💨 Вітер › {wind_speed} м/с\n☁ Хмарність › {cloudiness}%\n🌀 Тиск › {pressure} мм.рт.ст\n💧 Вологість › {humidity}%\n\n🌄 Схід › {sunrise}\n🌆 Захід › {sunset}\n\n🌡 Температура › {temp}°C\n⚡ Відчувається як › {feels_like}°C"
     },
+    "whois_usage_message": {
+        "en": "Usage: /whois <IP address>",
+        "pl": "Użycie: /whois <adres IP>",
+        "ru": "Использование: /whois <IP-адрес>",
+        "be": "Выкарыстанне: /whois <IP-адрас>",
+        "uk": "Використання: /whois <IP-адреса>"
+    },
+    "whois_no_response_message": {
+        "en": "IP address not responding!",
+        "pl": "Adres IP nie odpowiada!",
+        "ru": "IP-адрес не отвечает!",
+        "be": "IP-адрас не адказвае!",
+        "uk": "IP-адреса не відповідає!"
+    },
+    "whois_info_message": {
+        "en": "Information about {ip_address}:\n\n🌐 IP address › {query}\n\nCountry › {country}\nCountry Code › {country_code}\nRegion/City › {region}/{city}\nTimezone › {timezone}\nLatitude, Longitude › {lat}, {lon}\n\n👥 Organization › {org}\n⚙️ Provider › {isp}",
+        "pl": "Informacje o {ip_address}:\n\n🌐 Adres IP › {query}\n\nKraj › {country}\nKod kraju › {country_code}\nRegion/Miasto › {region}/{city}\nStrefa czasowa › {timezone}\nSzerokość, Długość › {lat}, {lon}\n\n👥 Organizacja › {org}\n⚙️ Dostawca › {isp}",
+        "ru": "Информация о {ip_address}:\n\n🌐 IP-адрес › {query}\n\nСтрана › {country}\nКод страны › {country_code}\nРегион/Город › {region}/{city}\nВременная зона › {timezone}\nШирота, долгота › {lat}, {lon}\n\n👥 Организация › {org}\n⚙️ Провайдер › {isp}",
+        "be": "Інфармацыя пра {ip_address}:\n\n🌐 IP-адрас › {query}\n\nКраіна › {country}\nКод краіны › {country_code}\nРэгіён/Горад › {region}/{city}\nЧасавы пояс › {timezone}\nШырата, даўгата › {lat}, {lon}\n\n👥 Арганізацыя › {org}\n⚙️ Пастаўшчык › {isp}",
+        "uk": "Інформація про {ip_address}:\n\n🌐 IP-адреса › {query}\n\nКраїна › {country}\nКод країни › {country_code}\nРегіон/Місто › {region}/{city}\nЧасовий пояс › {timezone}\nШирота, довгота › {lat}, {lon}\n\n👥 Організація › {org}\n⚙️ Провайдер › {isp}"
+    },
     "update_message": {
         "en": "I successfully updated the bot`s data! 🔄",
         "pl": "Pomyślnie zaktualizowałem dane bota! 🔄",
