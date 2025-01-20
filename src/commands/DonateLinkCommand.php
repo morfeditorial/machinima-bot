@@ -23,17 +23,17 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
+use morfeditorial\AbstractCommand;
 use morfeditorial\MyBot;
-use morfeditorial\CommandInterface;
 use morfeditorial\DependencyContainer;
 
-class DonateLinkCommand implements CommandInterface
+class DonateLinkCommand extends AbstractCommand
 {
-    private MyBot $bot;
-
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
-        $this->bot = $bot;
+        parent::__construct($bot, $container);
+        $this->setDescription($this->translator->translate($this->getDescriptionKey()));
+        $this->setAliases($this->translator->translate($this->getAliasesKey()));
     }
 
     public function execute(

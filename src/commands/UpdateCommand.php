@@ -23,26 +23,21 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
+use morfeditorial\AbstractCommand;
 use morfeditorial\MyBot;
-use morfeditorial\CommandInterface;
 use morfeditorial\DependencyContainer;
 
-class UpdateCommand implements CommandInterface
+class UpdateCommand extends AbstractCommand
 {
-    private MyBot $bot;
-
     private $dbManager;
-
-    private $translator;
-
-    private $visualsLinks;
 
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
-        $this->bot = $bot;
+        parent::__construct($bot, $container);
+        $this->setDescription($this->translator->translate($this->getDescriptionKey()));
+        $this->setAliases($this->translator->translate($this->getAliasesKey()));
+
         $this->dbManager = $container->get('dbManager');
-        $this->translator = $container->get('translator');
-        $this->visualsLinks = $container->get('visualsLinks');
     }
 
     public function execute(

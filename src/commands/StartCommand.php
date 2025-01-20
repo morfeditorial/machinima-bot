@@ -23,23 +23,27 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
+use morfeditorial\AbstractCommand;
 use morfeditorial\MyBot;
-use morfeditorial\CommandInterface;
 use morfeditorial\DependencyContainer;
 
-class StartCommand implements CommandInterface
+class StartCommand extends AbstractCommand
 {
-    private MyBot $bot;
-
-    private $translator;
-
-    private $visualsLinks;
-
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
-        $this->bot = $bot;
-        $this->translator = $container->get('translator');
-        $this->visualsLinks = $container->get('visualsLinks');
+        parent::__construct($bot, $container);
+        $this->setDescription($this->translator->translate($this->getDescriptionKey()));
+        $this->setAliases($this->translator->translate($this->getAliasesKey()));
+    }
+
+    public function getDescriptionKey() : string
+    {
+        return 'start_command_description';
+    }
+
+    public function getAliasesKey() : string
+    {
+        return 'start_command_aliases';
     }
 
     public function execute(
