@@ -5,7 +5,7 @@
         "ru": "Начать общение с помощником",
         "be": "Пачніце зносіны з памочнікам",
         "uk": "Почати спілкування з помічником"
-    },
+    }
     "help_command_description": {
         "en": "Learn more about the bot",
         "pl": "Dowiedz się więcej o bocie",
