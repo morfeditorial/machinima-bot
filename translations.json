@@ -175,11 +175,11 @@
         "uk": "☔ Прогноз погоди в місті {city}, {country}:\n\n🔮 Погода › {description}\n💨 Вітер › {wind_speed} м/с\n☁ Хмарність › {cloudiness}%\n🌀 Тиск › {pressure} мм.рт.ст\n💧 Вологість › {humidity}%\n\n🌄 Схід › {sunrise}\n🌆 Захід › {sunset}\n\n🌡 Температура › {temp}°C\n⚡ Відчувається як › {feels_like}°C"
     },
     "whois_usage_message": {
-        "en": "Usage: /whois <IP address>",
-        "pl": "Użycie: /whois <adres IP>",
-        "ru": "Использование: /whois <IP-адрес>",
-        "be": "Выкарыстанне: /whois <IP-адрас>",
-        "uk": "Використання: /whois <IP-адреса>"
+        "en": "Usage: /whois &lt;IP address&gt;",
+        "pl": "Użycie: /whois &lt;adres IP&gt;",
+        "ru": "Использование: /whois &lt;IP-адрес&gt;",
+        "be": "Выкарыстанне: /whois &lt;IP-адрас&gt;",
+        "uk": "Використання: /whois &lt;IP-адреса&gt;"
     },
     "whois_no_response_message": {
         "en": "IP address not responding!",
