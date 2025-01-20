@@ -78,22 +78,4 @@ class CommandFactory
 
         return null;
     }
-
-    public function create(string $commandName) : ?CommandInterface
-    {
-        return match ($commandName) {
-            'start' => new \morfeditorial\commands\StartCommand($this->bot, $this->container),
-            'help' => new \morfeditorial\commands\HelpCommand($this->bot, $this->container),
-            'time' => new \morfeditorial\commands\TimeCommand($this->bot, $this->container),
-            'weather' => new \morfeditorial\commands\WeatherCommand($this->bot, $this->container),
-            'whois' => new \morfeditorial\commands\WhoisCommand($this->bot, $this->container),
-            'update' => new \morfeditorial\commands\UpdateCommand($this->bot, $this->container),
-            'admin_panel' => new \morfeditorial\commands\AdminPanelCommand($this->bot, $this->container),
-            'search_author' => new \morfeditorial\commands\SearchAuthorCommand($this->bot, $this->container),
-            'create_role' => new \morfeditorial\commands\CreateRoleCommand($this->bot, $this->container),
-            'assign_initial_admin' => new \morfeditorial\commands\AssignInitialAdminCommand($this->bot, $this->container),
-            'assign_role' => new \morfeditorial\commands\AssignRoleCommand($this->bot, $this->container),
-            default => null,
-        };
-    }
 }
