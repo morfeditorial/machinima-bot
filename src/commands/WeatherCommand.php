@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\AbstractCommand;
 use morfeditorial\MyBot;
+use morfeditorial\AbstractCommand;
 use morfeditorial\DependencyContainer;
 
 class WeatherCommand extends AbstractCommand
@@ -56,10 +56,9 @@ class WeatherCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        $city = implode(" ", $args);
+        $city = implode(' ', $args);
 
-        if ($city == "") {
-            $this->bot->sendMessage($chatId, $this->translator->translate('weather_no_city_specified_message'));
+        if ('' == $city) {
             $this->bot->sendMessage($chatId, $this->translator->translate('weather_usage_message'));
 
             return;
@@ -80,6 +79,6 @@ class WeatherCommand extends AbstractCommand
             return;
         }
 
-        $this->bot->sendMessage($chatId, str_replace(["{city}", "{country}", "{description}", "{wind_speed}", "{cloudiness}", "{pressure}", "{humidity}", "{sunrise}", "{sunset}", "{temp}", "{feels_like}"], [$weather->name, $weather->sys->country, $weather->weather[0]->description, $weather->wind->speed, $weather->clouds->all, intval(($weather->main->pressure) * (0.750063755419211)), $weather->main->humidity, date("H:i:s (e)", $weather->sys->sunrise), date("H:i:s (e)", $weather->sys->sunset), $weather->main->temp, $weather->main->feels_like], $this->translator->translate('weather_report_message')));
+        $this->bot->sendMessage($chatId, str_replace(['{city}', '{country}', '{description}', '{wind_speed}', '{cloudiness}', '{pressure}', '{humidity}', '{sunrise}', '{sunset}', '{temp}', '{feels_like}'], [$weather->name, $weather->sys->country, $weather->weather[0]->description, $weather->wind->speed, $weather->clouds->all, intval(($weather->main->pressure) * (0.750063755419211)), $weather->main->humidity, date('H:i:s (e)', $weather->sys->sunrise), date('H:i:s (e)', $weather->sys->sunset), $weather->main->temp, $weather->main->feels_like], $this->translator->translate('weather_report_message')));
     }
 }

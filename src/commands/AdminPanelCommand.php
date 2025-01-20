@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\AbstractCommand;
 use morfeditorial\MyBot;
+use morfeditorial\AbstractCommand;
 use morfeditorial\DependencyContainer;
 
 class AdminPanelCommand extends AbstractCommand

@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\AbstractCommand;
 use morfeditorial\MyBot;
+use morfeditorial\AbstractCommand;
 use morfeditorial\DependencyContainer;
 
 class WhoisCommand extends AbstractCommand
@@ -56,20 +56,20 @@ class WhoisCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        if (!isset($args[0])) {
-            $this->bot->sendMessage($chatId, str_replace("{ip_address}", $args[0], $this->translator->translate("whois_usage_message")));
+        if (! isset($args[0])) {
+            $this->bot->sendMessage($chatId, $this->translator->translate('whois_usage_message'));
 
             return;
         }
 
-        $whois = json_decode(file_get_contents("http://ip-api.com/json/" . $args[0]), true);
+        $whois = json_decode(file_get_contents('http://ip-api.com/json/' . $args[0]), true);
 
-        if ($whois["status"] !== "success") {
-            $this->bot->sendMessage($chatId, $this->translator->translate("whois_no_response_message"));
+        if ('success' !== $whois['status']) {
+            $this->bot->sendMessage($chatId, $this->translator->translate('whois_no_response_message'));
 
             return;
         }
 
-        $this->bot->sendMessage($chatId, str_replace(["{ip_address}", "{query}", "{country}", "{country_code}", "{region}", "{city}", "{timezone}", "{lat}", "{lon}", "{org}", "{isp}"], [strtolower($args[0]), $whois["query"], $whois["country"], $whois["countryCode"], $whois["regionName"], $whois["city"], $whois["timezone"], $whois["lat"], $whois["lon"], $whois["org"], $whois["isp"]], $this->translator->translate("whois_info_message")));
+        $this->bot->sendMessage($chatId, str_replace(['{ip_address}', '{query}', '{country}', '{country_code}', '{region}', '{city}', '{timezone}', '{lat}', '{lon}', '{org}', '{isp}'], [strtolower($args[0]), $whois['query'], $whois['country'], $whois['countryCode'], $whois['regionName'], $whois['city'], $whois['timezone'], $whois['lat'], $whois['lon'], $whois['org'], $whois['isp']], $this->translator->translate('whois_info_message')));
     }
 }
