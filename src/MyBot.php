@@ -37,7 +37,8 @@ class MyBot extends tgLib
     {
         parent::__construct($token);
 
-        $this->container = new DependencyContainer;
+        $translations = json_decode(file_get_contents(self::TRANSLATIONS_FILE), true);
+        $this->container = new DependencyContainer($translations, 'en');
         $this->container->set('dbManager', new DatabaseManager(self::DATABASE_FILE));
         $this->container->set('fuzzySearch', new FuzzySearch);
         $this->container->set('visualsLinks', [
@@ -62,13 +63,22 @@ class MyBot extends tgLib
     private function initializeCommands() : void
     {
         // Register commands
-        $this->commandFactory->registerCommand(new \morfeditorial\commands\StartCommand($this, $this->container));
-        $this->commandFactory->registerCommand(new \morfeditorial\commands\HelpCommand($this, $this->container));
-        $this->commandFactory->registerCommand(new \morfeditorial\commands\SearchContentCommand($this, $this->container));
-        $this->commandFactory->registerCommand(new \morfeditorial\commands\SearchAuthorCommand($this, $this->container));
-        $this->commandFactory->registerCommand(new \morfeditorial\commands\CategoriesCommand($this, $this->container));
-        $this->commandFactory->registerCommand(new \morfeditorial\commands\TopAuthorsCommand($this, $this->container));
-        $this->commandFactory->registerCommand(new \morfeditorial\commands\RandomContentCommand($this, $this->container));
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\StartCommand($this, $this->container)); // start
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\HelpCommand($this, $this->container)); // help
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\TimeCommand($this, $this->container)); // time
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\WeatherCommand($this, $this->container)); // weather
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\WhoisCommand($this, $this->container)); // whois
+        }
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\UpdateCommand($this, $this->container)); // update
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\AdminPanelCommand($this, $this->container)); // admin_panel
+        // $this->commandFactory->registerCommand(new \morfeditorial\commands\SearchContentCommand($this, $this->container)); // search_content
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\SearchAuthorCommand($this, $this->container)); // search_author
+        // $this->commandFactory->registerCommand(new \morfeditorial\commands\CategoriesCommand($this, $this->container)); // categories
+        // $this->commandFactory->registerCommand(new \morfeditorial\commands\TopAuthorsCommand($this, $this->container)); // top_authors
+        // $this->commandFactory->registerCommand(new \morfeditorial\commands\RandomContentCommand($this, $this->container)); // random_content
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\createRoleCommand($this, $this->container)); // create_role
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\AssignInitialAdminCommand($this, $this->container)); // assign_initial_admin
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\AssignRoleCommand($this, $this->container)); // assign_role
 
         $this->commandFactory->initializeCommands();
     }
@@ -78,7 +88,7 @@ class MyBot extends tgLib
         $messageData = $this->extractMessageData($update);
         $message = $messageData['message'] ?? null;
 
-        $this->container->set('translator', new Translator(json_decode(file_get_contents(self::TRANSLATIONS_FILE), true), $messageData['language'] ?? 'en'));
+        $this->container->set('translator', new Translator(json_decode(file_get_contents(self::TRANSLATIONS_FILE), true), ));
 
         if ($message) {
             $this->processMessage($messageData, $message);

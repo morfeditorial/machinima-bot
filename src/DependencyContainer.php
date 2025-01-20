@@ -25,15 +25,20 @@ namespace morfeditorial;
 
 class DependencyContainer
 {
-    private array $dependencies = [];
+    private $services = [];
 
-    public function set(string $key, $value) : void
+    public function __construct($translations, $userLocale)
     {
-        $this->dependencies[$key] = $value;
+        $this->services['translator'] = new Translator($translations, $userLocale);
     }
 
-    public function get(string $key)
+    public function get($service)
     {
-        return $this->dependencies[$key] ?? null;
+        return $this->services[$service] ?? null;
+    }
+
+    public function set($service, $object)
+    {
+        $this->services[$service] = $object;
     }
 }
