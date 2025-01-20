@@ -57,5 +57,5 @@ class StartCommand extends AbstractCommand
         array $args
     ) : void {
         $this->bot->pictureReply($chatId, $this->translator->translate('welcome_message'), $this->visualsLinks[0]);
-    }f
+    }
 }
