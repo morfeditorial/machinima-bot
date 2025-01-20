@@ -56,6 +56,21 @@ class MyBot extends tgLib
         ]);
 
         $this->commandFactory = new CommandFactory($this, $this->container);
+        $this->initializeCommands();
+    }
+    
+    private function initializeCommands() : void
+    {
+        // Register commands
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\StartCommand($this, $this->container));
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\HelpCommand($this, $this->container));
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\SearchContentCommand($this, $this->container));
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\SearchAuthorCommand($this, $this->container));
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\CategoriesCommand($this, $this->container));
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\TopAuthorsCommand($this, $this->container));
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\RandomContentCommand($this, $this->container));
+
+        $this->commandFactory->initializeCommands();
     }
 
     public function handleUpdate($update) : void

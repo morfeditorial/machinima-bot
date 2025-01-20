@@ -44,7 +44,7 @@ class Translator
      * Translate a given key to the user's locale.
      *
      * @param  string  $key  The key for the translation.
-     * @return string The translated string or a not found message.
+     * @return mixed The translated string, array, or a not found message.
      */
     public function translate($key)
     {
@@ -60,6 +60,16 @@ class Translator
     }
 
     /**
+     * Sets the user's locale used for translations.
+     *
+     * @param  string  $locale  The user's locale in IETF BCP 47 format (e.g., 'uk' for Ukrainian, 'en' for English).
+     */
+    public function setUserLocale(string $locale) : void
+    {
+        $this->userLocale = $locale;
+    }
+
+    /**
      * Returns the user's locale used for translations.
      *
      * @return string The user's locale in IETF BCP 47 format (e.g., 'uk' for Ukrainian, 'en' for English).
@@ -67,5 +77,24 @@ class Translator
     public function getUserLocale() : string
     {
         return $this->userLocale;
+    }
+
+    /**
+     * Returns all available locales in the translations.
+     *
+     * @return array An array of available locales.
+     */
+    public function getAvailableLocales() : array
+    {
+        $locales = [];
+        foreach ($this->translations as $key => $translations) {
+            foreach ($translations as $locale => $translation) {
+                if (! in_array($locale, $locales)) {
+                    $locales[] = $locale;
+                }
+            }
+        }
+
+        return $locales;
     }
 }
