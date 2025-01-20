@@ -1,4 +1,15 @@
 {
+    "start_command_description": {
+        "en": "Start communication with the assistant",
+        "pl": "Rozpocznij komunikację z asystentem",
+        "ru": "Начать общение с помощником",
+        "be": "Пачніце зносіны з памочнікам",
+        "uk": "Почати спілкування з помічником"
+    },
+    "start_command_aliases": {
+        "en": ["start", "begin", "initiate"],
+        "uk": ["старт", "почати", "ініціювати"]
+    },
     "welcome_message": {
         "en": "Hello, I`m a chatbot named Pai! 👋🏻\n\nMy mission is to centralize Ukrainian machinimators in one list. I`ll help you find interesting projects, short films, and series based on <b>Minecraft</b>. You won`t be bored with me!\n\n📚 You can learn commands to interact with me by sending the word «/help».",
         "pl": "Cześć, jestem czatbotem o imieniu Pai! 👋🏻\n\nMoje zadanie to scentralizować ukraińskich machinimatorów w jednym spisie. Pomogę ci znaleźć interesujące projekty, krótkometrażowe filmy i seriale oparte na <b>Minecraft</b>. Z pewnością się nie nudzisz ze mną!\n\n📚 Aby dowiedzieć się więcej o moich komendach, wyślij słowo «/help».",
