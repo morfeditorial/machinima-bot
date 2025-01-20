@@ -75,7 +75,7 @@ class MyBot extends tgLib
         // $this->commandFactory->registerCommand(new \morfeditorial\commands\CategoriesCommand($this, $this->container)); // categories
         // $this->commandFactory->registerCommand(new \morfeditorial\commands\TopAuthorsCommand($this, $this->container)); // top_authors
         // $this->commandFactory->registerCommand(new \morfeditorial\commands\RandomContentCommand($this, $this->container)); // random_content
-        $this->commandFactory->registerCommand(new \morfeditorial\commands\createRoleCommand($this, $this->container)); // create_role
+        $this->commandFactory->registerCommand(new \morfeditorial\commands\CreateRoleCommand($this, $this->container)); // create_role
         $this->commandFactory->registerCommand(new \morfeditorial\commands\AssignInitialAdminCommand($this, $this->container)); // assign_initial_admin
         $this->commandFactory->registerCommand(new \morfeditorial\commands\AssignRoleCommand($this, $this->container)); // assign_role
 
