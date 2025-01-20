@@ -52,7 +52,7 @@ class CommandFactory
                 if ($command instanceof AbstractCommand) {
                     $translator->setUserLocale($locale);
                     $command->setDescription($translator->translate($command->getDescriptionKey()));
-                    $aliases = $translator->translate($command->getAliasesKey());
+                    $aliases = $command->getAliases();
                     if (is_array($aliases)) {
                         $command->setAliases($aliases);
                     } else {

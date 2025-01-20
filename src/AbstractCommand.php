@@ -64,8 +64,6 @@ abstract class AbstractCommand implements CommandInterface
 
     abstract public function getDescriptionKey() : string;
 
-    abstract public function getAliasesKey() : string;
-
     abstract public function execute(
         string $message,
         int $messageId,
