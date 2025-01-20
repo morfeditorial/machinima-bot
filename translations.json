@@ -6,10 +6,104 @@
         "be": "Пачніце зносіны з памочнікам",
         "uk": "Почати спілкування з помічником"
     },
-    "start_command_aliases": {
-        "en": ["start", "begin", "initiate"],
-        "uk": ["старт", "почати", "ініціювати"]
+    "help_command_description": {
+        "en": "Learn more about the bot",
+        "pl": "Dowiedz się więcej o bocie",
+        "ru": "Узнать больше о боте",
+        "be": "Даведайцеся больш пра бота",
+        "uk": "Дізнатися більше про бота"
     },
+    "time_command_description": {
+        "en": "Check the current time",
+        "pl": "Sprawdź aktualny czas",
+        "ru": "Узнать текущее время",
+        "be": "Даведайцеся актуальны час",
+        "uk": "Дізнатися поточний час"
+    },
+    "weather_command_description": {
+        "en": "Get weather information",
+        "pl": "Uzyskaj informacje o pogodzie",
+        "ru": "Получить информацию о погоде",
+        "be": "Атрымаць інфармацыю пра надвор'е",
+        "uk": "Отримати інформацію про погоду"
+    },
+    "whois_command_description": {
+        "en": "Get information about an IP or domain",
+        "pl": "Uzyskaj informacje o adresie IP lub domenie",
+        "ru": "Получить информацию об IP или домене",
+        "be": "Атрымаць інфармацыю пра IP або дамен",
+        "uk": "Отримати інформацію про IP або домен"
+    },
+    "update_command_description": {
+        "en": "Update the bot, including name, description, and localized information",
+        "pl": "Zaktualizuj bota, w tym nazwę, opis i informacje lokalne",
+        "ru": "Обновить бота, включая имя, описание и локализованную информацию",
+        "be": "Абнавіце бота, уключаючы назву, апісанне і лакалізаваную інфармацыю",
+        "uk": "Оновити бота, включаючи назву, опис та локалізовану інформацію"
+    },
+    "admin_panel_command_description": {
+        "en": "Access the admin panel",
+        "pl": "Uzyskaj dostęp do panelu administratora",
+        "ru": "Получить доступ к панели администратора",
+        "be": "Доступ да панэлі адміністратара",
+        "uk": "Отримати доступ до панелі адміністратора"
+    },
+    "search_content_command_description": {
+        "en": "Find content by tag",
+        "pl": "Znajdź zawartość według tagu",
+        "ru": "Найти контент по тегам",
+        "be": "Знайдзіце кантэнт па тэгу",
+        "uk": "Знайти контент за тегами"
+    },
+    "search_author_command_description": {
+        "en": "Find information about the author",
+        "pl": "Znajdź informacje o autorze",
+        "ru": "Найти информацию об авторе",
+        "be": "Знайдзіце звесткі пра аўтара",
+        "uk": "Знайти інформацію про автора"
+    },
+    "categories_command_description": {
+        "en": "View available categories",
+        "pl": "Zobacz dostępne kategorie",
+        "ru": "Просмотреть доступные категории",
+        "be": "Прагляд даступных катэгорый",
+        "uk": "Переглянути доступні категорії"
+    },
+    "top_authors_command_description": {
+        "en": "View the most popular authors",
+        "pl": "Zobacz najpopularniejszych autorów",
+        "ru": "Посмотреть самых популярных авторов",
+        "be": "Прагляд самых папулярных аўтараў",
+        "uk": "Переглянути найпопулярніших авторів"
+    },
+    "random_content_command_description": {
+        "en": "Get random content",
+        "pl": "Zdobądź losową zawartość",
+        "ru": "Получить случайный контент",
+        "be": "Атрымаць выпадковы кантэнт",
+        "uk": "Отримати випадковий контент"
+    },
+    "create_role_command_description": {
+        "en": "Create a new role",
+        "pl": "Utwórz nową rolę",
+        "ru": "Создать новую роль",
+        "be": "Стварыць новую ролю",
+        "uk": "Створити нову роль"
+    },
+    "assign_initial_admin_command_description": {
+        "en": "Assign the first admin role to the initiator",
+        "pl": "Przypisz pierwszą rolę administratora inicjatorowi",
+        "ru": "Назначить первую роль администратора инициатору",
+        "be": "Прызначыць першую ролю адміністратара ініцыятару",
+        "uk": "Призначити першу роль адміністратора ініціатору"
+    },
+    "assign_role_command_description": {
+        "en": "Assign a role to a user",
+        "pl": "Przypisz rolę użytkownikowi",
+        "ru": "Назначить роль пользователю",
+        "be": "Прызначыць ролю карыстальніку",
+        "uk": "Призначити роль користувачу"
+    }
     "welcome_message": {
         "en": "Hello, I`m a chatbot named Pai! 👋🏻\n\nMy mission is to centralize Ukrainian machinimators in one list. I`ll help you find interesting projects, short films, and series based on <b>Minecraft</b>. You won`t be bored with me!\n\n📚 You can learn commands to interact with me by sending the word «/help».",
         "pl": "Cześć, jestem czatbotem o imieniu Pai! 👋🏻\n\nMoje zadanie to scentralizować ukraińskich machinimatorów w jednym spisie. Pomogę ci znaleźć interesujące projekty, krótkometrażowe filmy i seriale oparte na <b>Minecraft</b>. Z pewnością się nie nudzisz ze mną!\n\n📚 Aby dowiedzieć się więcej o moich komendach, wyślij słowo «/help».",
