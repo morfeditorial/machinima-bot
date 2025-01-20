@@ -36,6 +36,16 @@ class HelpCommand extends AbstractCommand
         $this->setAliases($this->translator->translate($this->getAliasesKey()));
     }
 
+    public function getDescriptionKey() : string
+    {
+        return 'help_command_description';
+    }
+
+    public function getAliasesKey() : string
+    {
+        return 'help_command_aliases';
+    }
+
     public function execute(
         string $message,
         int $messageId,

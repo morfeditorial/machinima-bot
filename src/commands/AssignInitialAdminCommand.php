@@ -40,6 +40,16 @@ class AssignInitialAdminCommand extends AbstractCommand
         $this->dbManager = $container->get('dbManager');
     }
 
+    public function getDescriptionKey() : string
+    {
+        return 'assign_initial_admin_command_description';
+    }
+
+    public function getAliasesKey() : string
+    {
+        return 'assign_initial_admin_command_aliases';
+    }
+
     public function execute(
         string $message,
         int $messageId,

@@ -40,6 +40,16 @@ class AdminPanelCommand extends AbstractCommand
         $this->dbManager = $container->get('dbManager');
     }
 
+    public function getDescriptionKey() : string
+    {
+        return 'admin_panel_command_description';
+    }
+
+    public function getAliasesKey() : string
+    {
+        return 'admin_panel_command_aliases';
+    }
+
     public function execute(
         string $message,
         int $messageId,

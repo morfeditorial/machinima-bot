@@ -43,6 +43,16 @@ class SearchAuthorCommand extends AbstractCommand
         $this->search = $container->get('fuzzySearch');
     }
 
+    public function getDescriptionKey() : string
+    {
+        return 'search_author_command_description';
+    }
+
+    public function getAliasesKey() : string
+    {
+        return 'search_author_command_aliases';
+    }
+
     public function execute(
         string $message,
         int $messageId,

@@ -40,6 +40,16 @@ class UpdateCommand extends AbstractCommand
         $this->dbManager = $container->get('dbManager');
     }
 
+    public function getDescriptionKey() : string
+    {
+        return 'update_command_description';
+    }
+
+    public function getAliasesKey() : string
+    {
+        return 'update_command_aliases';
+    }
+
     public function execute(
         string $message,
         int $messageId,

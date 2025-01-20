@@ -40,6 +40,16 @@ class CreateRoleCommand extends AbstractCommand
         $this->dbManager = $container->get('dbManager');
     }
 
+    public function getDescriptionKey() : string
+    {
+        return 'create_role_command_description';
+    }
+
+    public function getAliasesKey() : string
+    {
+        return 'create_role_command_aliases';
+    }
+
     public function execute(
         string $message,
         int $messageId,

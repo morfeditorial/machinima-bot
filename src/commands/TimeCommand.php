@@ -36,6 +36,16 @@ class TimeCommand extends AbstractCommand
         $this->setAliases($this->translator->translate($this->getAliasesKey()));
     }
 
+    public function getDescriptionKey() : string
+    {
+        return 'time_command_description';
+    }
+
+    public function getAliasesKey() : string
+    {
+        return 'time_command_aliases';
+    }
+
     public function execute(
         string $message,
         int $messageId,
