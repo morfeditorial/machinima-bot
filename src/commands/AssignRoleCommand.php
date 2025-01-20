@@ -35,7 +35,7 @@ class AssignRoleCommand extends AbstractCommand
     {
         parent::__construct($bot, $container);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
-        $this->setAliases($this->translator->translate($this->getAliasesKey()));
+        $this->setAliases(['assign_role']);
 
         $this->dbManager = $container->get('dbManager');
     }
@@ -43,11 +43,6 @@ class AssignRoleCommand extends AbstractCommand
     public function getDescriptionKey() : string
     {
         return 'assign_role_command_description';
-    }
-
-    public function getAliasesKey() : string
-    {
-        return 'assign_role_command_aliases';
     }
 
     public function execute(

@@ -35,7 +35,7 @@ class UpdateCommand extends AbstractCommand
     {
         parent::__construct($bot, $container);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
-        $this->setAliases($this->translator->translate($this->getAliasesKey()));
+        $this->setAliases(['update']);
 
         $this->dbManager = $container->get('dbManager');
     }
@@ -43,11 +43,6 @@ class UpdateCommand extends AbstractCommand
     public function getDescriptionKey() : string
     {
         return 'update_command_description';
-    }
-
-    public function getAliasesKey() : string
-    {
-        return 'update_command_aliases';
     }
 
     public function execute(

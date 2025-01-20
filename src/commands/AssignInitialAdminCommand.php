@@ -35,7 +35,7 @@ class AssignInitialAdminCommand extends AbstractCommand
     {
         parent::__construct($bot, $container);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
-        $this->setAliases($this->translator->translate($this->getAliasesKey()));
+        $this->setAliases(['assign_initial_admin']);
 
         $this->dbManager = $container->get('dbManager');
     }
@@ -43,11 +43,6 @@ class AssignInitialAdminCommand extends AbstractCommand
     public function getDescriptionKey() : string
     {
         return 'assign_initial_admin_command_description';
-    }
-
-    public function getAliasesKey() : string
-    {
-        return 'assign_initial_admin_command_aliases';
     }
 
     public function execute(

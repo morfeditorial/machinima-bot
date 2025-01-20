@@ -37,7 +37,7 @@ class SearchAuthorCommand extends AbstractCommand
     {
         parent::__construct($bot, $container);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
-        $this->setAliases($this->translator->translate($this->getAliasesKey()));
+        $this->setAliases(['search_author']);
 
         $this->dbManager = $container->get('dbManager');
         $this->search = $container->get('fuzzySearch');
@@ -46,11 +46,6 @@ class SearchAuthorCommand extends AbstractCommand
     public function getDescriptionKey() : string
     {
         return 'search_author_command_description';
-    }
-
-    public function getAliasesKey() : string
-    {
-        return 'search_author_command_aliases';
     }
 
     public function execute(
