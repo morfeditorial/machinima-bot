@@ -27,16 +27,16 @@ error_reporting(E_ALL);
 
 class tgLib
 {
-    private $token = '';
+    private string $token = '';
 
-    private $offset = 0;
+    private int $offset = 0;
 
-    public function __construct($token)
+    public function __construct(string $token)
     {
         $this->token = $token;
     }
 
-    public function request($method, $params = [])
+    public function request(string $method, array $params = []) : array
     {
         $url = 'https://api.telegram.org/bot' . $this->token . '/' . $method;
         $curl = curl_init();
@@ -55,20 +55,21 @@ class tgLib
         return $out;
     }
 
-public function getUpdates()
-{
-    $updates = $this->request('getUpdates', ['offset' => $this->offset]);
-    $result = [];
-    if (isset($updates['result'])) {
-        foreach ($updates['result'] as $update) {
-            $this->offset = $update['update_id'] + 1;
-            $result[] = $update;
+    public function getUpdates() : array
+    {
+        $updates = $this->request('getUpdates', ['offset' => $this->offset]);
+        $result = [];
+        if (isset($updates['result'])) {
+            foreach ($updates['result'] as $update) {
+                $this->offset = $update['update_id'] + 1;
+                $result[] = $update;
+            }
         }
-    }
-    return $result;
-}
 
-    public function keyboardMakeup($type, $buttonsArray, $additional_params = null)
+        return $result;
+    }
+
+    public function keyboardMakeup(string $type, array $buttonsArray, ?array $additional_params = null) : array
     {
         $answer = [$type => $buttonsArray];
         if (null != $additional_params) {
@@ -78,7 +79,7 @@ public function getUpdates()
         return $answer;
     }
 
-    public function inlineButton($text, $callback_query, $additional_params = null)
+    public function inlineButton(string $text, string $callback_query, ?array $additional_params = null) : array
     {
         $answer = ['text' => $text, 'callback_data' => $callback_query];
         if (null != $additional_params) {
@@ -88,7 +89,7 @@ public function getUpdates()
         return $answer;
     }
 
-    public function callbackAnswer($callback_query_id, $text = null, $additional_params = null)
+    public function callbackAnswer(string $callback_query_id, ?string $text = null, ?array $additional_params = null) : array
     {
         $params = ['callback_query_id' => $callback_query_id];
         if (null != $text) {
@@ -101,17 +102,17 @@ public function getUpdates()
         return $this->request('answerCallbackQuery', $params);
     }
 
-    public function endCB($id)
+    public function endCallback(string $id) : array
     {
         return $this->callbackAnswer($id);
     }
 
-    public function hideKeyboard()
+    public function hideKeyboard() : array
     {
         return ['remove_keyboard' => true];
     }
 
-    public function replyMarkup($reply_markup, $resize = true)
+    public function replyMarkup(array $reply_markup, bool $resize = true) : array
     {
         $keyboards = [
             'resize_keyboard' => $resize,
@@ -121,21 +122,21 @@ public function getUpdates()
         return $keyboards;
     }
 
-    public function sendChatAction($chat, $action)
+    public function sendChatAction(int $chat_id, string $action) : array
     {
         $params = [
-            'chat_id' => $chat,
+            'chat_id' => $chat_id,
             'action' => $action,
         ];
 
         return $this->request('sendChatAction', $params);
     }
 
-    public function sendMessage($chat, $text, $keyboard = null, $additional_params = null)
+    public function sendMessage(int $chat_id, string $text, ?array $keyboard = null, ?array $additional_params = null) : array
     {
         $params = [
             'parse_mode' => 'HTML',
-            'chat_id' => $chat,
+            'chat_id' => $chat_id,
             'text' => $text,
         ];
         if (null != $keyboard) {
@@ -145,25 +146,25 @@ public function getUpdates()
             $params = array_merge($params, $additional_params);
         }
 
-        $this->sendChatAction($chat, 'typing');
+        $this->sendChatAction($chat_id, 'typing');
         sleep(2);
 
         return $this->request('sendMessage', $params);
     }
 
-    public function sendMessageWithTypingStatus($chat, $text, $keyboard = null, $additional_params = null)
+    public function sendMessageWithTypingStatus(int $chat_id, string $text, ?array $keyboard = null, ?array $additional_params = null) : array
     {
-        $this->sendChatAction($chat, 'typing');
+        $this->sendChatAction($chat_id, 'typing');
         sleep(3);
 
-        return $this->sendMessage($chat, $text, $keyboard, $additional_params);
+        return $this->sendMessage($chat_id, $text, $keyboard, $additional_params);
     }
 
-    public function sendButton($chat, $text, $keyboard = null, $additional_params = null)
+    public function sendButton(int $chat_id, string $text, ?array $keyboard = null, ?array $additional_params = null) : array
     {
         $params = [
             'parse_mode' => 'HTML',
-            'chat_id' => $chat,
+            'chat_id' => $chat_id,
             'text' => $text,
         ];
         if (null != $keyboard) {
@@ -173,13 +174,13 @@ public function getUpdates()
             $params = array_merge($params, $additional_params);
         }
 
-        $this->sendChatAction($chat, 'typing');
+        $this->sendChatAction($chat_id, 'typing');
         sleep(2);
 
         return $this->request('sendMessage', $params);
     }
 
-    public function deleteMessage($chat_id, $message_id)
+    public function deleteMessage(int $chat_id, int $message_id) : array
     {
         return $this->request('deleteMessage', [
             'chat_id' => $chat_id,
@@ -187,7 +188,7 @@ public function getUpdates()
         ]);
     }
 
-    public function editMessage($chat_id, $message, int $message_id, ?array $keyboard = null, $additional_params = null) : void
+    public function editMessage(int $chat_id, string $message, int $message_id, ?array $keyboard = null, ?array $additional_params = null) : void
     {
         $params = [
             'message_id' => $message_id,
@@ -206,7 +207,7 @@ public function getUpdates()
         $this->request('editMessageText', $params);
     }
 
-    public function editMediaMessage($chat_id, $message_id, $media, $text = null, ?array $keyboard = null, $additional_params = null) : void
+    public function editMediaMessage(int $chat_id, int $message_id, string $media, ?string $text = null, ?array $keyboard = null, ?array $additional_params = null) : void
     {
         $photo = [
             'type' => 'photo',
@@ -230,12 +231,12 @@ public function getUpdates()
         $this->request('editMessageMedia', $params);
     }
 
-    public function kick($chat, $userid)
+    public function kick(int $chat_id, int $user_id) : array
     {
-        return $this->request('kickChatMember', ['chat_id' => $chat, 'user_id' => $userid]);
+        return $this->request('kickChatMember', ['chat_id' => $chat_id, 'user_id' => $user_id]);
     }
 
-    public function getUserIdByUsername($username)
+    public function getUserIdByUsername(string $username) : int|false
     {
         if (preg_match('/^@?([a-zA-Z0-9_]{5,32})$/', $username, $matches)) {
             $username = $matches[1];
@@ -249,114 +250,114 @@ public function getUpdates()
         return false;
     }
 
-    public function createPoll($chat, $question, $answers = [])
+    public function createPoll(int $chat_id, string $question, array $answers = []) : array
     {
         return $this->request('sendPoll', [
-            'chat_id' => $chat,
+            'chat_id' => $chat_id,
             'question' => $question,
             'options' => $answers,
         ]);
     }
 
-    public function pictureReply($chat, $text, $url_of_picture, $keyboard = null)
+    public function pictureReply(int $chat_id, string $text, string $url_of_picture, ?array $keyboard = null) : array
     {
-        $params = ['parse_mode' => 'HTML', 'chat_id' => $chat, 'caption' => $text, 'photo' => $url_of_picture];
+        $params = ['parse_mode' => 'HTML', 'chat_id' => $chat_id, 'caption' => $text, 'photo' => $url_of_picture];
         if (null != $keyboard) {
             $params['reply_markup'] = json_encode($keyboard, JSON_INVALID_UTF8_IGNORE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
-        $this->sendChatAction($chat, 'upload_photo');
+        $this->sendChatAction($chat_id, 'upload_photo');
         sleep(2);
 
         return $this->request('sendPhoto', $params);
     }
 
-    public function videoReply($chat, $text, $url_of_video, $keyboard = null)
+    public function videoReply(int $chat_id, string $text, string $url_of_video, ?array $keyboard = null) : array
     {
-        $params = ['parse_mode' => 'HTML', 'chat_id' => $chat, 'caption' => $text, 'video' => $url_of_video];
+        $params = ['parse_mode' => 'HTML', 'chat_id' => $chat_id, 'caption' => $text, 'video' => $url_of_video];
         if (null != $keyboard) {
             $params['reply_markup'] = json_encode($keyboard, JSON_INVALID_UTF8_IGNORE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
-        $this->sendChatAction($chat, 'upload_video');
+        $this->sendChatAction($chat_id, 'upload_video');
         sleep(2);
 
         return $this->request('sendVideo', $params);
     }
 
-    public function gifReply($chat, $text, $url_of_gif, $keyboard = null)
+    public function gifReply(int $chat_id, string $text, string $url_of_gif, ?array $keyboard = null) : array
     {
-        $params = ['parse_mode' => 'HTML', 'chat_id' => $chat, 'caption' => $text, 'animation' => $url_of_gif];
+        $params = ['parse_mode' => 'HTML', 'chat_id' => $chat_id, 'caption' => $text, 'animation' => $url_of_gif];
         if (null != $keyboard) {
             $params['reply_markup'] = json_encode($keyboard, JSON_INVALID_UTF8_IGNORE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
-        $this->sendChatAction($chat, 'upload_photo');
+        $this->sendChatAction($chat_id, 'upload_photo');
         sleep(2);
 
         return $this->request('sendAnimation', $params);
     }
 
-    public function audioReply($chat, $text, $url_of_audio, $keyboard = null)
+    public function audioReply(int $chat_id, string $text, string $url_of_audio, ?array $keyboard = null) : array
     {
-        $params = ['parse_mode' => 'HTML', 'chat_id' => $chat, 'caption' => $text, 'audio' => $url_of_audio];
+        $params = ['parse_mode' => 'HTML', 'chat_id' => $chat_id, 'caption' => $text, 'audio' => $url_of_audio];
         if (null != $keyboard) {
             $params['reply_markup'] = json_encode($keyboard, JSON_INVALID_UTF8_IGNORE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
-        $this->sendChatAction($chat, 'upload_audio');
+        $this->sendChatAction($chat_id, 'upload_audio');
         sleep(2);
 
         return $this->request('sendAudio', $params);
     }
 
-    public function voiceReply($chat, $text, $url_of_voice, $keyboard = null)
+    public function voiceReply(int $chat_id, string $text, string $url_of_voice, ?array $keyboard = null) : array
     {
-        $params = ['parse_mode' => 'HTML', 'chat_id' => $chat, 'caption' => $text, 'voice' => $url_of_voice];
+        $params = ['parse_mode' => 'HTML', 'chat_id' => $chat_id, 'caption' => $text, 'voice' => $url_of_voice];
         if (null != $keyboard) {
             $params['reply_markup'] = json_encode($keyboard, JSON_INVALID_UTF8_IGNORE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
-        $this->sendChatAction($chat, 'upload_voice');
+        $this->sendChatAction($chat_id, 'upload_voice');
         sleep(2);
 
         return $this->request('sendVoice', $params);
     }
 
-    public function videoNoteReply($chat, $url_of_vidnote, $keyboard = null) //URL UNSUPPORTED
+    public function videoNoteReply(int $chat_id, string $url_of_vidnote, ?array $keyboard = null) : array
     {
-        $params = ['chat_id' => $chat, 'video' => $url_of_vidnote];
+        $params = ['chat_id' => $chat_id, 'video' => $url_of_vidnote];
         if (null != $keyboard) {
             $params['reply_markup'] = json_encode($keyboard, JSON_INVALID_UTF8_IGNORE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
-        $this->sendChatAction($chat, 'typing');
+        $this->sendChatAction($chat_id, 'typing');
         sleep(2);
 
         return $this->request('sendVideoNote', $params);
-    }
+    } // URL UNSUPPORTED
 
-    public function setChatTitle($chat, $title)
+    public function setChatTitle(int $chat_id, string $title) : array
     {
-        return $this->request('setChatTitle', ['chat_id' => $chat, 'title' => $title]);
+        return $this->request('setChatTitle', ['chat_id' => $chat_id, 'title' => $title]);
     }
 
-    public function chatInviteLink($chat)
+    public function chatInviteLink(int $chat_id) : string
     {
-        return $this->request('exportChatInviteLink', ['chat_id' => $chat])['result'];
+        return $this->request('exportChatInviteLink', ['chat_id' => $chat_id])['result'];
     }
 
-    public function pinMessage($chat, $message_id)
+    public function pinMessage(int $chat_id, int $message_id) : array
     {
-        return $this->request('pinChatMessage', ['chat_id' => $chat, 'message_id' => $message_id]);
+        return $this->request('pinChatMessage', ['chat_id' => $chat_id, 'message_id' => $message_id]);
     }
 
-    public function unpinMessage($chat)
+    public function unpinMessage(int $chat_id) : array
     {
-        return $this->request('unpinChatMessage', ['chat_id' => $chat]);
+        return $this->request('unpinChatMessage', ['chat_id' => $chat_id]);
     }
 
-    public function setCommands($commands = '[]', $scope = '{"type":"default"}', $language_code = '')
+    public function setCommands(string $commands = '[]', string $scope = '{"type":"default"}', string $language_code = '') : array
     {
         $params = [
             'commands' => $commands,
@@ -367,7 +368,7 @@ public function getUpdates()
         return $this->request('setMyCommands', $params);
     }
 
-    public function delCommand($scope = '{"type":"default"}', $language_code = '')
+    public function delCommand(string $scope = '{"type":"default"}', string $language_code = '') : array
     {
         $params = [
             'scope' => $scope,
@@ -377,12 +378,12 @@ public function getUpdates()
         return $this->request('deleteMyCommands', $params);
     }
 
-    public function getCommands()
+    public function getCommands() : array
     {
         return $this->request('getMyCommands');
     }
 
-    public function setMyName($name = '', $language_code = '')
+    public function setMyName(string $name = '', string $language_code = '') : array
     {
         $params = [
             'name' => $name,
@@ -392,7 +393,7 @@ public function getUpdates()
         return $this->request('setMyName', $params);
     }
 
-    public function getMyName($language_code = '')
+    public function getMyName(string $language_code = '') : array
     {
         $params = [
             'language_code' => $language_code,
@@ -401,7 +402,7 @@ public function getUpdates()
         return $this->request('getMyName', $params);
     }
 
-    public function setMyDescription($description = '', $language_code = '')
+    public function setMyDescription(string $description = '', string $language_code = '') : array
     {
         $params = [
             'description' => $description,
@@ -411,7 +412,7 @@ public function getUpdates()
         return $this->request('setMyDescription', $params);
     }
 
-    public function getMyDescription($language_code = '')
+    public function getMyDescription(string $language_code = '') : array
     {
         $params = [
             'language_code' => $language_code,
@@ -420,7 +421,7 @@ public function getUpdates()
         return $this->request('getMyDescription', $params);
     }
 
-    public function setMyShortDescription($description = '', $language_code = '')
+    public function setMyShortDescription(string $description = '', string $language_code = '') : array
     {
         $params = [
             'short_description' => $description,
@@ -430,7 +431,7 @@ public function getUpdates()
         return $this->request('setMyShortDescription', $params);
     }
 
-    public function getMyShortDescription($language_code = '')
+    public function getMyShortDescription(string $language_code = '') : array
     {
         $params = [
             'language_code' => $language_code,
@@ -439,16 +440,16 @@ public function getUpdates()
         return $this->request('getMyShortDescription', $params);
     }
 
-    public function tempban($chat, $userid, $time)
+    public function tempban(int $chat_id, int $user_id, int $time) : array
     {
         return $this->request('kickChatMember', [
-            'chat_id' => $chat,
-            'user_id' => $userid,
+            'chat_id' => $chat_id,
+            'user_id' => $user_id,
             'until_date' => $time,
         ]);
     }
 
-    public function toUnix($mainstr)
+    public function toUnix(string $mainstr) : int|array
     {
         if (mb_stripos($mainstr, 'm')) {
             $end = mb_stripos($mainstr, 'm');
@@ -460,7 +461,7 @@ public function getUpdates()
             $end = mb_stripos($mainstr, 's');
             $timeTEMP = mb_substr($mainstr, 0, $end);
 
-            return $timeTEMP; //in theory this shit works
+            return $timeTEMP; // in theory this shit works
         } elseif (mb_stripos($mainstr, 'h')) {
             $end = mb_stripos($mainstr, 'h');
             $timeTEMP = mb_substr($mainstr, 0, $end);
