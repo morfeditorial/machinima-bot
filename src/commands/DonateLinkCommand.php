@@ -34,6 +34,7 @@ class DonateLinkCommand extends AbstractCommand
         parent::__construct($bot, $container);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
         $this->setAliases(['donate_link']);
+        $this->setHiddenFromMenu(true);
     }
 
     public function getDescriptionKey() : string

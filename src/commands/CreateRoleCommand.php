@@ -36,6 +36,7 @@ class CreateRoleCommand extends AbstractCommand
         parent::__construct($bot, $container);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
         $this->setAliases(['create_role']);
+        $this->setHiddenFromMenu(true);
 
         $this->dbManager = $container->get('dbManager');
     }

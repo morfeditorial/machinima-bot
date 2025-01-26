@@ -34,6 +34,7 @@ class WeatherCommand extends AbstractCommand
         parent::__construct($bot, $container);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
         $this->setAliases(['weather']);
+        $this->setHiddenFromMenu(true);
     }
 
     public function getDescriptionKey() : string
