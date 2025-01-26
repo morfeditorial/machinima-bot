@@ -35,6 +35,8 @@ abstract class AbstractCommand implements CommandInterface
 
     protected array $aliases;
 
+    protected bool $hiddenFromMenu = false;
+
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
         $this->bot = $bot;
@@ -63,6 +65,16 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     abstract public function getDescriptionKey() : string;
+
+    public function setHiddenFromMenu(bool $hiddenFromMenu) : void
+    {
+        $this->hiddenFromMenu = $hiddenFromMenu;
+    }
+
+    public function isHiddenFromMenu() : bool
+    {
+        return $this->hiddenFromMenu;
+    }
 
     abstract public function execute(
         string $message,

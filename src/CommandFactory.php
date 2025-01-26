@@ -58,6 +58,9 @@ class CommandFactory
                     } else {
                         $command->setAliases([$aliases]);
                     }
+                    if ($command->isHiddenFromMenu()) {
+                        continue;
+                    }
                     $commands[] = [
                         'command' => $command->getAliases()[0],
                         'description' => $command->getDescription(),
