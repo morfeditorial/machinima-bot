@@ -357,7 +357,7 @@ class tgLib
         return $this->request('unpinChatMessage', ['chat_id' => $chat_id]);
     }
 
-    public function setCommands(string $commands = '[]', string $scope = '{"type":"default"}', string $language_code = '') : array
+    public function setCommands(string $commands = '[]', ?string $scope = '{"type":"default"}', string $language_code = '') : array
     {
         $params = [
             'commands' => $commands,
