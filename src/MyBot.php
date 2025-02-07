@@ -159,123 +159,127 @@ class MyBot extends tgLib
         $default_state = $db_manager->getState($user_id);
 
         if ('awaiting_author_name_creation' === $default_state) {
-            if ($db_manager->hasHigherRole($user_id, 'moderator')) {
-                $this->deleteMessage($chat_id, $message_id);
-                $db_manager->clearState($user_id, 'default');
-                $author_id = $db_manager->createAuthor($message);
-                $author_status = $db_manager->isPrivate($author_id);
-                $keyboard = [
-                    'inline_keyboard' => [
-                        [
-                            ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
-                            ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
-                        ],
-                        [
-                            ['text' => $this->translate('add_bio'), 'callback_data' => 'set_author_about_' . $author_id],
-                            ['text' => $this->translate('add_link'), 'callback_data' => 'add_author_link_' . $author_id],
-                        ],
-                        [
-                            ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
-                        ],
-                        [
-                            ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
-                        ],
-                    ],
-                ];
-                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[2], str_replace('{author}', htmlspecialchars($message), $this->translate('author_added_message')), $keyboard);
-            } else {
+            if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                return;
             }
+            $this->deleteMessage($chat_id, $message_id);
+            $db_manager->clearState($user_id, 'default');
+            $author_id = $db_manager->createAuthor($message);
+            $author_status = $db_manager->isPrivate($author_id);
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
+                        ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
+                    ],
+                    [
+                        ['text' => $this->translate('add_bio'), 'callback_data' => 'set_author_about_' . $author_id],
+                        ['text' => $this->translate('add_link'), 'callback_data' => 'add_author_link_' . $author_id],
+                    ],
+                    [
+                        ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
+                    ],
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
+                    ],
+                ],
+            ];
+            $this->editMediaMessage($chat_id, $current_panel, $visuals_links[2], str_replace('{author}', htmlspecialchars($message), $this->translate('author_added_message')), $keyboard);
         } elseif ($state = $db_manager->getState($user_id, 'change_name')) {
-            if ($db_manager->hasHigherRole($user_id, 'moderator')) {
-                $this->deleteMessage($chat_id, $message_id);
-                $db_manager->clearState($user_id, 'change_name');
-                $author_id = $state['author_id'];
-                $author = $db_manager->getAuthorById($author_id);
-                $db_manager->updateAuthorName($author_id, $message);
-                $author_status = $db_manager->isPrivate($author_id);
-                $keyboard = [
-                    'inline_keyboard' => [
-                        [
-                            ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
-                            ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
-                        ],
-                        [
-                            ['text' => $this->translate('change_bio'), 'callback_data' => 'set_author_about_' . $author_id],
-                            ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'add_author_link_' . $author_id],
-                        ],
-                        [
-                            ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
-                        ],
-                        [
-                            ['text' => $this->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
-                        ],
-                    ],
-                ];
-                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[6], str_replace(['{author}', '{oldName}', '{biography}', '{link}'], [htmlspecialchars($message), htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], $this->translate('name_changed_message')), $keyboard);
-            } else {
+            if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                return;
             }
+            $this->deleteMessage($chat_id, $message_id);
+            $db_manager->clearState($user_id, 'change_name');
+            $author_id = $state['author_id'];
+            $author = $db_manager->getAuthorById($author_id);
+            $db_manager->updateAuthorName($author_id, $message);
+            $author_status = $db_manager->isPrivate($author_id);
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
+                        ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
+                    ],
+                    [
+                        ['text' => $this->translate('change_bio'), 'callback_data' => 'set_author_about_' . $author_id],
+                        ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'add_author_link_' . $author_id],
+                    ],
+                    [
+                        ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
+                    ],
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
+                    ],
+                ],
+            ];
+            $this->editMediaMessage($chat_id, $current_panel, $visuals_links[6], str_replace(['{author}', '{oldName}', '{biography}', '{link}'], [htmlspecialchars($message), htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], $this->translate('name_changed_message')), $keyboard);
         } elseif ($state = $db_manager->getState($user_id, 'set_author_about')) {
-            if ($db_manager->hasHigherRole($user_id, 'moderator')) {
-                $this->deleteMessage($chat_id, $message_id);
-                $db_manager->clearState($user_id, 'set_author_about');
-                $author_id = $state['author_id'];
-                $author = $db_manager->getAuthorById($author_id);
-                $db_manager->setBiography($author_id, $message);
-                $author_status = $db_manager->isPrivate($author_id);
-                $keyboard = [
-                    'inline_keyboard' => [
-                        [
-                            ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
-                            ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
-                        ],
-                        [
-                            ['text' => $this->translate('change_bio'), 'callback_data' => 'set_author_about_' . $author_id],
-                            ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'add_author_link_' . $author_id],
-                        ],
-                        [
-                            ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
-                        ],
-                        [
-                            ['text' => $this->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
-                        ],
-                    ],
-                ];
-                $this->editMediaMessage($chat_id, $current_panel, ($author['biography'] ? $visuals_links[8] : $visuals_links[7]), str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), htmlspecialchars($message), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], ($author['biography'] ? $this->translate('bio_changed_message') : $this->translate('bio_added_message'))), $keyboard);
-            } else {
+            if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                return;
             }
+            $this->deleteMessage($chat_id, $message_id);
+            $db_manager->clearState($user_id, 'set_author_about');
+            $author_id = $state['author_id'];
+            $author = $db_manager->getAuthorById($author_id);
+            $db_manager->setBiography($author_id, $message);
+            $author_status = $db_manager->isPrivate($author_id);
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
+                        ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
+                    ],
+                    [
+                        ['text' => $this->translate('change_bio'), 'callback_data' => 'set_author_about_' . $author_id],
+                        ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'add_author_link_' . $author_id],
+                    ],
+                    [
+                        ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
+                    ],
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
+                    ],
+                ],
+            ];
+            $this->editMediaMessage($chat_id, $current_panel, ($author['biography'] ? $visuals_links[8] : $visuals_links[7]), str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), htmlspecialchars($message), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], ($author['biography'] ? $this->translate('bio_changed_message') : $this->translate('bio_added_message'))), $keyboard);
         } elseif ($state = $db_manager->getState($user_id, 'add_author_link')) {
-            if ($db_manager->hasHigherRole($user_id, 'moderator')) {
-                $this->deleteMessage($chat_id, $message_id);
-                $db_manager->clearState($user_id, 'add_author_link');
-                $author_id = $state['author_id'];
-                $author = $db_manager->getAuthorById($author_id);
-                $db_manager->setChannelLink($author_id, $message);
-                $author_status = $db_manager->isPrivate($author_id);
-                $keyboard = [
-                    'inline_keyboard' => [
-                        [
-                            ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
-                            ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
-                        ],
-                        [
-                            ['text' => ($author['biography'] ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'set_author_about_' . $author_id],
-                            ['text' => $this->translate('change_link'), 'callback_data' => 'add_author_link_' . $author_id],
-                        ],
-                        [
-                            ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
-                        ],
-                        [
-                            ['text' => $this->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
-                        ],
-                    ],
-                ];
-                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), htmlspecialchars($message)], $this->translate('link_changed_message')), $keyboard);
-            } else {
+            if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                return;
             }
+            $this->deleteMessage($chat_id, $message_id);
+            $db_manager->clearState($user_id, 'add_author_link');
+            $author_id = $state['author_id'];
+            $author = $db_manager->getAuthorById($author_id);
+            $db_manager->setChannelLink($author_id, $message);
+            $author_status = $db_manager->isPrivate($author_id);
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
+                        ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
+                    ],
+                    [
+                        ['text' => ($author['biography'] ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'set_author_about_' . $author_id],
+                        ['text' => $this->translate('change_link'), 'callback_data' => 'add_author_link_' . $author_id],
+                    ],
+                    [
+                        ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
+                    ],
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
+                    ],
+                ],
+            ];
+            $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), htmlspecialchars($message)], $this->translate('link_changed_message')), $keyboard);
         } elseif ('awaiting_role_creation' === $default_state) {
             $parts = explode(' ', $message);
             if (2 === count($parts)) {
@@ -317,54 +321,57 @@ class MyBot extends tgLib
             $current_page = $db_manager->getCurrentPage($user_id);
 
             if ('control_panel' === $payload) {
-                if ($db_manager->hasHigherRole($user_id, 'moderator')) {
-                    $db_manager->clearState($user_id);
-                    if (! is_null($current_page)) {
-                        $db_manager->resetCurrentPage($user_id);
-                    }
-                    $keyboard = [
-                        'inline_keyboard' => [
-                            [
-                                ['text' => $this->translate('add_author'), 'callback_data' => 'add_author'],
-                                ['text' => $this->translate('delete_author'), 'callback_data' => 'delete_author'],
-                            ],
-                            [
-                                ['text' => $this->translate('list_of_authors'), 'callback_data' => 'list_of_authors'],
-                            ],
-                            [
-                                ['text' => $this->translate('access_control'), 'callback_data' => 'access_control'],
-                            ],
-                        ],
-                    ];
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('admin_panel_message'), $keyboard);
-                } else {
+                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
                 }
+                $db_manager->clearState($user_id);
+                if (! is_null($current_page)) {
+                    $db_manager->resetCurrentPage($user_id);
+                }
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('add_author'), 'callback_data' => 'add_author'],
+                            ['text' => $this->translate('delete_author'), 'callback_data' => 'delete_author'],
+                        ],
+                        [
+                            ['text' => $this->translate('list_of_authors'), 'callback_data' => 'list_of_authors'],
+                        ],
+                        [
+                            ['text' => $this->translate('access_control'), 'callback_data' => 'access_control'],
+                        ],
+                    ],
+                ];
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('admin_panel_message'), $keyboard);
             } elseif ('add_author' === $payload) {
-                if ($db_manager->hasHigherRole($user_id, 'moderator')) {
-                    $db_manager->setState($user_id, 'awaiting_author_name_creation');
-                    $keyboard = [
-                        'inline_keyboard' => [
-                            [
-                                ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
-                            ],
+                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $db_manager->setState($user_id, 'awaiting_author_name_creation');
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
                         ],
-                    ];
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[10], $this->translate('add_author_message'), $keyboard);
-                } else {
-                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
-                }
+                    ],
+                ];
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[10], $this->translate('add_author_message'), $keyboard);
             } elseif ('delete_author' === $payload) {
-                if ($db_manager->hasHigherRole($user_id, 'moderator')) {
-                    $db_manager->setCurrentPage($user_id, 'delete_page_1');
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard(1, 3, 1, 'author_to_delete_', 'delete_page_'));
-                } else {
+                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
                 }
+                $db_manager->setCurrentPage($user_id, 'delete_page_1');
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard(1, 3, 1, 'author_to_delete_', 'delete_page_'));
             } elseif (preg_match("/^delete_page_(\d+)$/", $payload, $matches)) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
                     $db_manager->setCurrentPage($user_id, $payload);
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard($matches[1], 3, 1, 'author_to_delete_', 'delete_page_'));
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard((int) $matches[1], 3, 1, 'author_to_delete_', 'delete_page_'));
                 } else {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
@@ -451,12 +458,12 @@ class MyBot extends tgLib
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif (preg_match("/^page_(\d+)$/", $payload, $matches)) {
-                if ($db_manager->hasHigherRole($user_id, 'moderator')) {
-                    $db_manager->setCurrentPage($user_id, $payload);
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[9], $this->translate('list_of_authors_message'), $this->generateAuthorsKeyboard($matches[1]));
+                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
                 } else {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
+                    $db_manager->setCurrentPage($user_id, $payload);
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[9], $this->translate('list_of_authors_message'), $this->generateAuthorsKeyboard((int) $matches[1]));
             } elseif (preg_match("/^author_(\d+)$/", $payload, $matches)) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
                     $author = $db_manager->getAuthorById(intval($matches[1]));
@@ -657,28 +664,31 @@ class MyBot extends tgLib
     public function sendUpdateRolesPriorityPanel(int $chat_id, int $user_id, $callback_query_id) : void
     {
         $db_manager = $this->container->get('db_manager');
-        $visuals_links = $this->container->get('visuals_links');
 
         if ($db_manager->hasHigherRole($user_id, 'admin')) {
-            $roles = $db_manager->queryRolesOrderedByPriority();
-            $selected_role = $db_manager->getState($user_id, 'selected_role');
-
-            $keyboard = ['inline_keyboard' => []];
-
-            foreach ($roles as $role) {
-                $keyboard_row = [];
-                $this->buildRoleButton($keyboard_row, $selected_role, $role);
-                $keyboard['inline_keyboard'][] = $keyboard_row;
-            }
-
-            $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('go_back'), 'callback_data' => 'access_control'],
-            ];
-
-            $this->editMediaMessage($chat_id, $db_manager->getCurrentPanel($user_id), $visuals_links[1], 'Ви можете змінити пріоритети ролей:', $keyboard);
-        } else {
             $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+            return;
         }
+
+        $roles = $db_manager->queryRolesOrderedByPriority();
+        $selected_role = $db_manager->getState($user_id, 'selected_role');
+
+        $keyboard = ['inline_keyboard' => []];
+
+        foreach ($roles as $role) {
+            $keyboard_row = [];
+            $this->buildRoleButton($keyboard_row, $selected_role, $role);
+            $keyboard['inline_keyboard'][] = $keyboard_row;
+        }
+
+        $keyboard['inline_keyboard'][] = [
+            ['text' => $this->translate('go_back'), 'callback_data' => 'access_control'],
+        ];
+
+        $visuals_links = $this->container->get('visuals_links');
+
+        $this->editMediaMessage($chat_id, $db_manager->getCurrentPanel($user_id), $visuals_links[1], 'Ви можете змінити пріоритети ролей:', $keyboard);
     }
 
     public function toggleRoleSelection(int $chat_id, int $user_id, mixed $callback_query_id, string $role_name) : void
