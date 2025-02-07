@@ -43,19 +43,19 @@ class StartCommand extends AbstractCommand
 
     public function execute(
         string $message,
-        int $messageId,
-        string $chatType,
-        int $chatId,
-        int $userId,
+        int $message_id,
+        string $chat_type,
+        int $chat_id,
+        int $user_id,
         $payload,
-        ?int $replyMessageId,
-        ?int $replyAuthor,
-        string $firstName,
-        $currentPanel,
-        $currentPage,
+        ?int $reply_message_id,
+        ?int $reply_author,
+        string $first_name,
+        $current_panel,
+        $current_page,
         string $cmd,
         array $args
     ) : void {
-        $this->bot->pictureReply($chatId, $this->translator->translate('welcome_message'), $this->visualsLinks[0]);
+        $this->bot->pictureReply($chat_id, $this->translator->translate('welcome_message'), $this->visuals_links[0]);
     }
 }

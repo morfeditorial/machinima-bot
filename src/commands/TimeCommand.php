@@ -44,21 +44,21 @@ class TimeCommand extends AbstractCommand
 
     public function execute(
         string $message,
-        int $messageId,
-        string $chatType,
-        int $chatId,
-        int $userId,
+        int $message_id,
+        string $chat_type,
+        int $chat_id,
+        int $user_id,
         $payload,
-        ?int $replyMessageId,
-        ?int $replyAuthor,
-        string $firstName,
-        $currentPanel,
-        $currentPage,
+        ?int $reply_message_id,
+        ?int $reply_author,
+        string $first_name,
+        $current_panel,
+        $current_page,
         string $cmd,
         array $args
     ) : void {
         $date = date('d.m.y H:i:s');
 
-        $this->bot->sendMessage($chatId, str_replace('{date}', $date, $this->translator->translate('time_message')));
+        $this->bot->sendMessage($chat_id, str_replace('{date}', $date, $this->translator->translate('time_message')));
     }
 }

@@ -29,7 +29,7 @@ use morfeditorial\DependencyContainer;
 
 class UpdateCommand extends AbstractCommand
 {
-    private $dbManager;
+    private $db_manager;
 
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
@@ -38,7 +38,7 @@ class UpdateCommand extends AbstractCommand
         $this->setAliases(['update']);
         $this->setHiddenFromMenu(true);
 
-        $this->dbManager = $container->get('dbManager');
+        $this->db_manager = $container->get('db_manager');
     }
 
     public function getDescriptionKey() : string
@@ -48,21 +48,21 @@ class UpdateCommand extends AbstractCommand
 
     public function execute(
         string $message,
-        int $messageId,
-        string $chatType,
-        int $chatId,
-        int $userId,
+        int $message_id,
+        string $chat_type,
+        int $chat_id,
+        int $user_id,
         $payload,
-        ?int $replyMessageId,
-        ?int $replyAuthor,
-        string $firstName,
-        $currentPanel,
-        $currentPage,
+        ?int $reply_message_id,
+        ?int $reply_author,
+        string $first_name,
+        $current_panel,
+        $current_page,
         string $cmd,
         array $args
     ) : void {
-        if (! $this->dbManager->hasHigherRole($userId, "admin")) {
-            $this->bot->sendMessage($chatId, $this->translator->translate("no_permission_message"));
+        if (! $this->db_manager->hasHigherRole($user_id, "admin")) {
+            $this->bot->sendMessage($chat_id, $this->translator->translate("no_permission_message"));
             return;
         }
 
@@ -134,6 +134,6 @@ class UpdateCommand extends AbstractCommand
         $this->bot->setMyShortDescription("Бот, які дапаможа табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft.", "be");
         $this->bot->setMyShortDescription("Бот, який допоможе тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft.", "uk");
 
-        $this->bot->sendMessage($chatId, $this->translator->translate("update_message"));
+        $this->bot->sendMessage($chat_id, $this->translator->translate("update_message"));
     }
 }

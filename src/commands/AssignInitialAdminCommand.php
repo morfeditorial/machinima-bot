@@ -29,7 +29,7 @@ use morfeditorial\DependencyContainer;
 
 class AssignInitialAdminCommand extends AbstractCommand
 {
-    private $dbManager;
+    private $db_manager;
 
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
@@ -38,7 +38,7 @@ class AssignInitialAdminCommand extends AbstractCommand
         $this->setAliases(['assign_initial_admin']);
         $this->setHiddenFromMenu(true);
 
-        $this->dbManager = $container->get('dbManager');
+        $this->db_manager = $container->get('db_manager');
     }
 
     public function getDescriptionKey() : string
@@ -48,31 +48,31 @@ class AssignInitialAdminCommand extends AbstractCommand
 
     public function execute(
         string $message,
-        int $messageId,
-        string $chatType,
-        int $chatId,
-        int $userId,
+        int $message_id,
+        string $chat_type,
+        int $chat_id,
+        int $user_id,
         $payload,
-        ?int $replyMessageId,
-        ?int $replyAuthor,
-        string $firstName,
-        $currentPanel,
-        $currentPage,
+        ?int $reply_message_id,
+        ?int $reply_author,
+        string $first_name,
+        $current_panel,
+        $current_page,
         string $cmd,
         array $args
     ) : void {
-        if (! $this->dbManager->getRoleByName('admin')) {
-            $this->dbManager->createRole('admin', 100);
+        if (! $this->db_manager->getRoleByName('admin')) {
+            $this->db_manager->createRole('admin', 100);
         }
 
-        if (0 < $this->dbManager->getUsersCountByRole('admin')) {
-            $this->bot->sendMessage($chatId, $this->translator->translate('already_initialled_admin_message'));
+        if (0 < $this->db_manager->getUsersCountByRole('admin')) {
+            $this->bot->sendMessage($chat_id, $this->translator->translate('already_initialled_admin_message'));
 
             return;
         }
 
-        $this->dbManager->assignRole($userId, 'admin');
+        $this->db_manager->assignRole($user_id, 'admin');
 
-        $this->bot->sendMessage($chatId, $this->translator->translate('success_initialled_admin_message'));
+        $this->bot->sendMessage($chat_id, $this->translator->translate('success_initialled_admin_message'));
     }
 }

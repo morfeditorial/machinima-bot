@@ -44,23 +44,23 @@ class WeatherCommand extends AbstractCommand
 
     public function execute(
         string $message,
-        int $messageId,
-        string $chatType,
-        int $chatId,
-        int $userId,
+        int $message_id,
+        string $chat_type,
+        int $chat_id,
+        int $user_id,
         $payload,
-        ?int $replyMessageId,
-        ?int $replyAuthor,
-        string $firstName,
-        $currentPanel,
-        $currentPage,
+        ?int $reply_message_id,
+        ?int $reply_author,
+        string $first_name,
+        $current_panel,
+        $current_page,
         string $cmd,
         array $args
     ) : void {
         $city = implode(' ', $args);
 
         if ('' == $city) {
-            $this->bot->sendMessage($chatId, $this->translator->translate('weather_usage_message'));
+            $this->bot->sendMessage($chat_id, $this->translator->translate('weather_usage_message'));
 
             return;
         }
@@ -75,11 +75,11 @@ class WeatherCommand extends AbstractCommand
         $weather = json_decode(file_get_contents("https://api.openweathermap.org/data/2.5/weather?q={$city}&units=metric&appid={$OWApi_key}&lang={$language}"));
 
         if (empty($weather)) {
-            $this->bot->sendMessage($chatId, $this->translator->translate('weather_fetch_fail_message'));
+            $this->bot->sendMessage($chat_id, $this->translator->translate('weather_fetch_fail_message'));
 
             return;
         }
 
-        $this->bot->sendMessage($chatId, str_replace(['{city}', '{country}', '{description}', '{wind_speed}', '{cloudiness}', '{pressure}', '{humidity}', '{sunrise}', '{sunset}', '{temp}', '{feels_like}'], [$weather->name, $weather->sys->country, $weather->weather[0]->description, $weather->wind->speed, $weather->clouds->all, intval(($weather->main->pressure) * (0.750063755419211)), $weather->main->humidity, date('H:i:s (e)', $weather->sys->sunrise), date('H:i:s (e)', $weather->sys->sunset), $weather->main->temp, $weather->main->feels_like], $this->translator->translate('weather_report_message')));
+        $this->bot->sendMessage($chat_id, str_replace(['{city}', '{country}', '{description}', '{wind_speed}', '{cloudiness}', '{pressure}', '{humidity}', '{sunrise}', '{sunset}', '{temp}', '{feels_like}'], [$weather->name, $weather->sys->country, $weather->weather[0]->description, $weather->wind->speed, $weather->clouds->all, intval(($weather->main->pressure) * (0.750063755419211)), $weather->main->humidity, date('H:i:s (e)', $weather->sys->sunrise), date('H:i:s (e)', $weather->sys->sunset), $weather->main->temp, $weather->main->feels_like], $this->translator->translate('weather_report_message')));
     }
 }

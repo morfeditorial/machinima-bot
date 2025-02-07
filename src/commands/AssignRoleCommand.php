@@ -29,7 +29,7 @@ use morfeditorial\DependencyContainer;
 
 class AssignRoleCommand extends AbstractCommand
 {
-    private $dbManager;
+    private $db_manager;
 
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
@@ -38,7 +38,7 @@ class AssignRoleCommand extends AbstractCommand
         $this->setAliases(['assign_role']);
         $this->setHiddenFromMenu(true);
 
-        $this->dbManager = $container->get('dbManager');
+        $this->db_manager = $container->get('db_manager');
     }
 
     public function getDescriptionKey() : string
@@ -48,44 +48,44 @@ class AssignRoleCommand extends AbstractCommand
 
     public function execute(
         string $message,
-        int $messageId,
-        string $chatType,
-        int $chatId,
-        int $userId,
+        int $message_id,
+        string $chat_type,
+        int $chat_id,
+        int $user_id,
         $payload,
-        ?int $replyMessageId,
-        ?int $replyAuthor,
-        string $firstName,
-        $currentPanel,
-        $currentPage,
+        ?int $reply_message_id,
+        ?int $reply_author,
+        string $first_name,
+        $current_panel,
+        $current_page,
         string $cmd,
         array $args
     ) : void {
-        if (! $this->dbManager->hasHigherRole($userId, 'admin')) {
-            $this->bot->sendMessage($chatId, $this->translator->translate('no_permission_message'));
+        if (! $this->db_manager->hasHigherRole($user_id, 'admin')) {
+            $this->bot->sendMessage($chat_id, $this->translator->translate('no_permission_message'));
 
             return;
         }
 
         if (2 > count($args)) {
-            $this->bot->sendMessage($chatId, $this->translator->translate('assign_role_usage_message'));
+            $this->bot->sendMessage($chat_id, $this->translator->translate('assign_role_usage_message'));
 
             return;
         }
 
-        $targetUserId = intval($args[0]);
-        $roleName = $args[1];
+        $target_user_id = intval($args[0]);
+        $role_name = $args[1];
 
-        if (! $this->dbManager->getRoleByName($roleName)) {
-            $this->bot->sendMessage($chatId, str_replace('{roleName}', htmlspecialchars($roleName), $this->translator->translate('role_not_found_message')));
+        if (! $this->db_manager->getRoleByName($role_name)) {
+            $this->bot->sendMessage($chat_id, str_replace('{roleName}', htmlspecialchars($role_name), $this->translator->translate('role_not_found_message')));
 
             return;
         }
 
-        if ($this->dbManager->assignRole($targetUserId, $roleName)) {
-            $this->bot->sendMessage($chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($roleName), $targetUserId], $this->translator->translate('assign_role_message')));
+        if ($this->db_manager->assignRole($target_user_id, $role_name)) {
+            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translator->translate('assign_role_message')));
         } else {
-            $this->bot->sendMessage($chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($roleName), $targetUserId], $this->translator->translate('role_assignment_failure_message')));
+            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translator->translate('role_assignment_failure_message')));
         }
     }
 }

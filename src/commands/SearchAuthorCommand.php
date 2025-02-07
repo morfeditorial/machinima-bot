@@ -29,7 +29,7 @@ use morfeditorial\DependencyContainer;
 
 class SearchAuthorCommand extends AbstractCommand
 {
-    private $dbManager;
+    private $db_manager;
 
     private $search;
 
@@ -39,7 +39,7 @@ class SearchAuthorCommand extends AbstractCommand
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
         $this->setAliases(['search_author']);
 
-        $this->dbManager = $container->get('dbManager');
+        $this->db_manager = $container->get('db_manager');
         $this->search = $container->get('fuzzySearch');
     }
 
@@ -50,35 +50,35 @@ class SearchAuthorCommand extends AbstractCommand
 
     public function execute(
         string $message,
-        int $messageId,
-        string $chatType,
-        int $chatId,
-        int $userId,
+        int $message_id,
+        string $chat_type,
+        int $chat_id,
+        int $user_id,
         $payload,
-        ?int $replyMessageId,
-        ?int $replyAuthor,
-        string $firstName,
-        $currentPanel,
-        $currentPage,
+        ?int $reply_message_id,
+        ?int $reply_author,
+        string $first_name,
+        $current_panel,
+        $current_page,
         string $cmd,
         array $args
     ) : void {
         if (empty($args)) {
-            $this->bot->sendMessage($chatId, $this->translator->translate('search_author_usage_message'));
+            $this->bot->sendMessage($chat_id, $this->translator->translate('search_author_usage_message'));
 
             return;
         }
 
-        $authors = $this->dbManager->getAllAuthors();
+        $authors = $this->db_manager->getAllAuthors();
         $searchQuery = implode(' ', $args);
         $results = $this->search->fuzzySearch($searchQuery, $authors);
 
         if (empty($results)) {
-            $this->bot->sendMessage($chatId, str_replace('{searchQuery}', htmlspecialchars($searchQuery), $this->translator->translate('no_search_results_message')));
+            $this->bot->sendMessage($chat_id, str_replace('{searchQuery}', htmlspecialchars($searchQuery), $this->translator->translate('no_search_results_message')));
 
             return;
         }
 
-        $this->bot->sendButton($chatId, str_replace(['{searchQuery}', '{count}'], [htmlspecialchars($searchQuery), count($results)], $this->translator->translate('search_author_message')), $this->bot->generateAuthorsKeyboard(1, 6, 1, 'profile_author_', 'search_author_' . $searchQuery, $results));
+        $this->bot->sendButton($chat_id, str_replace(['{searchQuery}', '{count}'], [htmlspecialchars($searchQuery), count($results)], $this->translator->translate('search_author_message')), $this->bot->generateAuthorsKeyboard(1, 6, 1, 'profile_author_', 'search_author_' . $searchQuery, $results));
     }
 }

@@ -29,7 +29,7 @@ use morfeditorial\DependencyContainer;
 
 class AdminPanelCommand extends AbstractCommand
 {
-    private $dbManager;
+    private $db_manager;
 
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
@@ -38,7 +38,7 @@ class AdminPanelCommand extends AbstractCommand
         $this->setAliases(['admin_panel']);
         $this->setHiddenFromMenu(true);
 
-        $this->dbManager = $container->get('dbManager');
+        $this->db_manager = $container->get('db_manager');
     }
 
     public function getDescriptionKey() : string
@@ -48,34 +48,34 @@ class AdminPanelCommand extends AbstractCommand
 
     public function execute(
         string $message,
-        int $messageId,
-        string $chatType,
-        int $chatId,
-        int $userId,
+        int $message_id,
+        string $chat_type,
+        int $chat_id,
+        int $user_id,
         $payload,
-        ?int $replyMessageId,
-        ?int $replyAuthor,
-        string $firstName,
-        $currentPanel,
-        $currentPage,
+        ?int $reply_message_id,
+        ?int $reply_author,
+        string $first_name,
+        $current_panel,
+        $current_page,
         string $cmd,
         array $args
     ) : void {
-        if (! $this->dbManager->hasHigherRole($userId, 'moderator')) {
-            $this->bot->sendMessage($chatId, $this->translator->translate('no_permission_message'));
+        if (! $this->db_manager->hasHigherRole($user_id, 'moderator')) {
+            $this->bot->sendMessage($chat_id, $this->translator->translate('no_permission_message'));
 
             return;
         }
 
-        $this->dbManager->clearState($userId);
-        if (! is_null($currentPanel)) {
-            $this->bot->deleteMessage($chatId, $currentPanel);
+        $this->db_manager->clearState($user_id);
+        if (! is_null($current_panel)) {
+            $this->bot->deleteMessage($chat_id, $current_panel);
         }
 
-        $this->dbManager->setCurrentPanel($userId, $messageId + 1);
+        $this->db_manager->setCurrentPanel($user_id, $message_id + 1);
 
         if (! is_null($currentPage)) {
-            $this->dbManager->resetCurrentPage($userId);
+            $this->db_manager->resetCurrentPage($user_id);
         }
 
         $keyboard = [
@@ -93,6 +93,6 @@ class AdminPanelCommand extends AbstractCommand
             ],
         ];
 
-        $this->bot->pictureReply($chatId, $this->translator->translate('admin_panel_message'), $this->visualsLinks[1], $keyboard);
+        $this->bot->pictureReply($chat_id, $this->translator->translate('admin_panel_message'), $this->visuals_links[1], $keyboard);
     }
 }

@@ -44,21 +44,21 @@ class WhoisCommand extends AbstractCommand
 
     public function execute(
         string $message,
-        int $messageId,
-        string $chatType,
-        int $chatId,
-        int $userId,
+        int $message_id,
+        string $chat_type,
+        int $chat_id,
+        int $user_id,
         $payload,
-        ?int $replyMessageId,
-        ?int $replyAuthor,
-        string $firstName,
-        $currentPanel,
-        $currentPage,
+        ?int $reply_message_id,
+        ?int $reply_author,
+        string $first_name,
+        $current_panel,
+        $current_page,
         string $cmd,
         array $args
     ) : void {
         if (! isset($args[0])) {
-            $this->bot->sendMessage($chatId, $this->translator->translate('whois_usage_message'));
+            $this->bot->sendMessage($chat_id, $this->translator->translate('whois_usage_message'));
 
             return;
         }
@@ -66,11 +66,11 @@ class WhoisCommand extends AbstractCommand
         $whois = json_decode(file_get_contents('http://ip-api.com/json/' . $args[0]), true);
 
         if ('success' !== $whois['status']) {
-            $this->bot->sendMessage($chatId, $this->translator->translate('whois_no_response_message'));
+            $this->bot->sendMessage($chat_id, $this->translator->translate('whois_no_response_message'));
 
             return;
         }
 
-        $this->bot->sendMessage($chatId, str_replace(['{ip_address}', '{query}', '{country}', '{country_code}', '{region}', '{city}', '{timezone}', '{lat}', '{lon}', '{org}', '{isp}'], [strtolower($args[0]), $whois['query'], $whois['country'], $whois['countryCode'], $whois['regionName'], $whois['city'], $whois['timezone'], $whois['lat'], $whois['lon'], $whois['org'], $whois['isp']], $this->translator->translate('whois_info_message')));
+        $this->bot->sendMessage($chat_id, str_replace(['{ip_address}', '{query}', '{country}', '{country_code}', '{region}', '{city}', '{timezone}', '{lat}', '{lon}', '{org}', '{isp}'], [strtolower($args[0]), $whois['query'], $whois['country'], $whois['countryCode'], $whois['regionName'], $whois['city'], $whois['timezone'], $whois['lat'], $whois['lon'], $whois['org'], $whois['isp']], $this->translator->translate('whois_info_message')));
     }
 }
