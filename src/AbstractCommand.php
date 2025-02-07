@@ -29,19 +29,19 @@ abstract class AbstractCommand implements CommandInterface
 
     protected $translator;
 
-    protected $visualsLinks;
+    protected $visuals_links;
 
     protected string $description;
 
     protected array $aliases;
 
-    protected bool $hiddenFromMenu = false;
+    protected bool $hidden_from_menu = false;
 
     public function __construct(MyBot $bot, DependencyContainer $container)
     {
         $this->bot = $bot;
         $this->translator = $container->get('translator');
-        $this->visualsLinks = $container->get('visualsLinks');
+        $this->visuals_links = $container->get('visuals_links');
     }
 
     public function setDescription(string $description) : void
@@ -66,28 +66,28 @@ abstract class AbstractCommand implements CommandInterface
 
     abstract public function getDescriptionKey() : string;
 
-    public function setHiddenFromMenu(bool $hiddenFromMenu) : void
+    public function setHiddenFromMenu(bool $hidden_from_menu) : void
     {
-        $this->hiddenFromMenu = $hiddenFromMenu;
+        $this->hidden_from_menu = $hidden_from_menu;
     }
 
     public function isHiddenFromMenu() : bool
     {
-        return $this->hiddenFromMenu;
+        return $this->hidden_from_menu;
     }
 
     abstract public function execute(
         string $message,
-        int $messageId,
-        string $chatType,
-        int $chatId,
-        int $userId,
+        int $message_id,
+        string $chat_type,
+        int $chat_id,
+        int $user_id,
         $payload,
-        ?int $replyMessageId,
-        ?int $replyAuthor,
-        string $firstName,
-        $currentPanel,
-        $currentPage,
+        ?int $reply_message_id,
+        ?int $reply_author,
+        string $first_name,
+        $current_panel,
+        $current_page,
         string $cmd,
         array $args
     ) : void;

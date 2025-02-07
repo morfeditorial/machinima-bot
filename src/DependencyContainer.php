@@ -25,7 +25,7 @@ namespace morfeditorial;
 
 class DependencyContainer
 {
-    private $services = [];
+    private array $services = [];
 
     public function __construct($translations, $userLocale)
     {
