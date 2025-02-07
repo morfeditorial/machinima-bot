@@ -139,7 +139,7 @@ class MyBot extends tgLib
                 $command_data['args']
             );
         } else {
-            $this->sendMessage($message_data['chat_id'], $this->container->get('translator')->translate('unknown_command_message'));
+            $this->sendMessage($message_data['chat_id'], $this->translate('unknown_command_message'));
         }
     }
 
@@ -153,7 +153,6 @@ class MyBot extends tgLib
         $payload = $message_data['payload'];
         $first_name = $message_data['first_name'];
         $db_manager = $this->container->get('db_manager');
-        $translator = $this->container->get('translator');
         $visuals_links = $this->container->get('visuals_links');
         $current_panel = $db_manager->getCurrentPanel($user_id);
         $current_page = $db_manager->getCurrentPage($user_id);
@@ -168,24 +167,24 @@ class MyBot extends tgLib
                 $keyboard = [
                     'inline_keyboard' => [
                         [
-                            ['text' => $translator->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
-                            ['text' => ($author_status ? $translator->translate('make_public') : $translator->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
+                            ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
+                            ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
                         ],
                         [
-                            ['text' => $translator->translate('add_bio'), 'callback_data' => 'set_author_about_' . $author_id],
-                            ['text' => $translator->translate('add_link'), 'callback_data' => 'add_author_link_' . $author_id],
+                            ['text' => $this->translate('add_bio'), 'callback_data' => 'set_author_about_' . $author_id],
+                            ['text' => $this->translate('add_link'), 'callback_data' => 'add_author_link_' . $author_id],
                         ],
                         [
-                            ['text' => $translator->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
+                            ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
                         ],
                         [
-                            ['text' => $translator->translate('go_back'), 'callback_data' => 'control_panel'],
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
                         ],
                     ],
                 ];
-                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[2], str_replace('{author}', htmlspecialchars($message), $translator->translate('author_added_message')), $keyboard);
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[2], str_replace('{author}', htmlspecialchars($message), $this->translate('author_added_message')), $keyboard);
             } else {
-                $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                $this->sendMessage($chat_id, $this->translate('no_permission_message'));
             }
         } elseif ($state = $db_manager->getState($user_id, 'change_name')) {
             if ($db_manager->hasHigherRole($user_id, 'moderator')) {
@@ -198,24 +197,24 @@ class MyBot extends tgLib
                 $keyboard = [
                     'inline_keyboard' => [
                         [
-                            ['text' => $translator->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
-                            ['text' => ($author_status ? $translator->translate('make_public') : $translator->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
+                            ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
+                            ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
                         ],
                         [
-                            ['text' => $translator->translate('change_bio'), 'callback_data' => 'set_author_about_' . $author_id],
-                            ['text' => ($author['channel_link'] ? $translator->translate('change_link') : $translator->translate('add_link')), 'callback_data' => 'add_author_link_' . $author_id],
+                            ['text' => $this->translate('change_bio'), 'callback_data' => 'set_author_about_' . $author_id],
+                            ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'add_author_link_' . $author_id],
                         ],
                         [
-                            ['text' => $translator->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
+                            ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
                         ],
                         [
-                            ['text' => $translator->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
+                            ['text' => $this->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
                         ],
                     ],
                 ];
-                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[6], str_replace(['{author}', '{oldName}', '{biography}', '{link}'], [htmlspecialchars($message), htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $translator->translate('bio_not_set')), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $translator->translate('link_not_set'))], $translator->translate('name_changed_message')), $keyboard);
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[6], str_replace(['{author}', '{oldName}', '{biography}', '{link}'], [htmlspecialchars($message), htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], $this->translate('name_changed_message')), $keyboard);
             } else {
-                $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                $this->sendMessage($chat_id, $this->translate('no_permission_message'));
             }
         } elseif ($state = $db_manager->getState($user_id, 'set_author_about')) {
             if ($db_manager->hasHigherRole($user_id, 'moderator')) {
@@ -228,24 +227,24 @@ class MyBot extends tgLib
                 $keyboard = [
                     'inline_keyboard' => [
                         [
-                            ['text' => $translator->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
-                            ['text' => ($author_status ? $translator->translate('make_public') : $translator->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
+                            ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
+                            ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
                         ],
                         [
-                            ['text' => $translator->translate('change_bio'), 'callback_data' => 'set_author_about_' . $author_id],
-                            ['text' => ($author['channel_link'] ? $translator->translate('change_link') : $translator->translate('add_link')), 'callback_data' => 'add_author_link_' . $author_id],
+                            ['text' => $this->translate('change_bio'), 'callback_data' => 'set_author_about_' . $author_id],
+                            ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'add_author_link_' . $author_id],
                         ],
                         [
-                            ['text' => $translator->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
+                            ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
                         ],
                         [
-                            ['text' => $translator->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
+                            ['text' => $this->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
                         ],
                     ],
                 ];
-                $this->editMediaMessage($chat_id, $current_panel, ($author['biography'] ? $visuals_links[8] : $visuals_links[7]), str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), htmlspecialchars($message), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $translator->translate('link_not_set'))], ($author['biography'] ? $translator->translate('bio_changed_message') : $translator->translate('bio_added_message'))), $keyboard);
+                $this->editMediaMessage($chat_id, $current_panel, ($author['biography'] ? $visuals_links[8] : $visuals_links[7]), str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), htmlspecialchars($message), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], ($author['biography'] ? $this->translate('bio_changed_message') : $this->translate('bio_added_message'))), $keyboard);
             } else {
-                $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                $this->sendMessage($chat_id, $this->translate('no_permission_message'));
             }
         } elseif ($state = $db_manager->getState($user_id, 'add_author_link')) {
             if ($db_manager->hasHigherRole($user_id, 'moderator')) {
@@ -258,24 +257,24 @@ class MyBot extends tgLib
                 $keyboard = [
                     'inline_keyboard' => [
                         [
-                            ['text' => $translator->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
-                            ['text' => ($author_status ? $translator->translate('make_public') : $translator->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
+                            ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $author_id],
+                            ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $author_id],
                         ],
                         [
-                            ['text' => ($author['biography'] ? $translator->translate('change_bio') : $translator->translate('add_bio')), 'callback_data' => 'set_author_about_' . $author_id],
-                            ['text' => $translator->translate('change_link'), 'callback_data' => 'add_author_link_' . $author_id],
+                            ['text' => ($author['biography'] ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'set_author_about_' . $author_id],
+                            ['text' => $this->translate('change_link'), 'callback_data' => 'add_author_link_' . $author_id],
                         ],
                         [
-                            ['text' => $translator->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
+                            ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $author_id],
                         ],
                         [
-                            ['text' => $translator->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
+                            ['text' => $this->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
                         ],
                     ],
                 ];
-                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $translator->translate('bio_not_set')), htmlspecialchars($message)], $translator->translate('link_changed_message')), $keyboard);
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), htmlspecialchars($message)], $this->translate('link_changed_message')), $keyboard);
             } else {
-                $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                $this->sendMessage($chat_id, $this->translate('no_permission_message'));
             }
         } elseif ('awaiting_role_creation' === $default_state) {
             $parts = explode(' ', $message);
@@ -311,7 +310,6 @@ class MyBot extends tgLib
         $callback_query_id = $message_data['callback_query_id'];
         $first_name = $message_data['first_name'];
         $db_manager = $this->container->get('db_manager');
-        $translator = $this->container->get('translator');
         $visuals_links = $this->container->get('visuals_links');
 
         if (null !== $payload) {
@@ -327,20 +325,20 @@ class MyBot extends tgLib
                     $keyboard = [
                         'inline_keyboard' => [
                             [
-                                ['text' => $translator->translate('add_author'), 'callback_data' => 'add_author'],
-                                ['text' => $translator->translate('delete_author'), 'callback_data' => 'delete_author'],
+                                ['text' => $this->translate('add_author'), 'callback_data' => 'add_author'],
+                                ['text' => $this->translate('delete_author'), 'callback_data' => 'delete_author'],
                             ],
                             [
-                                ['text' => $translator->translate('list_of_authors'), 'callback_data' => 'list_of_authors'],
+                                ['text' => $this->translate('list_of_authors'), 'callback_data' => 'list_of_authors'],
                             ],
                             [
-                                ['text' => $translator->translate('access_control'), 'callback_data' => 'access_control'],
+                                ['text' => $this->translate('access_control'), 'callback_data' => 'access_control'],
                             ],
                         ],
                     ];
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $translator->translate('admin_panel_message'), $keyboard);
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('admin_panel_message'), $keyboard);
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif ('add_author' === $payload) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
@@ -348,27 +346,27 @@ class MyBot extends tgLib
                     $keyboard = [
                         'inline_keyboard' => [
                             [
-                                ['text' => $translator->translate('go_back'), 'callback_data' => 'control_panel'],
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
                             ],
                         ],
                     ];
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[10], $translator->translate('add_author_message'), $keyboard);
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[10], $this->translate('add_author_message'), $keyboard);
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif ('delete_author' === $payload) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
                     $db_manager->setCurrentPage($user_id, 'delete_page_1');
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $translator->translate('delete_author_message'), $this->generateAuthorsKeyboard(1, 3, 1, 'author_to_delete_', 'delete_page_'));
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard(1, 3, 1, 'author_to_delete_', 'delete_page_'));
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif (preg_match("/^delete_page_(\d+)$/", $payload, $matches)) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
                     $db_manager->setCurrentPage($user_id, $payload);
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $translator->translate('delete_author_message'), $this->generateAuthorsKeyboard($matches[1], 3, 1, 'author_to_delete_', 'delete_page_'));
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard($matches[1], 3, 1, 'author_to_delete_', 'delete_page_'));
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif (preg_match("/^author_to_delete_(\d+)$/", $payload, $matches)) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
@@ -376,16 +374,16 @@ class MyBot extends tgLib
                     $keyboard = [
                         'inline_keyboard' => [
                             [
-                                ['text' => $translator->translate('confirm_delete'), 'callback_data' => 'delete_confirmation_' . $matches[1]],
+                                ['text' => $this->translate('confirm_delete'), 'callback_data' => 'delete_confirmation_' . $matches[1]],
                             ],
                             [
-                                ['text' => $translator->translate('go_back'), 'callback_data' => $prefix[0] ?? 'author_' . $matches[1]],
+                                ['text' => $this->translate('go_back'), 'callback_data' => $prefix[0] ?? 'author_' . $matches[1]],
                             ],
                         ],
                     ];
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{author}', htmlspecialchars($db_manager->getAuthorById(intval($matches[1]))['name']), $translator->translate('confirm_delete_message')), $keyboard);
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{author}', htmlspecialchars($db_manager->getAuthorById(intval($matches[1]))['name']), $this->translate('confirm_delete_message')), $keyboard);
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif (preg_match("/^delete_confirmation_(\d+)$/", $payload, $matches)) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
@@ -394,13 +392,13 @@ class MyBot extends tgLib
                     $keyboard = [
                         'inline_keyboard' => [
                             [
-                                ['text' => $translator->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
+                                ['text' => $this->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
                             ],
                         ],
                     ];
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{author}', htmlspecialchars($author['name']), $translator->translate('author_deleted_message')), $keyboard);
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{author}', htmlspecialchars($author['name']), $this->translate('author_deleted_message')), $keyboard);
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif (preg_match("/^change_name_(\d+)$/", $payload, $matches)) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
@@ -408,13 +406,13 @@ class MyBot extends tgLib
                     $keyboard = [
                         'inline_keyboard' => [
                             [
-                                ['text' => $translator->translate('go_back'), 'callback_data' => 'author_' . $matches[1]],
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'author_' . $matches[1]],
                             ],
                         ],
                     ];
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[3], $translator->translate('pending_name_change'), $keyboard);
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[3], $this->translate('pending_name_change'), $keyboard);
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif (preg_match("/^set_author_about_(\d+)$/", $payload, $matches)) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
@@ -423,13 +421,13 @@ class MyBot extends tgLib
                     $keyboard = [
                         'inline_keyboard' => [
                             [
-                                ['text' => $translator->translate('go_back'), 'callback_data' => 'author_' . $matches[1]],
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'author_' . $matches[1]],
                             ],
                         ],
                     ];
-                    $this->editMediaMessage($chat_id, $current_panel, ($author['biography'] ? $visuals_links[5] : $visuals_links[4]), ($author['biography'] ? $translator->translate('pending_bio_change') : $translator->translate('pending_bio_add')), $keyboard);
+                    $this->editMediaMessage($chat_id, $current_panel, ($author['biography'] ? $visuals_links[5] : $visuals_links[4]), ($author['biography'] ? $this->translate('pending_bio_change') : $this->translate('pending_bio_add')), $keyboard);
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif (preg_match("/^add_author_link_(\d+)$/", $payload, $matches)) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
@@ -437,27 +435,27 @@ class MyBot extends tgLib
                     $keyboard = [
                         'inline_keyboard' => [
                             [
-                                ['text' => $translator->translate('go_back'), 'callback_data' => 'author_' . $matches[1]],
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'author_' . $matches[1]],
                             ],
                         ],
                     ];
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $translator->translate('pending_link_change'), $keyboard);
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('pending_link_change'), $keyboard);
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif ('list_of_authors' === $payload) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
                     $db_manager->setCurrentPage($user_id, 'page_1');
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[9], $translator->translate('list_of_authors_message'), $this->generateAuthorsKeyboard());
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[9], $this->translate('list_of_authors_message'), $this->generateAuthorsKeyboard());
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif (preg_match("/^page_(\d+)$/", $payload, $matches)) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
                     $db_manager->setCurrentPage($user_id, $payload);
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[9], $translator->translate('list_of_authors_message'), $this->generateAuthorsKeyboard($matches[1]));
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[9], $this->translate('list_of_authors_message'), $this->generateAuthorsKeyboard($matches[1]));
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif (preg_match("/^author_(\d+)$/", $payload, $matches)) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
@@ -467,46 +465,46 @@ class MyBot extends tgLib
                         $keyboard = [
                             'inline_keyboard' => [
                                 [
-                                    ['text' => $translator->translate('change_name'), 'callback_data' => 'change_name_' . $matches[1]],
-                                    ['text' => ($author_status ? $translator->translate('make_public') : $translator->translate('make_private')), 'callback_data' => 'set_private_' . $matches[1]],
+                                    ['text' => $this->translate('change_name'), 'callback_data' => 'change_name_' . $matches[1]],
+                                    ['text' => ($author_status ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'set_private_' . $matches[1]],
                                 ],
                                 [
-                                    ['text' => ($author['biography'] ? $translator->translate('change_bio') : $translator->translate('add_bio')), 'callback_data' => 'set_author_about_' . $matches[1]],
-                                    ['text' => ($author['channel_link'] ? $translator->translate('change_link') : $translator->translate('add_link')), 'callback_data' => 'add_author_link_' . $matches[1]],
+                                    ['text' => ($author['biography'] ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'set_author_about_' . $matches[1]],
+                                    ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'add_author_link_' . $matches[1]],
                                 ],
                                 [
-                                    ['text' => $translator->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $matches[1]],
+                                    ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author_to_delete_' . $matches[1]],
                                 ],
                                 [
-                                    ['text' => $translator->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
+                                    ['text' => $this->translate('go_back'), 'callback_data' => $current_page ?? 'control_panel'],
                                 ],
                             ],
                         ];
-                        $this->editMediaMessage($chat_id, $current_panel, $visuals_links[11], str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $translator->translate('bio_not_set')), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $translator->translate('link_not_set'))], $translator->translate('author_info_message')), $keyboard);
+                        $this->editMediaMessage($chat_id, $current_panel, $visuals_links[11], str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], $this->translate('author_info_message')), $keyboard);
 
                         return;
                     }
                     $keyboard = [
                         'inline_keyboard' => [
                             [
-                                ['text' => $translator->translate('go_back'), 'callback_data' => 'control_panel'],
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
                             ],
                         ],
                     ];
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $translator->translate('author_not_found_message'), $keyboard);
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('author_not_found_message'), $keyboard);
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif (preg_match("/^profile_author_(\d+)$/", $payload, $matches)) {
                 $author = $db_manager->getAuthorById(intval($matches[1]));
                 if (false !== $author) {
                     $avatar = $this->createAvatar($author['name'], $author['channel_link']);
-                    $this->pictureReply($chat_id, str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $translator->translate('bio_not_set')), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $translator->translate('link_not_set'))], $translator->translate('author_info_message')), $avatar);
+                    $this->pictureReply($chat_id, str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], $this->translate('author_info_message')), $avatar);
                     unlink($avatar);
 
                     return;
                 }
-                $this->sendMessage($chat_id, $translator->translate('author_not_found_message'));
+                $this->sendMessage($chat_id, $this->translate('author_not_found_message'));
             } elseif ('access_control' === $payload) {
                 if ($db_manager->hasHigherRole($user_id, 'admin')) {
                     $db_manager->clearState($user_id);
@@ -516,21 +514,21 @@ class MyBot extends tgLib
                     $keyboard = [
                         'inline_keyboard' => [
                             [
-                                ['text' => $translator->translate('create_role'), 'callback_data' => 'create_role'],
-                                ['text' => $translator->translate('delete_role'), 'callback_data' => 'delete_role'],
+                                ['text' => $this->translate('create_role'), 'callback_data' => 'create_role'],
+                                ['text' => $this->translate('delete_role'), 'callback_data' => 'delete_role'],
                             ],
                             [
-                                ['text' => $translator->translate('view_roles'), 'callback_data' => 'view_roles'],
-                                ['text' => $translator->translate('change_priorities'), 'callback_data' => 'change_priorities'],
+                                ['text' => $this->translate('view_roles'), 'callback_data' => 'view_roles'],
+                                ['text' => $this->translate('change_priorities'), 'callback_data' => 'change_priorities'],
                             ],
                             [
-                                ['text' => $translator->translate('go_back'), 'callback_data' => 'control_panel'],
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
                             ],
                         ],
                     ];
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $translator->translate('access_control_panel_message'), $keyboard);
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('access_control_panel_message'), $keyboard);
                 } else {
-                    $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
                 }
             } elseif ('change_priorities' === $payload) {
                 $this->sendUpdateRolesPriorityPanel($chat_id, $user_id, $callback_query_id);
@@ -609,52 +607,48 @@ class MyBot extends tgLib
         return curl_file_create($temp_file);
     }
 
-    public function generateAuthorsKeyboard($page_number = 1, $buttons_per_page = 3, $authors_per_row = 1, $prefix = 'author_', $page_prefix = 'page_', $authors = null) : array
-    {
-        $initial_authors = $authors;
-        $authors = $authors ?? $db_manager->getAllAuthors();
+    public function generateAuthorsKeyboard(
+        int $page_number = 1,
+        int $buttons_per_page = 3,
+        int $authors_per_row = 1,
+        string $prefix = 'author_',
+        string $page_prefix = 'page_',
+        ?array $authors = null
+    ) : array {
+        $is_from_database = is_null($authors);
+        $authors = $authors ?? $this->container->get('db_manager')->getAllAuthors();
         $total_buttons = count($authors);
         $total_pages = (int) ceil($total_buttons / $buttons_per_page);
         $page_number = max(1, min($page_number, $total_pages));
-        $offset = ($page_number - 1) * $buttons_per_page;
-        $keyboard = ['inline_keyboard' => []];
-        $current_row = [];
-        $row_count = 0;
-        $sliced_authors = array_slice($authors, $offset, $buttons_per_page);
 
+        $sliced_authors = array_slice($authors, ($page_number - 1) * $buttons_per_page, $buttons_per_page);
+        $keyboard = ['inline_keyboard' => []];
+
+        $current_row = [];
         foreach ($sliced_authors as $author) {
             $current_row[] = ['text' => $author['name'], 'callback_data' => $prefix . $author['id']];
-            $row_count++;
-
-            if ($row_count === $authors_per_row) {
+            if (count($current_row) === $authors_per_row) {
                 $keyboard['inline_keyboard'][] = $current_row;
                 $current_row = [];
-                $row_count = 0;
             }
         }
-
-        $translator = $this->container->get('translator');
-
         if (! empty($current_row)) {
             $keyboard['inline_keyboard'][] = $current_row;
         }
 
         if ($total_pages > 1) {
             $pagination = [];
-
             if ($page_number > 1) {
-                $pagination[] = ['text' => $translator->translate('previous_page'), 'callback_data' => $page_prefix . ($page_number - 1)];
+                $pagination[] = ['text' => $this->translate('previous_page'), 'callback_data' => $page_prefix . ($page_number - 1)];
             }
-
             if ($page_number < $total_pages) {
-                $pagination[] = ['text' => $translator->translate('next_page'), 'callback_data' => $page_prefix . ($page_number + 1)];
+                $pagination[] = ['text' => $this->translate('next_page'), 'callback_data' => $page_prefix . ($page_number + 1)];
             }
-
             $keyboard['inline_keyboard'][] = $pagination;
         }
 
-        if (is_null($initial_authors)) {
-            $keyboard['inline_keyboard'][] = [['text' => $translator->translate('go_back'), 'callback_data' => 'control_panel']];
+        if ($is_from_database) {
+            $keyboard['inline_keyboard'][] = [['text' => $this->translate('go_back'), 'callback_data' => 'control_panel']];
         }
 
         return $keyboard;
@@ -663,7 +657,6 @@ class MyBot extends tgLib
     public function sendUpdateRolesPriorityPanel(int $chat_id, int $user_id, $callback_query_id) : void
     {
         $db_manager = $this->container->get('db_manager');
-        $translator = $this->container->get('translator');
         $visuals_links = $this->container->get('visuals_links');
 
         if ($db_manager->hasHigherRole($user_id, 'admin')) {
@@ -679,12 +672,12 @@ class MyBot extends tgLib
             }
 
             $keyboard['inline_keyboard'][] = [
-                ['text' => $translator->translate('go_back'), 'callback_data' => 'access_control'],
+                ['text' => $this->translate('go_back'), 'callback_data' => 'access_control'],
             ];
 
             $this->editMediaMessage($chat_id, $db_manager->getCurrentPanel($user_id), $visuals_links[1], 'Ви можете змінити пріоритети ролей:', $keyboard);
         } else {
-            $this->sendMessage($chat_id, $translator->translate('no_permission_message'));
+            $this->sendMessage($chat_id, $this->translate('no_permission_message'));
         }
     }
 
@@ -727,5 +720,9 @@ class MyBot extends tgLib
         $db_manager->clearState($user_id, 'selected_role');
         $this->callbackAnswer($callback_query_id, 'Роль «' . $selected_role_name . '» оновлена.');
         $this->sendUpdateRolesPriorityPanel($chat_id, $user_id, $callback_query_id);
+    }
+
+    private function translate(string $key) : string {
+        return $this->container->get('translator')->translate($key);
     }
 }
