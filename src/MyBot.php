@@ -369,12 +369,13 @@ class MyBot extends tgLib
                 $db_manager->setCurrentPage($user_id, 'delete_page_1');
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard(1, 3, 1, 'author_to_delete_', 'delete_page_'));
             } elseif (preg_match("/^delete_page_(\d+)$/", $payload, $matches)) {
-                if ($db_manager->hasHigherRole($user_id, 'moderator')) {
-                    $db_manager->setCurrentPage($user_id, $payload);
-                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard((int) $matches[1], 3, 1, 'author_to_delete_', 'delete_page_'));
-                } else {
+                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
                 }
+                $db_manager->setCurrentPage($user_id, $payload);
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard((int) $matches[1], 3, 1, 'author_to_delete_', 'delete_page_'));
             } elseif (preg_match("/^author_to_delete_(\d+)$/", $payload, $matches)) {
                 if ($db_manager->hasHigherRole($user_id, 'moderator')) {
                     preg_match("/^delete_page_(\d+)$/", $current_page ?? 'page_', $prefix);
@@ -665,7 +666,7 @@ class MyBot extends tgLib
     {
         $db_manager = $this->container->get('db_manager');
 
-        if ($db_manager->hasHigherRole($user_id, 'admin')) {
+        if (! $db_manager->hasHigherRole($user_id, 'admin')) {
             $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
             return;
