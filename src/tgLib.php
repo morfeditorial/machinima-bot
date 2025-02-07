@@ -36,7 +36,7 @@ class tgLib
         $this->token = $token;
     }
 
-    public function request(string $method, array $params = []) : array
+    public function request(string $method, array $params = []) : ?array
     {
         $url = 'https://api.telegram.org/bot' . $this->token . '/' . $method;
         $curl = curl_init();
@@ -48,22 +48,33 @@ class tgLib
 
         curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
 
-        $out = json_decode(curl_exec($curl), true);
+        $response = curl_exec($curl);
 
+        if (false === $response) {
+            curl_close($curl);
+
+            return null;
+        }
+
+        $decoded = json_decode($response, true);
         curl_close($curl);
 
-        return $out;
+        return is_array($decoded) ? $decoded : null;
     }
 
     public function getUpdates() : array
     {
         $updates = $this->request('getUpdates', ['offset' => $this->offset]);
+
+        if (! is_array($updates) || ! isset($updates['result'])) {
+            return [];
+        }
+
         $result = [];
-        if (isset($updates['result'])) {
-            foreach ($updates['result'] as $update) {
-                $this->offset = $update['update_id'] + 1;
-                $result[] = $update;
-            }
+
+        foreach ($updates['result'] as $update) {
+            $this->offset = $update['update_id'] + 1;
+            $result[] = $update;
         }
 
         return $result;
