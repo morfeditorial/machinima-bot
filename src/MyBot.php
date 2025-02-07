@@ -662,7 +662,7 @@ class MyBot extends tgLib
 
     public function sendUpdateRolesPriorityPanel(int $chat_id, int $user_id, $callback_query_id) : void
     {
-        $db_danager = $this->container->get('db_manager');
+        $db_manager = $this->container->get('db_manager');
         $translator = $this->container->get('translator');
         $visuals_links = $this->container->get('visuals_links');
 
