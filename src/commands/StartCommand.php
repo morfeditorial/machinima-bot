@@ -25,13 +25,12 @@ namespace morfeditorial\commands;
 
 use morfeditorial\MyBot;
 use morfeditorial\AbstractCommand;
-use morfeditorial\DependencyContainer;
 
 class StartCommand extends AbstractCommand
 {
-    public function __construct(MyBot $bot, DependencyContainer $container)
+    public function __construct(MyBot $bot)
     {
-        parent::__construct($bot, $container);
+        parent::__construct($bot);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
         $this->setAliases(['start', 'begin', 'initiate']);
     }

@@ -25,20 +25,19 @@ namespace morfeditorial\commands;
 
 use morfeditorial\AbstractCommand;
 use morfeditorial\MyBot;
-use morfeditorial\DependencyContainer;
 
 class UpdateCommand extends AbstractCommand
 {
     private $db_manager;
 
-    public function __construct(MyBot $bot, DependencyContainer $container)
+    public function __construct(MyBot $bot)
     {
-        parent::__construct($bot, $container);
+        parent::__construct($bot);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
         $this->setAliases(['update']);
         $this->setHiddenFromMenu(true);
 
-        $this->db_manager = $container->get('db_manager');
+        $this->db_manager = $this->container->get('db_manager');
     }
 
     public function getDescriptionKey() : string
@@ -65,56 +64,6 @@ class UpdateCommand extends AbstractCommand
             $this->bot->sendMessage($chat_id, $this->translator->translate("no_permission_message"));
             return;
         }
-
-        $this->bot->setCommands(json_encode([
-            ["command" => "start", "description" => "Start communication with the assistant"],
-            ["command" => "help", "description" => "Learn more about the bot"],
-            ["command" => "search_content", "description" => "Find content by tag"],
-            ["command" => "search_author", "description" => "Find information about the author"],
-            ["command" => "categories", "description" => "View available categories"],
-            ["command" => "top_authors", "description" => "View the most popular authors"],
-            ["command" => "random_content", "description" => "Get random content"]
-        ], JSON_UNESCAPED_UNICODE));
-
-        $this->bot->setCommands(json_encode([
-            ["command" => "start", "description" => "Rozpocznij komunikację z asystentem"],
-            ["command" => "help", "description" => "Dowiedz się więcej o bocie"],
-            ["command" => "search_content", "description" => "Znajdź zawartość według tagu"],
-            ["command" => "search_author", "description" => "Znajdź informacje o autorze"],
-            ["command" => "categories", "description" => "Zobacz dostępne kategorie"],
-            ["command" => "top_authors", "description" => "Zobacz najpopularniejszych autorów"],
-            ["command" => "random_content", "description" => "Zdobądź losową zawartość"]
-        ], JSON_UNESCAPED_UNICODE), null, "pl");
-
-        $this->bot->setCommands(json_encode([
-            ["command" => "start", "description" => "Начать общение с помощником"],
-            ["command" => "help", "description" => "Узнать больше о боте"],
-            ["command" => "search_content", "description" => "Найти контент по тегам"],
-            ["command" => "search_author", "description" => "Найти информацию об авторе"],
-            ["command" => "categories", "description" => "Просмотреть доступные категории"],
-            ["command" => "top_authors", "description" => "Посмотреть самых популярных авторов"],
-            ["command" => "random_content", "description" => "Получить случайный контент"]
-        ], JSON_UNESCAPED_UNICODE), null, "ru");
-
-        $this->bot->setCommands(json_encode([
-            ["command" => "start", "description" => "Пачніце зносіны з памочнікам"],
-            ["command" => "help", "description" => "Даведайцеся больш пра бота"],
-            ["command" => "search_content", "description" => "Знайдзіце кантэнт па тэгу"],
-            ["command" => "search_author", "description" => "Знайдзіце звесткі пра аўтара"],
-            ["command" => "categories", "description" => "Прагляд даступных катэгорый"],
-            ["command" => "top_authors", "description" => "Прагляд самых папулярных аўтараў"],
-            ["command" => "random_content", "description" => "Атрымаць выпадковы кантэнт"]
-        ], JSON_UNESCAPED_UNICODE), null, "be");
-
-        $this->bot->setCommands(json_encode([
-            ["command" => "start", "description" => "Почати спілкування з помічником"],
-            ["command" => "help", "description" => "Дізнатися більше про бота"],
-            ["command" => "search_content", "description" => "Знайти контент за тегами"],
-            ["command" => "search_author", "description" => "Знайти інформацію про автора"],
-            ["command" => "categories", "description" => "Переглянути доступні категорії"],
-            ["command" => "top_authors", "description" => "Переглянути найпопулярніших авторів"],
-            ["command" => "random_content", "description" => "Отримати випадковий контент"]
-        ], JSON_UNESCAPED_UNICODE), null, "uk");
 
         $this->bot->setMyName("MORF — centralized chatbot", "en");
         $this->bot->setMyName("MORF — scentralizowany chatbot", "pl");

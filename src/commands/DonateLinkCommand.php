@@ -25,13 +25,12 @@ namespace morfeditorial\commands;
 
 use morfeditorial\AbstractCommand;
 use morfeditorial\MyBot;
-use morfeditorial\DependencyContainer;
 
 class DonateLinkCommand extends AbstractCommand
 {
-    public function __construct(MyBot $bot, DependencyContainer $container)
+    public function __construct(MyBot $bot)
     {
-        parent::__construct($bot, $container);
+        parent::__construct($bot);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
         $this->setAliases(['donate_link']);
         $this->setHiddenFromMenu(true);

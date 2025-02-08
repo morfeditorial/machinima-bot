@@ -25,7 +25,6 @@ namespace morfeditorial\commands;
 
 use morfeditorial\MyBot;
 use morfeditorial\AbstractCommand;
-use morfeditorial\DependencyContainer;
 
 class SearchAuthorCommand extends AbstractCommand
 {
@@ -33,14 +32,14 @@ class SearchAuthorCommand extends AbstractCommand
 
     private $search;
 
-    public function __construct(MyBot $bot, DependencyContainer $container)
+    public function __construct(MyBot $bot)
     {
-        parent::__construct($bot, $container);
+        parent::__construct($bot);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
         $this->setAliases(['search_author']);
 
-        $this->db_manager = $container->get('db_manager');
-        $this->search = $container->get('fuzzySearch');
+        $this->db_manager = $this->container->get('db_manager');
+        $this->search = $this->container->get('fuzzy_search');
     }
 
     public function getDescriptionKey() : string
@@ -70,15 +69,15 @@ class SearchAuthorCommand extends AbstractCommand
         }
 
         $authors = $this->db_manager->getAllAuthors();
-        $searchQuery = implode(' ', $args);
-        $results = $this->search->fuzzySearch($searchQuery, $authors);
+        $search_query = implode(' ', $args);
+        $results = $this->search->fuzzySearch($search_query, $authors);
 
         if (empty($results)) {
-            $this->bot->sendMessage($chat_id, str_replace('{searchQuery}', htmlspecialchars($searchQuery), $this->translator->translate('no_search_results_message')));
+            $this->bot->sendMessage($chat_id, str_replace('{searchQuery}', htmlspecialchars($search_query), $this->translator->translate('no_search_results_message')));
 
             return;
         }
 
-        $this->bot->sendButton($chat_id, str_replace(['{searchQuery}', '{count}'], [htmlspecialchars($searchQuery), count($results)], $this->translator->translate('search_author_message')), $this->bot->generateAuthorsKeyboard(1, 6, 1, 'profile_author_', 'search_author_' . $searchQuery, $results));
+        $this->bot->sendButton($chat_id, str_replace(['{searchQuery}', '{count}'], [htmlspecialchars($search_query), count($results)], $this->translator->translate('search_author_message')), $this->bot->generateAuthorsKeyboard(1, 6, 1, 'profile_author_', 'search_author_' . $search_query, $results));
     }
 }

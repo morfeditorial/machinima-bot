@@ -25,20 +25,19 @@ namespace morfeditorial\commands;
 
 use morfeditorial\MyBot;
 use morfeditorial\AbstractCommand;
-use morfeditorial\DependencyContainer;
 
 class AssignRoleCommand extends AbstractCommand
 {
     private $db_manager;
 
-    public function __construct(MyBot $bot, DependencyContainer $container)
+    public function __construct(MyBot $bot)
     {
-        parent::__construct($bot, $container);
+        parent::__construct($bot);
         $this->setDescription($this->translator->translate($this->getDescriptionKey()));
         $this->setAliases(['assign_role']);
         $this->setHiddenFromMenu(true);
 
-        $this->db_manager = $container->get('db_manager');
+        $this->db_manager = $this->container->get('db_manager');
     }
 
     public function getDescriptionKey() : string
