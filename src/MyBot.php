@@ -63,21 +63,21 @@ class MyBot extends tgLib
     private function initializeCommands() : void
     {
         // Register commands
-        $this->command_factory->registerCommand(new \morfeditorial\commands\StartCommand($this, $this->container)); // start
-        $this->command_factory->registerCommand(new \morfeditorial\commands\HelpCommand($this, $this->container)); // help
-        $this->command_factory->registerCommand(new \morfeditorial\commands\TimeCommand($this, $this->container)); // time
-        $this->command_factory->registerCommand(new \morfeditorial\commands\WeatherCommand($this, $this->container)); // weather
-        $this->command_factory->registerCommand(new \morfeditorial\commands\WhoisCommand($this, $this->container)); // whois
-        $this->command_factory->registerCommand(new \morfeditorial\commands\UpdateCommand($this, $this->container)); // update
-        $this->command_factory->registerCommand(new \morfeditorial\commands\AdminPanelCommand($this, $this->container)); // admin_panel
-        // $this->command_factory->registerCommand(new \morfeditorial\commands\SearchContentCommand($this, $this->container)); // search_content
-        $this->command_factory->registerCommand(new \morfeditorial\commands\SearchAuthorCommand($this, $this->container)); // search_author
-        // $this->command_factory->registerCommand(new \morfeditorial\commands\CategoriesCommand($this, $this->container)); // categories
-        // $this->command_factory->registerCommand(new \morfeditorial\commands\TopAuthorsCommand($this, $this->container)); // top_authors
-        // $this->command_factory->registerCommand(new \morfeditorial\commands\RandomContentCommand($this, $this->container)); // random_content
-        $this->command_factory->registerCommand(new \morfeditorial\commands\CreateRoleCommand($this, $this->container)); // create_role
-        $this->command_factory->registerCommand(new \morfeditorial\commands\AssignInitialAdminCommand($this, $this->container)); // assign_initial_admin
-        $this->command_factory->registerCommand(new \morfeditorial\commands\AssignRoleCommand($this, $this->container)); // assign_role
+        $this->command_factory->registerCommand(new \morfeditorial\commands\StartCommand($this)); // start
+        $this->command_factory->registerCommand(new \morfeditorial\commands\HelpCommand($this)); // help
+        $this->command_factory->registerCommand(new \morfeditorial\commands\TimeCommand($this)); // time
+        $this->command_factory->registerCommand(new \morfeditorial\commands\WeatherCommand($this)); // weather
+        $this->command_factory->registerCommand(new \morfeditorial\commands\WhoisCommand($this)); // whois
+        $this->command_factory->registerCommand(new \morfeditorial\commands\UpdateCommand($this)); // update
+        $this->command_factory->registerCommand(new \morfeditorial\commands\AdminPanelCommand($this)); // admin_panel
+        // $this->command_factory->registerCommand(new \morfeditorial\commands\SearchContentCommand($this)); // search_content
+        $this->command_factory->registerCommand(new \morfeditorial\commands\SearchAuthorCommand($this)); // search_author
+        // $this->command_factory->registerCommand(new \morfeditorial\commands\CategoriesCommand($this)); // categories
+        // $this->command_factory->registerCommand(new \morfeditorial\commands\TopAuthorsCommand($this)); // top_authors
+        // $this->command_factory->registerCommand(new \morfeditorial\commands\RandomContentCommand($this)); // random_content
+        $this->command_factory->registerCommand(new \morfeditorial\commands\CreateRoleCommand($this)); // create_role
+        $this->command_factory->registerCommand(new \morfeditorial\commands\AssignInitialAdminCommand($this)); // assign_initial_admin
+        $this->command_factory->registerCommand(new \morfeditorial\commands\AssignRoleCommand($this)); // assign_role
 
         $this->command_factory->initializeCommands();
     }
@@ -87,7 +87,10 @@ class MyBot extends tgLib
         $message_data = $this->extractMessageData($update);
         $message = $message_data['message'] ?? null;
 
-        $this->container->set('translator', new Translator(json_decode(file_get_contents(self::TRANSLATIONS_FILE), true), $message_data['language_code'] ?? 'en'));
+        $this->container->set('translator', new Translator(
+            json_decode(file_get_contents(self::TRANSLATIONS_FILE), true), 
+            $message_data['language_code'] ?? 'en'
+        ));
 
         if ($message) {
             $this->processMessage($message_data, $message);

@@ -27,6 +27,8 @@ abstract class AbstractCommand implements CommandInterface
 {
     protected MyBot $bot;
 
+    public DependencyContainer $container;
+
     protected $translator;
 
     protected $visuals_links;
@@ -37,9 +39,14 @@ abstract class AbstractCommand implements CommandInterface
 
     protected bool $hidden_from_menu = false;
 
-    public function __construct(MyBot $bot, DependencyContainer $container)
+    public function __construct(MyBot $bot)
     {
         $this->bot = $bot;
+    }
+
+    public function setContainer(DependencyContainer &$container) : void
+    {
+        $this->container = $container;
         $this->translator = $container->get('translator');
         $this->visuals_links = $container->get('visuals_links');
     }

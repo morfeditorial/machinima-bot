@@ -31,7 +31,7 @@ class CommandFactory
 
     private array $commands = [];
 
-    public function __construct(MyBot $bot, DependencyContainer $container)
+    public function __construct(MyBot $bot, DependencyContainer &$container)
     {
         $this->bot = $bot;
         $this->container = $container;
@@ -39,6 +39,7 @@ class CommandFactory
 
     public function registerCommand(CommandInterface $command) : void
     {
+        $command->setContainer($this->container);
         $this->commands[] = $command;
     }
 
@@ -71,10 +72,10 @@ class CommandFactory
         }
     }
 
-    public function create(string $commandName) : ?CommandInterface
+    public function create(string $command_name) : ?CommandInterface
     {
         foreach ($this->commands as $command) {
-            if (in_array($commandName, $command->getAliases())) {
+            if (in_array($command_name, $command->getAliases())) {
                 return $command;
             }
         }
