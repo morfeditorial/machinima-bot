@@ -49,25 +49,38 @@ class CommandFactory
 
         foreach ($translator->getAvailableLocales() as $locale) {
             $commands = [];
+
             foreach ($this->commands as $command) {
                 if ($command instanceof AbstractCommand) {
                     $translator->setUserLocale($locale);
-                    $command->setDescription($translator->translate($command->getDescriptionKey()));
+
+                    $description_key = $command->getDescriptionKey();
+
+                    if ($description_key) {
+                        $command->setDescription($translator->translate($description_key));
+                    } elseif ($command->getDescription()) {
+                        $command->setDescription($command->getDescription());
+                    }
+
                     $aliases = $command->getAliases();
+
                     if (is_array($aliases)) {
                         $command->setAliases($aliases);
                     } else {
                         $command->setAliases([$aliases]);
                     }
+
                     if ($command->isHiddenFromMenu()) {
                         continue;
                     }
+
                     $commands[] = [
                         'command' => $command->getAliases()[0],
                         'description' => $command->getDescription(),
                     ];
                 }
             }
+
             $this->bot->setCommands(json_encode($commands, JSON_UNESCAPED_UNICODE), null, $locale);
         }
     }
