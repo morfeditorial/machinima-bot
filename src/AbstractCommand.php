@@ -31,6 +31,10 @@ abstract class AbstractCommand implements CommandInterface
 
     protected $translator;
 
+    protected $db_manager;
+
+    protected $search;
+
     protected $visuals_links;
 
     protected string $description;
@@ -48,6 +52,8 @@ abstract class AbstractCommand implements CommandInterface
     {
         $this->container = $container;
         $this->translator = $container->get('translator');
+        $this->db_manager = $container->get('db_manager');
+        $this->search = $container->get('fuzzy_search');
         $this->visuals_links = $container->get('visuals_links');
     }
 
