@@ -55,14 +55,16 @@ class AssignRoleCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        if (! $this->db_manager->hasHigherRole($user_id, 'admin')) {
-            $this->bot->sendMessage($chat_id, $this->translator->translate('no_permission_message'));
+        $db_manager = $this->getDbManager();
+
+        if (! $db_manager->hasHigherRole($user_id, 'admin')) {
+            $this->bot->sendMessage($chat_id, $this->translate('no_permission_message'));
 
             return;
         }
 
         if (2 > count($args)) {
-            $this->bot->sendMessage($chat_id, $this->translator->translate('assign_role_usage_message'));
+            $this->bot->sendMessage($chat_id, $this->translate('assign_role_usage_message'));
 
             return;
         }
@@ -70,16 +72,16 @@ class AssignRoleCommand extends AbstractCommand
         $target_user_id = intval($args[0]);
         $role_name = $args[1];
 
-        if (! $this->db_manager->getRoleByName($role_name)) {
-            $this->bot->sendMessage($chat_id, str_replace('{roleName}', htmlspecialchars($role_name), $this->translator->translate('role_not_found_message')));
+        if (! $db_manager->getRoleByName($role_name)) {
+            $this->bot->sendMessage($chat_id, str_replace('{roleName}', htmlspecialchars($role_name), $this->translate('role_not_found_message')));
 
             return;
         }
 
-        if ($this->db_manager->assignRole($target_user_id, $role_name)) {
-            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translator->translate('assign_role_message')));
+        if ($db_manager->assignRole($target_user_id, $role_name)) {
+            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('assign_role_message')));
         } else {
-            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translator->translate('role_assignment_failure_message')));
+            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_assignment_failure_message')));
         }
     }
 }

@@ -57,6 +57,6 @@ class TimeCommand extends AbstractCommand
     ) : void {
         $date = date('d.m.y H:i:s');
 
-        $this->bot->sendMessage($chat_id, str_replace('{date}', $date, $this->translator->translate('time_message')));
+        $this->bot->sendMessage($chat_id, str_replace('{date}', $date, $this->translate('time_message')));
     }
 }

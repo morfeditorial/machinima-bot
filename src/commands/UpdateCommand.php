@@ -56,7 +56,7 @@ class UpdateCommand extends AbstractCommand
         array $args
     ) : void {
         if (! $this->db_manager->hasHigherRole($user_id, "admin")) {
-            $this->bot->sendMessage($chat_id, $this->translator->translate("no_permission_message"));
+            $this->bot->sendMessage($chat_id, $this->translate("no_permission_message"));
             return;
         }
 
@@ -78,6 +78,6 @@ class UpdateCommand extends AbstractCommand
         $this->bot->setMyShortDescription("Бот, які дапаможа табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft.", "be");
         $this->bot->setMyShortDescription("Бот, який допоможе тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft.", "uk");
 
-        $this->bot->sendMessage($chat_id, $this->translator->translate("update_message"));
+        $this->bot->sendMessage($chat_id, $this->translate("update_message"));
     }
 }

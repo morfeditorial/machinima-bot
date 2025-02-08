@@ -54,8 +54,6 @@ class HelpCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        $this->bot->sendMessage($chat_id, $this->translator->translate('help_message'));
-
-        echo($this->translator->getUserLocale());
+        $this->bot->sendMessage($chat_id, $this->translate('help_message'));
     }
 }

@@ -55,38 +55,40 @@ class AdminPanelCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        if (! $this->db_manager->hasHigherRole($user_id, 'moderator')) {
-            $this->bot->sendMessage($chat_id, $this->translator->translate('no_permission_message'));
+        $db_manager = $this->getDbManager();
+
+        if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+            $this->bot->sendMessage($chat_id, $this->translate('no_permission_message'));
 
             return;
         }
 
-        $this->db_manager->clearState($user_id);
+        $db_manager->clearState($user_id);
         if (! is_null($current_panel)) {
             $this->bot->deleteMessage($chat_id, $current_panel);
         }
 
-        $this->db_manager->setCurrentPanel($user_id, $message_id + 1);
+        $db_manager->setCurrentPanel($user_id, $message_id + 1);
 
         if (! is_null($current_page)) {
-            $this->db_manager->resetCurrentPage($user_id);
+            $db_manager->resetCurrentPage($user_id);
         }
 
         $keyboard = [
             'inline_keyboard' => [
                 [
-                    ['text' => $this->translator->translate('add_author'), 'callback_data' => 'add_author'],
-                    ['text' => $this->translator->translate('delete_author'), 'callback_data' => 'delete_author'],
+                    ['text' => $this->translate('add_author'), 'callback_data' => 'add_author'],
+                    ['text' => $this->translate('delete_author'), 'callback_data' => 'delete_author'],
                 ],
                 [
-                    ['text' => $this->translator->translate('list_of_authors'), 'callback_data' => 'list_of_authors'],
+                    ['text' => $this->translate('list_of_authors'), 'callback_data' => 'list_of_authors'],
                 ],
                 [
-                    ['text' => $this->translator->translate('access_control'), 'callback_data' => 'access_control'],
+                    ['text' => $this->translate('access_control'), 'callback_data' => 'access_control'],
                 ],
             ],
         ];
 
-        $this->bot->pictureReply($chat_id, $this->translator->translate('admin_panel_message'), $this->visuals_links[1], $keyboard);
+        $this->bot->pictureReply($chat_id, $this->translate('admin_panel_message'), $this->getVisualsLinks()[1], $keyboard);
     }
 }

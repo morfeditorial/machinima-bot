@@ -55,14 +55,16 @@ class CreateRoleCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        if (! $this->db_manager->hasHigherRole($user_id, 'admin')) {
-            $this->bot->sendMessage($chat_id, $this->translator->translate('no_permission_message'));
+        $db_manager = $this->getDbManager();
+
+        if (! $db_manager->hasHigherRole($user_id, 'admin')) {
+            $this->bot->sendMessage($chat_id, $this->translate('no_permission_message'));
 
             return;
         }
 
         if (2 > count($args)) {
-            $this->bot->sendMessage($chat_id, $this->translator->translate('create_role_usage_message'));
+            $this->bot->sendMessage($chat_id, $this->translate('create_role_usage_message'));
 
             return;
         }
@@ -70,16 +72,16 @@ class CreateRoleCommand extends AbstractCommand
         $role_name = $args[0];
         $priority = intval($args[1]);
 
-        if ($this->db_manager->getRoleByName($role_name)) {
-            $this->bot->sendMessage($chat_id, str_replace('{roleName}', htmlspecialchars($role_name), $this->translator->translate('role_already_exist_message')));
+        if ($db_manager->getRoleByName($role_name)) {
+            $this->bot->sendMessage($chat_id, str_replace('{roleName}', htmlspecialchars($role_name), $this->translate('role_already_exist_message')));
 
             return;
         }
 
-        if ($this->db_manager->createRole($role_name, $priority)) {
-            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{priority}'], [htmlspecialchars($role_name), $priority], $this->translator->translate('create_role_message')));
+        if ($db_manager->createRole($role_name, $priority)) {
+            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{priority}'], [htmlspecialchars($role_name), $priority], $this->translate('create_role_message')));
         } else {
-            $this->bot->sendMessage($chat_id, $this->translator->translate('create_role_failure_message'));
+            $this->bot->sendMessage($chat_id, $this->translate('create_role_failure_message'));
         }
     }
 }

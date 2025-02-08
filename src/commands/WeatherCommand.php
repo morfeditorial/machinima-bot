@@ -58,7 +58,7 @@ class WeatherCommand extends AbstractCommand
         $city = implode(' ', $args);
 
         if ('' == $city) {
-            $this->bot->sendMessage($chat_id, $this->translator->translate('weather_usage_message'));
+            $this->bot->sendMessage($chat_id, $this->translate('weather_usage_message'));
 
             return;
         }
@@ -68,16 +68,16 @@ class WeatherCommand extends AbstractCommand
         }
 
         $OWApi_key = $_ENV['OPENWEATHERMAP_API_KEY'];
-        $language = $this->translator->getUserLocale() ?: 'en';
+        $language = $this->getTranslator()->getUserLocale() ?: 'en';
 
         $weather = json_decode(file_get_contents("https://api.openweathermap.org/data/2.5/weather?q={$city}&units=metric&appid={$OWApi_key}&lang={$language}"));
 
         if (empty($weather)) {
-            $this->bot->sendMessage($chat_id, $this->translator->translate('weather_fetch_fail_message'));
+            $this->bot->sendMessage($chat_id, $this->translate('weather_fetch_fail_message'));
 
             return;
         }
 
-        $this->bot->sendMessage($chat_id, str_replace(['{city}', '{country}', '{description}', '{wind_speed}', '{cloudiness}', '{pressure}', '{humidity}', '{sunrise}', '{sunset}', '{temp}', '{feels_like}'], [$weather->name, $weather->sys->country, $weather->weather[0]->description, $weather->wind->speed, $weather->clouds->all, intval(($weather->main->pressure) * (0.750063755419211)), $weather->main->humidity, date('H:i:s (e)', $weather->sys->sunrise), date('H:i:s (e)', $weather->sys->sunset), $weather->main->temp, $weather->main->feels_like], $this->translator->translate('weather_report_message')));
+        $this->bot->sendMessage($chat_id, str_replace(['{city}', '{country}', '{description}', '{wind_speed}', '{cloudiness}', '{pressure}', '{humidity}', '{sunrise}', '{sunset}', '{temp}', '{feels_like}'], [$weather->name, $weather->sys->country, $weather->weather[0]->description, $weather->wind->speed, $weather->clouds->all, intval(($weather->main->pressure) * (0.750063755419211)), $weather->main->humidity, date('H:i:s (e)', $weather->sys->sunrise), date('H:i:s (e)', $weather->sys->sunset), $weather->main->temp, $weather->main->feels_like], $this->translate('weather_report_message')));
     }
 }
