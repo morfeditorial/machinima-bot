@@ -28,17 +28,10 @@ use morfeditorial\AbstractCommand;
 
 class SearchAuthorCommand extends AbstractCommand
 {
-    private $db_manager;
-
-    private $search;
-
     public function __construct(MyBot $bot)
     {
         parent::__construct($bot);
         $this->setAliases(['search_author']);
-
-        $this->db_manager = $this->container->get('db_manager');
-        $this->search = $this->container->get('fuzzy_search');
     }
 
     public function getDescriptionKey() : string

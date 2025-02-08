@@ -28,15 +28,11 @@ use morfeditorial\MyBot;
 
 class UpdateCommand extends AbstractCommand
 {
-    private $db_manager;
-
     public function __construct(MyBot $bot)
     {
         parent::__construct($bot);
         $this->setAliases(['update']);
         $this->setHiddenFromMenu(true);
-
-        $this->db_manager = $this->container->get('db_manager');
     }
 
     public function getDescriptionKey() : string
