@@ -92,8 +92,6 @@ class MyBot extends tgLib
             $message_data['language_code'] ?? 'en'
         ));
 
-        echo($this->container->get('translator')->getUserLocale());
-
         if ($message) {
             $this->processMessage($message_data, $message);
         } else {
