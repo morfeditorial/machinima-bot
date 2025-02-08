@@ -747,7 +747,8 @@ class MyBot extends tgLib
         $this->sendUpdateRolesPriorityPanel($chat_id, $user_id, $callback_query_id);
     }
 
-    private function translate(string $key) : string {
+    private function translate(string $key)
+    {
         return $this->container->get('translator')->translate($key);
     }
 }

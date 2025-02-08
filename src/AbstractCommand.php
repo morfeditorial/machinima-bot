@@ -27,19 +27,11 @@ abstract class AbstractCommand implements CommandInterface
 {
     protected MyBot $bot;
 
-    public DependencyContainer $container;
+    protected DependencyContainer $container;
 
-    protected $translator;
+    protected string $description = '';
 
-    protected $db_manager;
-
-    protected $search;
-
-    protected $visuals_links;
-
-    protected string $description;
-
-    protected array $aliases;
+    protected array $aliases = [];
 
     protected bool $hidden_from_menu = false;
 
@@ -51,10 +43,31 @@ abstract class AbstractCommand implements CommandInterface
     public function setContainer(DependencyContainer &$container) : void
     {
         $this->container = $container;
-        $this->translator = $container->get('translator');
-        $this->db_manager = $container->get('db_manager');
-        $this->search = $container->get('fuzzy_search');
-        $this->visuals_links = $container->get('visuals_links');
+    }
+
+    public function getTranslator()
+    {
+        return $this->container->get('translator');
+    }
+
+    public function translate(string $key)
+    {
+        return $this->getTranslator()->translate($key);
+    }
+
+    public function getDbManager()
+    {
+        return $this->container->get('db_manager');
+    }
+
+    public function getSearch()
+    {
+        return $this->container->get('fuzzy_search');
+    }
+
+    public function getVisualsLinks()
+    {
+        return $this->container->get('visuals_links');
     }
 
     public function setDescription(string $description) : void

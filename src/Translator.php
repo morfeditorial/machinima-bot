@@ -26,18 +26,18 @@ class Translator
 {
     private $translations;
 
-    private $userLocale;
+    private $user_locale;
 
     /**
      * Constructor to initialize translations and user locale.
      *
      * @param  array  $translations  An associative array of translations.
-     * @param  string  $userLocale  The locale to be used for translations.
+     * @param  string  $user_locale  The locale to be used for translations.
      */
-    public function __construct($translations, $userLocale)
+    public function __construct(array $translations, string $user_locale)
     {
         $this->translations = $translations;
-        $this->userLocale = $userLocale;
+        $this->user_locale = $user_locale;
     }
 
     /**
@@ -46,11 +46,11 @@ class Translator
      * @param  string  $key  The key for the translation.
      * @return mixed The translated string, array, or a not found message.
      */
-    public function translate($key)
+    public function translate(string $key)
     {
         if (isset($this->translations[$key])) {
-            if (isset($this->translations[$key][$this->userLocale])) {
-                return $this->translations[$key][$this->userLocale];
+            if (isset($this->translations[$key][$this->user_locale])) {
+                return $this->translations[$key][$this->user_locale];
             } elseif (isset($this->translations[$key]['en'])) {
                 return $this->translations[$key]['en'];
             }
@@ -66,7 +66,7 @@ class Translator
      */
     public function setUserLocale(string $locale) : void
     {
-        $this->userLocale = $locale;
+        $this->user_locale = $locale;
     }
 
     /**
@@ -76,7 +76,7 @@ class Translator
      */
     public function getUserLocale() : string
     {
-        return $this->userLocale;
+        return $this->user_locale;
     }
 
     /**
