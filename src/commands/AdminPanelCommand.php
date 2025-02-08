@@ -74,7 +74,7 @@ class AdminPanelCommand extends AbstractCommand
 
         $this->db_manager->setCurrentPanel($user_id, $message_id + 1);
 
-        if (! is_null($currentPage)) {
+        if (! is_null($current_page)) {
             $this->db_manager->resetCurrentPage($user_id);
         }
 
