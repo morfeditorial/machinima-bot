@@ -87,10 +87,7 @@ class MyBot extends tgLib
         $message_data = $this->extractMessageData($update);
         $message = $message_data['message'] ?? null;
 
-        $this->container->set('translator', new Translator(
-            json_decode(file_get_contents(self::TRANSLATIONS_FILE), true), 
-            $message_data['language_code'] ?? 'en'
-        ));
+        $this->container->get('translator')->setUserLocale($message_data['language_code'] ?? 'en');
 
         if ($message) {
             $this->processMessage($message_data, $message);
