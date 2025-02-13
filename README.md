@@ -2,7 +2,7 @@
 
 **MachinimaBot** is a Telegram bot written in PHP. It is designed to interact with users on Telegram, providing various functionalities based on the commands it receives.
 
-![Bot Control Panel Appearance](https://github.com/user-attachments/assets/d74bc1cc-cd26-4a7b-b089-5a4c0deb7178)
+![Bot Control Panel Appearance](assets/images/IMG_20250213_144644_598.png)
 > *Screenshot of the admin panel showing the management capabilities of the Telegram bot.*
 
 ## Features
