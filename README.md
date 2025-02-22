@@ -20,24 +20,20 @@
 ## Installation
 
 1. Clone the repository:
-
    ```bash
    git clone https://github.com/ChernegaSergiy/machinima-bot.git
    cd machinima-bot
    ```
 
 3. Install dependencies using Composer:
-
    ```bash
    composer install
    ```
 
 4. Copy the `.env.example` file to `.env` and set your Telegram bot token:
-
    ```bash
    cp .env.example .env
    ```
-
    Edit the `.env` file to include your `BOT_TOKEN`.
 
 ## Usage
