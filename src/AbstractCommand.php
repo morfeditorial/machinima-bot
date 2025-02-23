@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace morfeditorial;
 
+use morfeditorial\interfaces\CommandInterface;
+
 abstract class AbstractCommand implements CommandInterface
 {
     protected MyBot $bot;
