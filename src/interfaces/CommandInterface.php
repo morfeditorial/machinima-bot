@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial;
+namespace morfeditorial\interfaces;
 
 interface CommandInterface
 {
