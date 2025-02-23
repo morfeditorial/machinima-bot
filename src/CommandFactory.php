@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace morfeditorial;
 
+use morfeditorial\interfaces\CommandInterface;
+
 class CommandFactory
 {
     private MyBot $bot;
