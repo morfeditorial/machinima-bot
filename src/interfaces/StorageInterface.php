@@ -27,7 +27,11 @@ interface StorageInterface
 {
     public function connect() : void;
 
-    public function query(string $query, array $params = []) : array;
+    public function getQueryBuilder() : QueryBuilderInterface;
 
-    public function execute(string $query, array $params = []) : void;
+    public function beginTransaction() : void;
+
+    public function commit() : void;
+
+    public function rollBack() : void;
 }
