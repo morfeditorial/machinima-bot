@@ -23,54 +23,125 @@ declare(strict_types=1);
 
 namespace morfeditorial\services;
 
-use morfeditorial\repositories\RoleRepository;
+use Exception;
+use morfeditorial\interfaces\StorageInterface;
 
 class RoleService
 {
-    public function __construct(private RoleRepository $roleRepo) {}
+    private $queryBuilder;
+
+    public function __construct(private StorageInterface $storage)
+    {
+        $this->queryBuilder = $storage->getQueryBuilder();
+    }
 
     public function createRole(string $roleName, int $priority) : bool
     {
-        return $this->roleRepo->createRole($roleName, $priority);
+        $this->queryBuilder->insert('roles', [
+            'role_name' => $roleName,
+            'priority' => $priority,
+        ])->execute();
+
+        return true;
     }
 
     public function deleteRole(string $roleName) : bool
     {
-        return $this->roleRepo->deleteRole($roleName);
+        $this->queryBuilder->delete('roles')
+            ->where('role_name', '=', $roleName)
+            ->execute();
+
+        return true;
     }
 
     public function getAllRoles() : array
     {
-        return $this->roleRepo->getAllRoles();
+        return $this->queryBuilder->select(['*'])
+            ->from('roles')
+            ->orderBy('priority', 'DESC')
+            ->get();
     }
 
     public function getRoleByName(string $roleName) : ?array
     {
-        return $this->roleRepo->getRoleByName($roleName);
+        return $this->queryBuilder->select(['*'])
+            ->from('roles')
+            ->where('role_name', '=', $roleName)
+            ->first();
     }
 
     public function getRolePriority(string $roleName) : int
     {
-        return $this->roleRepo->getRolePriority($roleName);
+        $result = $this->queryBuilder->select(['priority'])
+            ->from('roles')
+            ->where('role_name', '=', $roleName)
+            ->first();
+
+        return $result['priority'] ?? 0;
     }
 
     public function getRolesCount() : int
     {
-        return $this->roleRepo->getRolesCount();
+        return $this->queryBuilder->select()
+            ->from('roles')
+            ->count();
     }
 
     public function updateRolePriority(string $roleName, int $priority) : bool
     {
-        return $this->roleRepo->updateRolePriority($roleName, $priority);
+        $this->queryBuilder->update('roles', [
+            'priority' => $priority,
+        ])->where('role_name', '=', $roleName)
+            ->execute();
+
+        return true;
     }
 
     public function updateRolePriorities(string $roleName, int $newPriority) : void
     {
-        $this->roleRepo->updateRolePriorities($roleName, $newPriority);
+        $currentPriority = $this->getRolePriority($roleName);
+
+        if (0 === $currentPriority) {
+            throw new Exception('Role not found.');
+        }
+
+        $this->storage->beginTransaction();
+        try {
+            if ($currentPriority < $newPriority) {
+                $roles = $this->queryBuilder->select(['id', 'priority'])
+                    ->from('roles')
+                    ->where('priority', '>', $currentPriority)
+                    ->andWhere('priority', '<=', $newPriority)
+                    ->get();
+            } elseif ($currentPriority > $newPriority) {
+                $roles = $this->queryBuilder->select(['id', 'priority'])
+                    ->from('roles')
+                    ->where('priority', '<', $currentPriority)
+                    ->andWhere('priority', '>=', $newPriority)
+                    ->get();
+            }
+
+            foreach ($roles as $role) {
+                $newRolePriority = ($currentPriority < $newPriority) ? $role['priority'] - 1 : $role['priority'] + 1;
+                $this->queryBuilder->update('roles', [
+                    'priority' => $newRolePriority,
+                ])->where('id', '=', $role['id'])
+                    ->execute();
+            }
+
+            $this->updateRolePriority($roleName, $newPriority);
+            $this->storage->commit();
+        } catch (Exception $e) {
+            $this->storage->rollBack();
+            throw $e;
+        }
     }
 
     public function queryRolesOrderedByPriority() : array
     {
-        return $this->roleRepo->queryRolesOrderedByPriority();
+        return $this->queryBuilder->select(['*'])
+            ->from('roles')
+            ->orderBy('priority', 'DESC')
+            ->get();
     }
 }

@@ -23,64 +23,104 @@ declare(strict_types=1);
 
 namespace morfeditorial\services;
 
-use morfeditorial\repositories\AuthorRepository;
+use morfeditorial\interfaces\StorageInterface;
 
 class AuthorService
 {
-    public function __construct(private AuthorRepository $authorRepo) {}
+    private $queryBuilder;
+
+    public function __construct(private StorageInterface $storage)
+    {
+        $this->queryBuilder = $storage->getQueryBuilder();
+    }
 
     public function createAuthor(string $name) : int
     {
-        return $this->authorRepo->createAuthor($name);
+        $this->queryBuilder->insert('authors', [
+            'name' => $name,
+        ])->execute();
+
+        return $this->queryBuilder->getLastInsertId();
     }
 
     public function deleteAuthor(int $authorId) : void
     {
-        $this->authorRepo->deleteAuthor($authorId);
+        $this->queryBuilder->delete('authors')
+            ->where('id', '=', $authorId)
+            ->execute();
     }
 
     public function getAuthorById(int $authorId) : ?array
     {
-        return $this->authorRepo->getAuthorById($authorId);
+        return $this->queryBuilder->select(['*'])
+            ->from('authors')
+            ->where('id', '=', $authorId)
+            ->first();
     }
 
     public function getAllAuthors() : array
     {
-        return $this->authorRepo->getAllAuthors();
+        return $this->queryBuilder->select(['*'])
+            ->from('authors')
+            ->get();
     }
 
     public function updateAuthorName(int $authorId, string $name) : void
     {
-        $this->authorRepo->updateAuthorName($authorId, $name);
+        $this->queryBuilder->update('authors', [
+            'name' => $name,
+        ])->where('id', '=', $authorId)
+            ->execute();
     }
 
     public function setBiography(int $authorId, string $biography) : void
     {
-        $this->authorRepo->setBiography($authorId, $biography);
+        $this->queryBuilder->update('authors', [
+            'biography' => $biography,
+        ])->where('id', '=', $authorId)
+            ->execute();
     }
 
     public function setChannelLink(int $authorId, string $link) : void
     {
-        $this->authorRepo->setChannelLink($authorId, $link);
+        $this->queryBuilder->update('authors', [
+            'channel_link' => $link,
+        ])->where('id', '=', $authorId)
+            ->execute();
     }
 
     public function setPrivate(int $authorId, bool $private = true) : void
     {
-        $this->authorRepo->setPrivate($authorId, $private);
+        $this->queryBuilder->update('authors', [
+            'private' => $private,
+        ])->where('id', '=', $authorId)
+            ->execute();
     }
 
     public function isPrivate(int $authorId) : bool
     {
-        return $this->authorRepo->isPrivate($authorId);
+        $result = $this->queryBuilder->select(['private'])
+            ->from('authors')
+            ->where('id', '=', $authorId)
+            ->first();
+
+        return (bool) $result['private'];
     }
 
     public function getAuthorCreationTime(int $authorId) : ?string
     {
-        return $this->authorRepo->getAuthorCreationTime($authorId);
+        $result = $this->queryBuilder->select(['created_at'])
+            ->from('authors')
+            ->where('id', '=', $authorId)
+            ->first();
+
+        return $result['created_at'] ?? null;
     }
 
     public function countAuthors() : int
     {
-        return $this->authorRepo->countAuthors();
+        return $this->queryBuilder->select()
+            ->from('authors')
+            ->count();
     }
 }

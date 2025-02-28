@@ -23,24 +23,46 @@ declare(strict_types=1);
 
 namespace morfeditorial\services;
 
-use morfeditorial\repositories\UserStateRepository;
+use morfeditorial\interfaces\StorageInterface;
 
 class UserStateService
 {
-    public function __construct(private UserStateRepository $stateRepo) {}
+    private $queryBuilder;
+
+    public function __construct(private StorageInterface $storage)
+    {
+        $this->queryBuilder = $storage->getQueryBuilder();
+    }
 
     public function setState(int $userId, mixed $value, string $key = 'default') : void
     {
-        $this->stateRepo->setState($userId, $value, $key);
+        $this->queryBuilder->insert('user_states', [
+            'user_id' => $userId,
+            'key' => $key,
+            'value' => $value,
+        ])->execute();
     }
 
     public function getState(int $userId, string $key = 'default') : mixed
     {
-        return $this->stateRepo->getState($userId, $key);
+        $result = $this->queryBuilder->select(['value'])
+            ->from('user_states')
+            ->where('user_id', '=', $userId)
+            ->andWhere('key', '=', $key)
+            ->first();
+
+        return $result['value'] ?? null;
     }
 
     public function clearState(int $userId, ?string $key = null) : void
     {
-        $this->stateRepo->clearState($userId, $key);
+        $query = $this->queryBuilder->delete('user_states')
+            ->where('user_id', '=', $userId);
+
+        if (null !== $key) {
+            $query->andWhere('key', '=', $key);
+        }
+
+        $query->execute();
     }
 }

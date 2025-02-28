@@ -23,54 +23,92 @@ declare(strict_types=1);
 
 namespace morfeditorial\services;
 
-use morfeditorial\repositories\UserRepository;
+use morfeditorial\interfaces\StorageInterface;
 
 class UserService
 {
-    public function __construct(private UserRepository $userRepo) {}
+    private $queryBuilder;
+
+    public function __construct(private StorageInterface $storage)
+    {
+        $this->queryBuilder = $storage->getQueryBuilder();
+    }
 
     public function setCurrentPanel(int $userId, int $messageId) : void
     {
-        $this->userRepo->setCurrentPanel($userId, $messageId);
+        $this->queryBuilder->insert('user_data', [
+            'user_id' => $userId,
+            'current_panel' => $messageId,
+        ])->execute();
     }
 
     public function getCurrentPanel(int $userId) : ?int
     {
-        return $this->userRepo->getCurrentPanel($userId);
+        $result = $this->queryBuilder->select(['current_panel'])
+            ->from('user_data')
+            ->where('user_id', '=', $userId)
+            ->first();
+
+        return $result['current_panel'] ?? null;
     }
 
     public function setCurrentPage(int $userId, string $page) : void
     {
-        $this->userRepo->setCurrentPage($userId, $page);
+        $this->queryBuilder->update('user_data', [
+            'current_page' => $page,
+        ])->where('user_id', '=', $userId)
+            ->execute();
     }
 
     public function getCurrentPage(int $userId) : ?string
     {
-        return $this->userRepo->getCurrentPage($userId);
+        $result = $this->queryBuilder->select(['current_page'])
+            ->from('user_data')
+            ->where('user_id', '=', $userId)
+            ->first();
+
+        return $result['current_page'] ?? null;
     }
 
     public function resetCurrentPage(int $userId) : void
     {
-        $this->userRepo->resetCurrentPage($userId);
+        $this->queryBuilder->update('user_data', [
+            'current_page' => null,
+        ])->where('user_id', '=', $userId)
+            ->execute();
     }
 
     public function assignRole(int $userId, string $role) : void
     {
-        $this->userRepo->assignRole($userId, $role);
+        $this->queryBuilder->update('user_data', [
+            'role' => $role,
+        ])->where('user_id', '=', $userId)
+            ->execute();
     }
 
     public function removeRole(int $userId) : void
     {
-        $this->userRepo->removeRole($userId);
+        $this->queryBuilder->update('user_data', [
+            'role' => null,
+        ])->where('user_id', '=', $userId)
+            ->execute();
     }
 
     public function getRole(int $userId) : ?string
     {
-        return $this->userRepo->getRole($userId);
+        $result = $this->queryBuilder->select(['role'])
+            ->from('user_data')
+            ->where('user_id', '=', $userId)
+            ->first();
+
+        return $result['role'] ?? null;
     }
 
     public function getUsersCountByRole(string $role) : int
     {
-        return $this->userRepo->getUsersCountByRole($role);
+        return $this->queryBuilder->select()
+            ->from('user_data')
+            ->where('role', '=', $role)
+            ->count();
     }
 }
