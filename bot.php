@@ -29,6 +29,9 @@ class BotManager
 
     private function initializeSystem()
     {
+        if (! is_dir(self::LOG_DIR)) {
+            mkdir(self::LOG_DIR, 0777, true);
+        }
         if (! $this->isDaemon) {
             $this->clearScreen();
             $this->printLogo();
