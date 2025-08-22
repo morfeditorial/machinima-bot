@@ -8,13 +8,12 @@
  * /         /         /        _/        _/
  * \__/__/__/\________/\____/___/\_______/
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is licensed under the CSSM Unlimited License v2.0.
+ * Copyright (c) 2024 Sergiy Chernega
  *
  * @author CSSM Group
  * @link https://cssm.pp.ua/
+ *
  *
  */
 
