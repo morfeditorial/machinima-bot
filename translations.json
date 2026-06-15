@@ -383,7 +383,6 @@
         "be": "Роля з назвай «{roleName}» ужо існуе. Выберыце іншую назву.",
         "uk": "Роль з назвою «{roleName}» вже існує. Виберіть іншу назву."
     },
-
     "create_role_usage_message": {
         "en": "Usage: \/create_role &lt;role_name&gt;",
         "pl": "Użycie: \/create_role &lt;nazwa_roli&gt;",
