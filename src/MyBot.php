@@ -64,7 +64,6 @@ class MyBot extends tgLib
         $this->command_factory->registerCommand(new \morfeditorial\commands\StartCommand($this)); // start
         $this->command_factory->registerCommand(new \morfeditorial\commands\HelpCommand($this)); // help
         $this->command_factory->registerCommand(new \morfeditorial\commands\TimeCommand($this)); // time
-        $this->command_factory->registerCommand(new \morfeditorial\commands\WeatherCommand($this)); // weather
         $this->command_factory->registerCommand(new \morfeditorial\commands\WhoisCommand($this)); // whois
         $this->command_factory->registerCommand(new \morfeditorial\commands\UpdateCommand($this)); // update
         $this->command_factory->registerCommand(new \morfeditorial\commands\AdminPanelCommand($this)); // admin_panel
