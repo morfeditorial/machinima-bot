@@ -1199,6 +1199,20 @@ class MyBot extends tgLib
                         ],
                     ];
 
+                    $transition_buttons = [];
+                    if ('draft' === $project['status']) {
+                        $transition_buttons[] = ['text' => $this->translate('submit_project'), 'callback_data' => 'transition_project:' . $project_id . ':submit'];
+                    } elseif ('pending_review' === $project['status']) {
+                        $transition_buttons[] = ['text' => $this->translate('publish_project'), 'callback_data' => 'transition_project:' . $project_id . ':publish'];
+                        $transition_buttons[] = ['text' => $this->translate('reject_project'), 'callback_data' => 'transition_project:' . $project_id . ':reject'];
+                    } elseif ('rejected' === $project['status']) {
+                        $transition_buttons[] = ['text' => $this->translate('redraft_project'), 'callback_data' => 'transition_project:' . $project_id . ':re-draft'];
+                    }
+
+                    if (! empty($transition_buttons)) {
+                        array_unshift($keyboard['inline_keyboard'], $transition_buttons);
+                    }
+
                     if ($project['cover_file_id']) {
                         $this->editMediaMessage($chat_id, $current_panel, $project['cover_file_id'], $message_text, $keyboard);
                     } else {
@@ -1257,6 +1271,25 @@ class MyBot extends tgLib
 
                 // Refresh the categories view
                 $this->handlePanels(array_merge($message_data, ['payload' => 'select_project_categories:' . $project_id]));
+            } elseif (preg_match("/^transition_project:(\d+):([a-z-]+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $transition = $matches[2];
+                $content_service = $this->container->get('content_service');
+
+                if ($content_service->applyTransition($project_id, $transition)) {
+                    $new_content = $content_service->getContentById($project_id);
+                    $this->callbackAnswer($callback_query_id, str_replace('{status}', $new_content['status'], $this->translate('status_changed_message')));
+                } else {
+                    $this->callbackAnswer($callback_query_id, $this->translate('status_change_failed_message'));
+                }
+
+                // Refresh project view
+                $this->handlePanels(array_merge($message_data, ['payload' => 'view_project:' . $project_id]));
             } elseif (preg_match("/^manage_staff:(\d+)$/", $payload, $matches)) {
                 if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
