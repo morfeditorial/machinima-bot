@@ -24,7 +24,7 @@
         "uk": "Видалити роль"
     },
     "delete_role_usage_message": {
-        "en": "Usage: \/delete_role &lt;roleName&gt;",
+        "en": "Usage: \/delete_role &lt;role_name&gt;",
         "pl": "Użycie: \/delete_role &lt;nazwa_roli&gt;",
         "be": "Выкарыстанне: \/delete_role &lt;назва_ролі&gt;",
         "uk": "Використання: \/delete_role &lt;назва_ролі&gt;"
@@ -385,7 +385,7 @@
     },
 
     "create_role_usage_message": {
-        "en": "Usage: \/create_role &lt;roleName&gt;",
+        "en": "Usage: \/create_role &lt;role_name&gt;",
         "pl": "Użycie: \/create_role &lt;nazwa_roli&gt;",
         "be": "Выкарыстанне: \/create_role &lt;назва_ролі&gt;",
         "uk": "Використання: \/create_role &lt;назва_ролі&gt;"
@@ -427,10 +427,10 @@
         "uk": "Ролі «{roleName}» не знайдено."
     },
     "assign_role_usage_message": {
-        "en": "Usage: \/assign_role &lt;userId&gt; &lt;roleName&gt;",
-        "pl": "Użycie: \/assign_role &lt;userId&gt; &lt;nazwa_roli&gt;",
-        "be": "Выкарыстанне: \/assign_role &lt;userId&gt; &lt;назва_ролі&gt;",
-        "uk": "Використання: \/assign_role &lt;userId&gt; &lt;назва_ролі&gt;"
+        "en": "Usage: \/assign_role &lt;user_id&gt; &lt;role_name&gt;",
+        "pl": "Użycie: \/assign_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/assign_role &lt;user_id&gt; &lt;назва_ролі&gt;",
+        "uk": "Використання: \/assign_role &lt;user_id&gt; &lt;назва_ролі&gt;"
     },
     "success_initialled_admin_message": {
         "en": "You have been appointed as an administrator.",
