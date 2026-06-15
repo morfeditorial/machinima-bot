@@ -1240,12 +1240,12 @@ class MyBot extends tgLib
                     ];
 
                     $transition_buttons = [];
-                    if ('draft' === $project['status']) {
+                    if ('draft' === $project['status'] && $this->isGranted('creator')) {
                         $transition_buttons[] = ['text' => $this->translate('submit_project'), 'callback_data' => 'transition_project:' . $project_id . ':submit'];
-                    } elseif ('pending_review' === $project['status']) {
+                    } elseif ('pending_review' === $project['status'] && $this->isGranted('moderator')) {
                         $transition_buttons[] = ['text' => $this->translate('publish_project'), 'callback_data' => 'transition_project:' . $project_id . ':publish'];
                         $transition_buttons[] = ['text' => $this->translate('reject_project'), 'callback_data' => 'transition_project:' . $project_id . ':reject'];
-                    } elseif ('rejected' === $project['status']) {
+                    } elseif ('rejected' === $project['status'] && $this->isGranted('moderator')) {
                         $transition_buttons[] = ['text' => $this->translate('redraft_project'), 'callback_data' => 'transition_project:' . $project_id . ':re-draft'];
                     }
 
@@ -1312,14 +1312,20 @@ class MyBot extends tgLib
                 // Refresh the categories view
                 $this->handlePanels(array_merge($message_data, ['payload' => 'select_project_categories:' . $project_id]));
             } elseif (preg_match("/^transition_project:(\d+):([a-z-]+)$/", $payload, $matches)) {
-                if (! $this->isGranted('creator')) {
+                $project_id = (int) $matches[1];
+                $transition = $matches[2];
+                $content_service = $this->container->get('content_service');
+
+                $required_role = 'moderator';
+                if ('submit' === $transition) {
+                    $required_role = 'creator';
+                }
+
+                if (! $this->isGranted($required_role)) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $project_id = (int) $matches[1];
-                $transition = $matches[2];
-                $content_service = $this->container->get('content_service');
 
                 if ($content_service->applyTransition($project_id, $transition)) {
                     $new_content = $content_service->getContentById($project_id);
