@@ -817,16 +817,9 @@ class MyBot extends tgLib
                     $keyboard = ['inline_keyboard' => []];
 
                     foreach ($children as $child) {
-                        $child_hierarchy = $role_service->getChildren($child['role_name']);
-                        $children_text = ! empty($child_hierarchy) ? implode(', ', array_column($child_hierarchy, 'role_name')) : "\u{2014}";
-
                         $keyboard['inline_keyboard'][] = [
                             [
                                 'text' => $child['role_name'],
-                                'callback_data' => 'show_role:' . $child['role_name'],
-                            ],
-                            [
-                                'text' => $this->translate('remove') . ' ' . $child['role_name'],
                                 'callback_data' => 'confirm_remove_child:' . $role_name . ':' . $child['role_name'],
                             ],
                         ];
