@@ -22,7 +22,6 @@ declare(strict_types=1);
 namespace morfeditorial\services;
 
 use Doctrine\DBAL\Connection;
-use Exception;
 use morfeditorial\storage\StorageInterface;
 
 class RoleService
@@ -92,6 +91,17 @@ class RoleService
 
     public function deleteRole(string $role_name) : bool
     {
+        $role = $this->getRoleByName($role_name);
+
+        if (! $role) {
+            return false;
+        }
+
+        $this->db->executeStatement(
+            'DELETE FROM role_hierarchy WHERE parent_role_id = ? OR child_role_id = ?',
+            [$role['id'], $role['id']]
+        );
+
         return (bool) $this->db->executeStatement(
             'DELETE FROM roles WHERE role_name = ?',
             [$role_name]
@@ -133,41 +143,6 @@ class RoleService
         );
     }
 
-    public function hasRole(int $user_id, string $role_name) : bool
-    {
-        $result = $this->db->fetchAssociative('
-            SELECT ur.user_id FROM user_roles ur
-            JOIN roles r ON ur.role_id = r.id
-            WHERE ur.user_id = ? AND r.role_name = ?
-        ', [$user_id, $role_name]);
-
-        return (bool) $result;
-    }
-
-    public function hasHigherRole(int $user_id, string $role_name) : bool
-    {
-        $role = $this->db->fetchAssociative(
-            'SELECT priority FROM roles WHERE role_name = ?',
-            [$role_name]
-        );
-
-        if ($role) {
-            $required_priority = $role['priority'];
-
-            $user_priority = $this->db->fetchOne('
-                SELECT MAX(r.priority) as max_priority FROM user_roles ur
-                JOIN roles r ON ur.role_id = r.id
-                WHERE ur.user_id = ?
-            ', [$user_id]);
-
-            if (null !== $user_priority) {
-                return $user_priority >= $required_priority;
-            }
-        }
-
-        return false;
-    }
-
     public function getUserRoleNames(int $user_id) : array
     {
         $rows = $this->db->fetchAllAssociative('
@@ -191,7 +166,7 @@ class RoleService
 
     public function getAllRoles() : array
     {
-        return $this->db->fetchAllAssociative('SELECT * FROM roles ORDER BY priority DESC');
+        return $this->db->fetchAllAssociative('SELECT * FROM roles');
     }
 
     public function getRoleByName(string $role_name) : ?array
@@ -204,63 +179,38 @@ class RoleService
         return false !== $result ? $result : null;
     }
 
-    public function getRolePriority(string $role_name) : int
-    {
-        return (int) $this->db->fetchOne(
-            'SELECT priority FROM roles WHERE role_name = ?',
-            [$role_name]
-        );
-    }
-
     public function getRolesCount() : int
     {
         return (int) $this->db->fetchOne('SELECT COUNT(*) FROM roles');
     }
 
-    public function updateRolePriority(string $role_name, int $priority) : bool
+    public function getChildren(string $role_name) : array
     {
-        return (bool) $this->db->executeStatement(
-            'UPDATE roles SET priority = ? WHERE role_name = ?',
-            [$priority, $role_name]
-        );
-    }
+        $role = $this->getRoleByName($role_name);
 
-    public function updateRolePriorities(string $role_name, int $new_priority) : void
-    {
-        $current_priority = $this->getRolePriority($role_name);
-        if (0 === $current_priority && ! $this->getRoleByName($role_name)) {
-            throw new Exception('Role not found.');
+        if (! $role) {
+            return [];
         }
 
-        $this->db->beginTransaction();
-
-        try {
-            if ($current_priority < $new_priority) {
-                $this->db->executeStatement(
-                    'UPDATE roles SET priority = priority - 1 WHERE priority > ? AND priority <= ?',
-                    [$current_priority, $new_priority]
-                );
-            } elseif ($current_priority > $new_priority) {
-                $this->db->executeStatement(
-                    'UPDATE roles SET priority = priority + 1 WHERE priority < ? AND priority >= ?',
-                    [$current_priority, $new_priority]
-                );
-            } else {
-                return;
-            }
-
-            $this->updateRolePriority($role_name, $new_priority);
-            $this->db->commit();
-        } catch (Exception $e) {
-            $this->db->rollBack();
-            throw $e;
-        }
+        return $this->db->fetchAllAssociative('
+            SELECT r.id, r.role_name FROM role_hierarchy rh
+            JOIN roles r ON rh.child_role_id = r.id
+            WHERE rh.parent_role_id = ?
+        ', [$role['id']]);
     }
 
-    public function queryRolesOrderedByPriority() : array
+    public function getParents(string $role_name) : array
     {
-        return $this->db->fetchAllAssociative(
-            "SELECT role_name, priority FROM roles ORDER BY priority DESC"
-        );
+        $role = $this->getRoleByName($role_name);
+
+        if (! $role) {
+            return [];
+        }
+
+        return $this->db->fetchAllAssociative('
+            SELECT r.id, r.role_name FROM role_hierarchy rh
+            JOIN roles r ON rh.parent_role_id = r.id
+            WHERE rh.child_role_id = ?
+        ', [$role['id']]);
     }
 }
