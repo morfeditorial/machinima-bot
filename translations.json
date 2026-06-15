@@ -385,10 +385,10 @@
         "uk": "Видалити роль"
     },
     "delete_this_role": {
-        "en": "🗑 Delete role",
-        "pl": "🗑 Usuń rolę",
-        "be": "🗑 Выдаліць ролю",
-        "uk": "🗑 Видалити роль"
+        "en": "Delete role",
+        "pl": "Usuń rolę",
+        "be": "Выдаліць ролю",
+        "uk": "Видалити роль"
     },
     "view_roles": {
         "en": "View roles",
