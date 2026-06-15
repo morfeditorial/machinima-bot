@@ -81,6 +81,11 @@ class MyBot extends tgLib
             ->setPublic(true);
         $container_builder->setAlias(\morfeditorial\services\RoleService::class, 'role_service');
 
+        $container_builder->register('content_service', \morfeditorial\services\ContentService::class)
+            ->setAutowired(true)
+            ->setPublic(true);
+        $container_builder->setAlias(\morfeditorial\services\ContentService::class, 'content_service');
+
         $container_builder->register('token_storage', \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage::class)
             ->setPublic(true);
         $container_builder->register('role_hierarchy_voter', \morfeditorial\security\RoleHierarchyVoter::class)
