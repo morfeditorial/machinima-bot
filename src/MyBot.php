@@ -58,6 +58,7 @@ class MyBot extends tgLib
         $container_builder->register('storage', \morfeditorial\storage\DatabaseStorage::class)
             ->setAutowired(true)
             ->setPublic(true);
+        $container_builder->setAlias(\morfeditorial\storage\StorageInterface::class, 'storage');
 
         $container_builder->register('author_service', \morfeditorial\services\AuthorService::class)
             ->setAutowired(true)
