@@ -478,6 +478,19 @@ class MyBot extends tgLib
 
             // Return to staff management
             $this->handlePanels(array_merge($message_data, ['payload' => 'manage_staff:' . $project_id]));
+        } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_category_name')) {
+            $this->deleteMessage($chat_id, $message_id);
+            $content_service = $this->container->get('content_service');
+            $parent_id = $state_data['parent_id'] ?? null;
+            $name = $message;
+
+            $content_service->createCategory($name, $parent_id);
+
+            $this->sendMessage($chat_id, str_replace('{name}', htmlspecialchars($name), $this->translate('category_added_message')));
+            $user_state_service->clearState($user_id);
+
+            $payload = $parent_id ? 'manage_categories:' . $parent_id : 'manage_categories';
+            $this->handlePanels(array_merge($message_data, ['payload' => $payload]));
         } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_user_id_for_role')) {
             $target_user_id = (int) $message;
 
@@ -533,6 +546,10 @@ class MyBot extends tgLib
                         [
                             ['text' => $this->translate('add_author'), 'callback_data' => 'add_author'],
                             ['text' => $this->translate('delete_author'), 'callback_data' => 'delete_author'],
+                        ],
+                        [
+                            ['text' => $this->translate('manage_projects'), 'callback_data' => 'manage_projects'],
+                            ['text' => $this->translate('manage_categories'), 'callback_data' => 'manage_categories'],
                         ],
                         [
                             ['text' => $this->translate('list_of_authors'), 'callback_data' => 'list_of_authors'],
@@ -1282,6 +1299,92 @@ class MyBot extends tgLib
                     ];
                     $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('enter_project_description_message'), $keyboard);
                 }
+            } elseif (preg_match("/^manage_categories(:(\d+))?$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $user_state_service->clearState($user_id);
+                $parent_id = isset($matches[2]) ? (int) $matches[2] : null;
+                $content_service = $this->container->get('content_service');
+
+                $categories = $content_service->getCategoriesByParent($parent_id);
+                $keyboard = ['inline_keyboard' => []];
+
+                foreach ($categories as $category) {
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $category['name'], 'callback_data' => 'manage_categories:' . $category['id']],
+                        ['text' => '❌', 'callback_data' => 'confirm_delete_category:' . $category['id']],
+                    ];
+                }
+
+                $add_callback = $parent_id ? 'add_category:' . $parent_id : 'add_category';
+                $back_callback = $parent_id ? 'manage_categories' : 'control_panel'; // Simplified back logic
+
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('add_category'), 'callback_data' => $add_callback],
+                ];
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('go_back'), 'callback_data' => $back_callback],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('manage_categories'), $keyboard);
+            } elseif (preg_match("/^add_category(:(\d+))?$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $parent_id = isset($matches[2]) ? (int) $matches[2] : null;
+                $user_state_service->setState($user_id, ['parent_id' => $parent_id], 'awaiting_category_name');
+
+                $back_callback = $parent_id ? 'manage_categories:' . $parent_id : 'manage_categories';
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => $back_callback],
+                        ],
+                    ],
+                ];
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('enter_category_name_message'), $keyboard);
+            } elseif (preg_match("/^confirm_delete_category:(\d+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $category_id = (int) $matches[1];
+                // In a real scenario, we'd fetch the category name here.
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('confirm_yes'), 'callback_data' => 'delete_category:' . $category_id],
+                        ],
+                        [
+                            ['text' => $this->translate('confirm_no'), 'callback_data' => 'manage_categories'], // Or back to parent
+                        ],
+                    ],
+                ];
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{name}', 'ID ' . $category_id, $this->translate('confirm_delete_category_message')), $keyboard);
+            } elseif (preg_match("/^delete_category:(\d+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $category_id = (int) $matches[1];
+                $this->container->get('content_service')->db->executeStatement('DELETE FROM categories WHERE id = ?', [$category_id]);
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'manage_categories'],
+                        ],
+                    ],
+                ];
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('category_deleted_message'), $keyboard);
             }
         }
     }

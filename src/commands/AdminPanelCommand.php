@@ -78,6 +78,7 @@ class AdminPanelCommand extends AbstractCommand
                 ],
                 [
                     ['text' => $this->translate('manage_projects'), 'callback_data' => 'manage_projects'],
+                    ['text' => $this->translate('manage_categories'), 'callback_data' => 'manage_categories'],
                 ],
                 [
                     ['text' => $this->translate('list_of_authors'), 'callback_data' => 'list_of_authors'],
