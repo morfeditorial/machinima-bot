@@ -124,6 +124,13 @@ class ContentService
         return (int) $this->db->lastInsertId();
     }
 
+    public function getCategoryById(int $id) : ?array
+    {
+        $result = $this->db->fetchAssociative('SELECT * FROM categories WHERE id = ?', [$id]);
+
+        return $result ?: null;
+    }
+
     public function getAllCategories() : array
     {
         return $this->db->fetchAllAssociative('SELECT * FROM categories ORDER BY name ASC');

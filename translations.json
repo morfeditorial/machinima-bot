@@ -329,6 +329,12 @@
         "be": "Кіраванне катэгорыямі 🏷",
         "uk": "Управління категоріями 🏷"
     },
+    "manage_subcategories": {
+        "en": "Subcategories of «{category}» 🏷",
+        "pl": "Podkategorie «{category}» 🏷",
+        "be": "Падкатэгорыі «{category}» 🏷",
+        "uk": "Підкатегорії «{category}» 🏷"
+    },
     "add_category": {
         "en": "Add Category",
         "pl": "Dodaj kategorię",

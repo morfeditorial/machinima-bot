@@ -1589,7 +1589,15 @@ class MyBot extends tgLib
                     ['text' => $this->translate('go_back'), 'callback_data' => $back_callback],
                 ];
 
-                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('manage_categories'), $keyboard);
+                $msg = $this->translate('manage_categories');
+                if ($parent_id) {
+                    $parent_category = $content_service->getCategoryById($parent_id);
+                    if ($parent_category) {
+                        $msg = str_replace('{category}', htmlspecialchars($parent_category['name']), $this->translate('manage_subcategories'));
+                    }
+                }
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $msg, $keyboard);
             } elseif (preg_match("/^add_category(:(\d+))?$/", $payload, $matches)) {
                 if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
