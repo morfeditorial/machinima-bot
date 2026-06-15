@@ -53,6 +53,7 @@ class MyBot extends tgLib
         $container_builder->register('db_config', \morfeditorial\config\SQLiteConfig::class)
             ->setArgument('$filePath', self::DATABASE_FILE)
             ->setPublic(true);
+        $container_builder->setAlias(\morfeditorial\config\DatabaseConfigInterface::class, 'db_config');
 
         $container_builder->register('storage', \morfeditorial\storage\DatabaseStorage::class)
             ->setAutowired(true)
