@@ -1136,7 +1136,7 @@ class MyBot extends tgLib
 
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('select_role_to_delete_message'), $keyboard);
             } elseif (preg_match("/^manage_projects(_page_(\d+))?$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1182,7 +1182,7 @@ class MyBot extends tgLib
 
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('manage_projects'), $keyboard);
             } elseif (preg_match("/^view_project:(\d+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1249,7 +1249,7 @@ class MyBot extends tgLib
                     }
                 }
             } elseif (preg_match("/^select_project_categories:(\d+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1280,7 +1280,7 @@ class MyBot extends tgLib
 
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('select_categories_for_project'), $keyboard);
             } elseif (preg_match("/^toggle_project_category:(\d+):(\d+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1301,7 +1301,7 @@ class MyBot extends tgLib
                 // Refresh the categories view
                 $this->handlePanels(array_merge($message_data, ['payload' => 'select_project_categories:' . $project_id]));
             } elseif (preg_match("/^transition_project:(\d+):([a-z-]+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1320,7 +1320,7 @@ class MyBot extends tgLib
                 // Refresh project view
                 $this->handlePanels(array_merge($message_data, ['payload' => 'view_project:' . $project_id]));
             } elseif (preg_match("/^confirm_delete_project:(\d+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1343,7 +1343,7 @@ class MyBot extends tgLib
                     $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{title}', htmlspecialchars($project['title']), $this->translate('confirm_delete_project_message')), $keyboard);
                 }
             } elseif (preg_match("/^delete_project:(\d+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1358,7 +1358,7 @@ class MyBot extends tgLib
                 // Return to manage projects list
                 $this->handlePanels(array_merge($message_data, ['payload' => 'manage_projects']));
             } elseif (preg_match("/^edit_project:(\d+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1389,7 +1389,7 @@ class MyBot extends tgLib
                     $this->editMediaMessage($chat_id, $current_panel, $project['cover_file_id'] ?? $visuals_links[1], $this->translate('edit_project'), $keyboard);
                 }
             } elseif (preg_match("/^edit_project_field:(\d+):([a-z_]+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1427,7 +1427,7 @@ class MyBot extends tgLib
                     $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate($msg_key), $keyboard);
                 }
             } elseif (preg_match("/^set_edited_project_type:(\d+):(.+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1441,7 +1441,7 @@ class MyBot extends tgLib
 
                 $this->handlePanels(array_merge($message_data, ['payload' => 'edit_project:' . $project_id]));
             } elseif (preg_match("/^manage_staff:(\d+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1466,7 +1466,7 @@ class MyBot extends tgLib
 
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('manage_staff'), $keyboard);
             } elseif (preg_match("/^add_staff_select_author:(\d+)(_page_(\d+))?$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1481,7 +1481,7 @@ class MyBot extends tgLib
 
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('select_author_for_staff_message'), $keyboard);
             } elseif (preg_match("/^add_staff_to_project:(\d+):(\d+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1500,7 +1500,7 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('enter_staff_role_message'), $keyboard);
             } elseif (preg_match("/^remove_staff:(\d+):(\d+):(.+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1515,7 +1515,7 @@ class MyBot extends tgLib
                 // Refresh staff menu
                 $this->handlePanels(array_merge($message_data, ['payload' => 'manage_staff:' . $project_id]));
             } elseif ('add_project' === $payload) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -1530,7 +1530,7 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('enter_project_title_message'), $keyboard);
             } elseif (preg_match("/^set_project_type:(.+)$/", $payload, $matches)) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;

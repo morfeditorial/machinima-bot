@@ -163,6 +163,10 @@ class DatabaseStorage implements StorageInterface
         );
         $this->connection->executeStatement(
             'INSERT OR IGNORE INTO roles (role_name) VALUES (?)',
+            ['creator']
+        );
+        $this->connection->executeStatement(
+            'INSERT OR IGNORE INTO roles (role_name) VALUES (?)',
             ['user']
         );
 
@@ -173,6 +177,10 @@ class DatabaseStorage implements StorageInterface
         $moderator_id = $this->connection->fetchOne(
             'SELECT id FROM roles WHERE role_name = ?',
             ['moderator']
+        );
+        $creator_id = $this->connection->fetchOne(
+            'SELECT id FROM roles WHERE role_name = ?',
+            ['creator']
         );
         $user_id = $this->connection->fetchOne(
             'SELECT id FROM roles WHERE role_name = ?',
@@ -185,11 +193,11 @@ class DatabaseStorage implements StorageInterface
         );
         $this->connection->executeStatement(
             'INSERT OR IGNORE INTO role_hierarchy (parent_role_id, child_role_id) VALUES (?, ?)',
-            [$admin_id, $user_id]
+            [$moderator_id, $creator_id]
         );
         $this->connection->executeStatement(
             'INSERT OR IGNORE INTO role_hierarchy (parent_role_id, child_role_id) VALUES (?, ?)',
-            [$moderator_id, $user_id]
+            [$creator_id, $user_id]
         );
     }
 
