@@ -560,7 +560,7 @@ class MyBot extends tgLib
             $current_page = $user_service->getCurrentPage($user_id);
 
             if ('control_panel' === $payload) {
-                if (! $this->isGranted('moderator')) {
+                if (! $this->isGranted('creator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -569,24 +569,35 @@ class MyBot extends tgLib
                 if (! is_null($current_page)) {
                     $user_service->resetCurrentPage($user_id);
                 }
-                $keyboard = [
-                    'inline_keyboard' => [
-                        [
-                            ['text' => $this->translate('add_author'), 'callback_data' => 'add_author'],
-                            ['text' => $this->translate('delete_author'), 'callback_data' => 'delete_author'],
-                        ],
-                        [
-                            ['text' => $this->translate('manage_projects'), 'callback_data' => 'manage_projects'],
-                            ['text' => $this->translate('manage_categories'), 'callback_data' => 'manage_categories'],
-                        ],
-                        [
-                            ['text' => $this->translate('list_of_authors'), 'callback_data' => 'list_of_authors'],
-                        ],
-                        [
-                            ['text' => $this->translate('access_control'), 'callback_data' => 'access_control'],
-                        ],
-                    ],
-                ];
+
+                $keyboard = ['inline_keyboard' => []];
+
+                if ($this->isGranted('moderator')) {
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $this->translate('add_author'), 'callback_data' => 'add_author'],
+                        ['text' => $this->translate('delete_author'), 'callback_data' => 'delete_author'],
+                    ];
+                }
+
+                $project_row = [];
+                $project_row[] = ['text' => $this->translate('manage_projects'), 'callback_data' => 'manage_projects'];
+                if ($this->isGranted('moderator')) {
+                    $project_row[] = ['text' => $this->translate('manage_categories'), 'callback_data' => 'manage_categories'];
+                }
+                $keyboard['inline_keyboard'][] = $project_row;
+
+                if ($this->isGranted('moderator')) {
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $this->translate('list_of_authors'), 'callback_data' => 'list_of_authors'],
+                    ];
+                }
+
+                if ($this->isGranted('admin')) {
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $this->translate('access_control'), 'callback_data' => 'access_control'],
+                    ];
+                }
+
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('admin_panel_message'), $keyboard);
             } elseif ('add_author' === $payload) {
                 if (! $this->isGranted('moderator')) {
