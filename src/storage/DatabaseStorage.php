@@ -50,76 +50,108 @@ class DatabaseStorage implements StorageInterface
 
     private function initializeSchema() : void
     {
-        $schemaManager = $this->connection->createSchemaManager();
+        $this->connection->executeStatement("
+            CREATE TABLE IF NOT EXISTS authors (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                biography TEXT DEFAULT NULL,
+                channel_link TEXT DEFAULT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                state TEXT
+            )
+        ");
 
-        if (! $schemaManager->tablesExist(['authors'])) {
-            $this->connection->executeStatement("
-                CREATE TABLE authors (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    biography TEXT DEFAULT NULL,
-                    channel_link TEXT DEFAULT NULL,
-                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                    state TEXT
-                )
-            ");
+        $this->connection->executeStatement("
+            CREATE TABLE IF NOT EXISTS categories (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                parent_id INTEGER,
+                FOREIGN KEY (parent_id) REFERENCES categories(id)
+            )
+        ");
 
-            $this->connection->executeStatement("
-                CREATE TABLE content (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    author_id INTEGER,
-                    description TEXT,
-                    tags TEXT,
-                    FOREIGN KEY (author_id) REFERENCES authors(id)
-                )
-            ");
+        $this->connection->executeStatement("
+            CREATE TABLE IF NOT EXISTS content (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                type TEXT NOT NULL,
+                description TEXT,
+                url TEXT,
+                release_date TEXT,
+                status TEXT NOT NULL,
+                cover_file_id TEXT,
+                created_by INTEGER NOT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
 
-            $this->connection->executeStatement("
-                CREATE TABLE user_data (
-                    user_id INTEGER PRIMARY KEY,
-                    user_state TEXT,
-                    current_panel INTEGER,
-                    current_page TEXT,
-                    role TEXT
-                )
-            ");
+        $this->connection->executeStatement("
+            CREATE TABLE IF NOT EXISTS content_categories (
+                content_id INTEGER NOT NULL,
+                category_id INTEGER NOT NULL,
+                PRIMARY KEY (content_id, category_id),
+                FOREIGN KEY (content_id) REFERENCES content(id) ON DELETE CASCADE,
+                FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+            )
+        ");
 
-            $this->connection->executeStatement("
-                CREATE TABLE user_states (
-                    user_id INTEGER,
-                    state_key TEXT,
-                    state_value TEXT,
-                    PRIMARY KEY (user_id, state_key)
-                )
-            ");
+        $this->connection->executeStatement("
+            CREATE TABLE IF NOT EXISTS content_staff (
+                content_id INTEGER NOT NULL,
+                author_id INTEGER NOT NULL,
+                role TEXT NOT NULL,
+                PRIMARY KEY (content_id, author_id, role),
+                FOREIGN KEY (content_id) REFERENCES content(id) ON DELETE CASCADE,
+                FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
+            )
+        ");
 
-            $this->connection->executeStatement("
-                CREATE TABLE roles (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    role_name TEXT NOT NULL UNIQUE
-                )
-            ");
+        $this->connection->executeStatement("
+            CREATE TABLE IF NOT EXISTS user_data (
+                user_id INTEGER PRIMARY KEY,
+                user_state TEXT,
+                current_panel INTEGER,
+                current_page TEXT,
+                role TEXT
+            )
+        ");
 
-            $this->connection->executeStatement("
-                CREATE TABLE role_hierarchy (
-                    parent_role_id INTEGER NOT NULL,
-                    child_role_id INTEGER NOT NULL,
-                    PRIMARY KEY (parent_role_id, child_role_id),
-                    FOREIGN KEY (parent_role_id) REFERENCES roles(id),
-                    FOREIGN KEY (child_role_id) REFERENCES roles(id)
-                )
-            ");
+        $this->connection->executeStatement("
+            CREATE TABLE IF NOT EXISTS user_states (
+                user_id INTEGER,
+                state_key TEXT,
+                state_value TEXT,
+                PRIMARY KEY (user_id, state_key)
+            )
+        ");
 
-            $this->connection->executeStatement("
-                CREATE TABLE user_roles (
-                    user_id INTEGER NOT NULL,
-                    role_id INTEGER NOT NULL,
-                    FOREIGN KEY (user_id) REFERENCES user_data(user_id),
-                    FOREIGN KEY (role_id) REFERENCES roles(id),
-                    PRIMARY KEY (user_id, role_id)
-                )
-            ");
-        }
+        $this->connection->executeStatement("
+            CREATE TABLE IF NOT EXISTS roles (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                role_name TEXT NOT NULL UNIQUE
+            )
+        ");
+
+        $this->connection->executeStatement("
+            CREATE TABLE IF NOT EXISTS role_hierarchy (
+                parent_role_id INTEGER NOT NULL,
+                child_role_id INTEGER NOT NULL,
+                PRIMARY KEY (parent_role_id, child_role_id),
+                FOREIGN KEY (parent_role_id) REFERENCES roles(id),
+                FOREIGN KEY (child_role_id) REFERENCES roles(id)
+            )
+        ");
+
+        $this->connection->executeStatement("
+            CREATE TABLE IF NOT EXISTS user_roles (
+                user_id INTEGER NOT NULL,
+                role_id INTEGER NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES user_data(user_id),
+                FOREIGN KEY (role_id) REFERENCES roles(id),
+                PRIMARY KEY (user_id, role_id)
+            )
+        ");
 
         $this->connection->executeStatement(
             'INSERT OR IGNORE INTO roles (role_name) VALUES (?)',
