@@ -27,7 +27,7 @@ class FuzzySearch
 
     public function transliterate(string $string) : string
     {
-        $transliterationTable = [
+        $transliteration_table = [
             "а" => "a", "б" => "b", "в" => "v", "г" => "g", "д" => "d",
             "е" => "e", "ё" => "e", "ж" => "zh", "з" => "z", "и" => "i",
             "й" => "y", "к" => "k", "л" => "l", "м" => "m", "н" => "n",
@@ -39,7 +39,7 @@ class FuzzySearch
         ];
 
         $string = mb_strtolower($string, "utf-8");
-        return strtr($string, $transliterationTable);
+        return strtr($string, $transliteration_table);
     }
 
     public function fuzzySearch($query, $data) : array
@@ -64,47 +64,47 @@ class FuzzySearch
 
     public function isMatch($query, $item)
     {
-        $fieldsToSearch = ["name", "biography", "link"];
-        $contentFieldsToSearch = ["title", "description"];
+        $fields_to_search = ["name", "biography", "link"];
+        $content_fields_to_search = ["title", "description"];
 
         $query = $this->transliterate(trim(preg_replace(["/[^\p{L}\p{N}\s]+/u", "/\s+/u"], " ", $query)));
-        $queryWords = explode(" ", $query);
+        $query_words = explode(" ", $query);
 
-        foreach ($fieldsToSearch as $field) {
+        foreach ($fields_to_search as $field) {
             if (!isset($item[$field])) {
                 continue; // Skip if the field does not exist
             }
 
-            $fieldValue = $this->transliterate(trim(preg_replace(["/[^\p{L}\p{N}\s]+/u", "/\s+/u"], " ", $item[$field])));
+            $field_value = $this->transliterate(trim(preg_replace(["/[^\p{L}\p{N}\s]+/u", "/\s+/u"], " ", $item[$field])));
 
-            similar_text($fieldValue, $query, $textSimilarity);
+            similar_text($field_value, $query, $text_similarity);
 
-            if ($textSimilarity >= 40) {
-                return $textSimilarity;
+            if ($text_similarity >= 40) {
+                return $text_similarity;
             }
 
-            if (false !== mb_strpos($fieldValue, $query)) {
+            if (false !== mb_strpos($field_value, $query)) {
                 return 100;
             }
 
-            similar_text($fieldValue, $query, $similarity);
+            similar_text($field_value, $query, $similarity);
             if ($similarity >= 60) {
                 return $similarity;
             }
         }
 
-        foreach ($contentFieldsToSearch as $field) {
+        foreach ($content_fields_to_search as $field) {
             if (!isset($item["content"][$field])) {
                 continue;
             }
 
-            $contentValue = $this->transliterate(trim(preg_replace(["/[^\p{L}\p{N}\s]+/u", "/\s+/u"], " ", $item["content"][$field])));
+            $content_value = $this->transliterate(trim(preg_replace(["/[^\p{L}\p{N}\s]+/u", "/\s+/u"], " ", $item["content"][$field])));
 
-            if (false !== mb_strpos($contentValue, $query)) {
+            if (false !== mb_strpos($content_value, $query)) {
                 return 100;
             }
 
-            similar_text($contentValue, $query, $similarity);
+            similar_text($content_value, $query, $similarity);
             if ($similarity >= 60) {
                 return $similarity;
             }
@@ -115,9 +115,9 @@ class FuzzySearch
 
     public function checkPartialMatch($query, $text) : bool
     {
-        $queryWords = explode(" ", $query);
+        $query_words = explode(" ", $query);
 
-        foreach ($queryWords as $word) {
+        foreach ($query_words as $word) {
             if (false === mb_stripos($text, $word)) {
                 return false;
             }
