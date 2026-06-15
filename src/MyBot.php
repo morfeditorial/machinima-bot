@@ -1170,15 +1170,23 @@ class MyBot extends tgLib
                         $staff_text .= "\n- " . htmlspecialchars($member['author_name']) . " (" . htmlspecialchars($member['role']) . ")";
                     }
 
+                    $categories = $content_service->getCategoriesByContentId($project_id);
+                    $categories_names = array_column($categories, 'name');
+                    $categories_text = ! empty($categories_names) ? implode(', ', $categories_names) : "\u{2014}";
+
                     $message_text = "📦 <b>" . htmlspecialchars($project['title']) . "</b>\n";
                     $message_text .= "📝 " . htmlspecialchars($project['description'] ?? '') . "\n";
                     $message_text .= "📊 Статус: " . $project['status'] . "\n";
+                    $message_text .= "🏷 Категорії: " . htmlspecialchars($categories_text) . "\n";
                     $message_text .= "\n👥 Команда:" . ($staff_text ?: " \u{2014}");
 
                     $keyboard = [
                         'inline_keyboard' => [
                             [
                                 ['text' => $this->translate('manage_staff'), 'callback_data' => 'manage_staff:' . $project_id],
+                            ],
+                            [
+                                ['text' => $this->translate('select_categories_for_project'), 'callback_data' => 'select_project_categories:' . $project_id],
                             ],
                             [
                                 ['text' => $this->translate('go_back'), 'callback_data' => $user_service->getCurrentPage($user_id) ?? 'manage_projects'],
@@ -1192,6 +1200,58 @@ class MyBot extends tgLib
                         $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $message_text, $keyboard);
                     }
                 }
+            } elseif (preg_match("/^select_project_categories:(\d+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $content_service = $this->container->get('content_service');
+
+                $all_categories = $content_service->getAllCategories();
+                $project_categories = $content_service->getCategoriesByContentId($project_id);
+                $project_category_ids = array_column($project_categories, 'id');
+
+                $keyboard = ['inline_keyboard' => []];
+                foreach ($all_categories as $category) {
+                    $is_assigned = in_array($category['id'], $project_category_ids);
+                    $icon = $is_assigned ? '✅ ' : '➕ ';
+
+                    // Add indentation for subcategories
+                    $indent = $category['parent_id'] ? '  └ ' : '';
+
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $icon . $indent . $category['name'], 'callback_data' => "toggle_project_category:{$project_id}:{$category['id']}"],
+                    ];
+                }
+
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('go_back'), 'callback_data' => 'view_project:' . $project_id],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('select_categories_for_project'), $keyboard);
+            } elseif (preg_match("/^toggle_project_category:(\d+):(\d+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $category_id = (int) $matches[2];
+                $content_service = $this->container->get('content_service');
+
+                $project_categories = $content_service->getCategoriesByContentId($project_id);
+                $project_category_ids = array_column($project_categories, 'id');
+
+                if (in_array($category_id, $project_category_ids)) {
+                    $content_service->removeCategory($project_id, $category_id);
+                } else {
+                    $content_service->assignCategory($project_id, $category_id);
+                }
+
+                // Refresh the categories view
+                $this->handlePanels(array_merge($message_data, ['payload' => 'select_project_categories:' . $project_id]));
             } elseif (preg_match("/^manage_staff:(\d+)$/", $payload, $matches)) {
                 if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));

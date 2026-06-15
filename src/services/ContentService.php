@@ -168,6 +168,16 @@ class ContentService
 
     // --- Content Category Assignment ---
 
+    public function getCategoriesByContentId(int $content_id) : array
+    {
+        return $this->db->fetchAllAssociative(
+            'SELECT c.* FROM categories c
+             JOIN content_categories cc ON c.id = cc.category_id
+             WHERE cc.content_id = ?',
+            [$content_id]
+        );
+    }
+
     public function assignCategory(int $content_id, int $category_id) : bool
     {
         return (bool) $this->db->executeStatement(
