@@ -40,30 +40,30 @@ class MyBot extends tgLib
 
         $translations = json_decode(file_get_contents(self::TRANSLATIONS_FILE), true);
 
-        $containerBuilder = new ContainerBuilder();
+        $container_builder = new ContainerBuilder();
 
-        $containerBuilder->register('translator', Translator::class)
+        $container_builder->register('translator', Translator::class)
             ->setArguments([$translations, 'en']);
 
-        $containerBuilder->register('fuzzy_search', FuzzySearch::class)
+        $container_builder->register('fuzzy_search', FuzzySearch::class)
             ->setAutowired(true);
 
-        $containerBuilder->register('db_config', \morfeditorial\config\SQLiteConfig::class)
+        $container_builder->register('db_config', \morfeditorial\config\SQLiteConfig::class)
             ->setArgument('$filePath', self::DATABASE_FILE);
 
-        $containerBuilder->register('storage', \morfeditorial\storage\DatabaseStorage::class)
+        $container_builder->register('storage', \morfeditorial\storage\DatabaseStorage::class)
             ->setAutowired(true);
 
-        $containerBuilder->register('author_service', \morfeditorial\services\AuthorService::class)
+        $container_builder->register('author_service', \morfeditorial\services\AuthorService::class)
             ->setAutowired(true);
-        $containerBuilder->register('user_service', \morfeditorial\services\UserService::class)
+        $container_builder->register('user_service', \morfeditorial\services\UserService::class)
             ->setAutowired(true);
-        $containerBuilder->register('user_state_service', \morfeditorial\services\UserStateService::class)
+        $container_builder->register('user_state_service', \morfeditorial\services\UserStateService::class)
             ->setAutowired(true);
-        $containerBuilder->register('role_service', \morfeditorial\services\RoleService::class)
+        $container_builder->register('role_service', \morfeditorial\services\RoleService::class)
             ->setAutowired(true);
 
-        $containerBuilder->register('visuals_links', \ArrayObject::class)
+        $container_builder->register('visuals_links', \ArrayObject::class)
             ->setArguments([[
                 'https://i.ibb.co/mC7sv0W/01.png', // WELCOME_TO_MORF
                 'https://i.ibb.co/ygqgFMV/02.png', // WELCOME_ADMIN_PANEL
@@ -79,9 +79,9 @@ class MyBot extends tgLib
                 'https://i.ibb.co/TYPWsLQ/12.png', // AUTHOR_INFO_MANAGEMENT
             ]]);
 
-        $containerBuilder->compile();
+        $container_builder->compile();
 
-        $this->container = $containerBuilder;
+        $this->container = $container_builder;
 
         $this->command_factory = new CommandFactory($this, $this->container);
         $this->initializeCommands();
@@ -593,17 +593,17 @@ class MyBot extends tgLib
 
     private function extractMessageData($data)
     {
-        $callbackQuery = $data['callback_query'] ?? null;
+        $callback_query = $data['callback_query'] ?? null;
 
         return [
-            'message' => $callbackQuery['message']['text'] ?? $data['message']['text'] ?? null,
-            'message_id' => $callbackQuery['message']['message_id'] ?? $data['message']['message_id'] ?? null,
-            'chat_type' => $callbackQuery['message']['chat']['type'] ?? $data['message']['chat']['type'] ?? null,
-            'chat_id' => $callbackQuery['message']['chat']['id'] ?? $data['message']['chat']['id'] ?? null,
-            'user_id' => $callbackQuery['message']['from']['id'] ?? $data['message']['from']['id'] ?? null,
-            'language_code' => $callbackQuery['from']['language_code'] ?? $data['message']['from']['language_code'] ?? null,
-            'payload' => $callbackQuery['data'] ?? null,
-            'callback_query_id' => $callbackQuery['id'] ?? null,
+            'message' => $callback_query['message']['text'] ?? $data['message']['text'] ?? null,
+            'message_id' => $callback_query['message']['message_id'] ?? $data['message']['message_id'] ?? null,
+            'chat_type' => $callback_query['message']['chat']['type'] ?? $data['message']['chat']['type'] ?? null,
+            'chat_id' => $callback_query['message']['chat']['id'] ?? $data['message']['chat']['id'] ?? null,
+            'user_id' => $callback_query['message']['from']['id'] ?? $data['message']['from']['id'] ?? null,
+            'language_code' => $callback_query['from']['language_code'] ?? $data['message']['from']['language_code'] ?? null,
+            'payload' => $callback_query['data'] ?? null,
+            'callback_query_id' => $callback_query['id'] ?? null,
             'reply_message_id' => $data['message']['reply_to_message']['message_id'] ?? null,
             'reply_author' => $data['message']['reply_to_message']['from']['id'] ?? null,
             'first_name' => $data['message']['from']['first_name'] ?? null,
