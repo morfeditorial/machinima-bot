@@ -377,6 +377,42 @@
         "be": "Катэгорый не знойдзена.",
         "uk": "Категорій не знайдено."
     },
+    "submit_project": {
+        "en": "Submit for Review",
+        "pl": "Prześlij do recenzji",
+        "be": "Адправіць на праверку",
+        "uk": "Відправити на перевірку"
+    },
+    "publish_project": {
+        "en": "Publish ✅",
+        "pl": "Opublikuj ✅",
+        "be": "Апублікаваць ✅",
+        "uk": "Опублікувати ✅"
+    },
+    "reject_project": {
+        "en": "Reject ❌",
+        "pl": "Odrzuć ❌",
+        "be": "Адхіліць ❌",
+        "uk": "Відхилити ❌"
+    },
+    "redraft_project": {
+        "en": "Return to Draft",
+        "pl": "Wróć do wersji roboczej",
+        "be": "Вярнуць у чарнавікі",
+        "uk": "Повернути в чернетки"
+    },
+    "status_changed_message": {
+        "en": "Project status changed to: {status}",
+        "pl": "Status projektu zmieniony na: {status}",
+        "be": "Статус праекта зменены на: {status}",
+        "uk": "Статус проєкту змінено на: {status}"
+    },
+    "status_change_failed_message": {
+        "en": "Failed to change status. Invalid transition.",
+        "pl": "Nie udało się zmienić statusu. Nieprawidłowe przejście.",
+        "be": "Не ўдалося змяніць статус. Няправільны пераход.",
+        "uk": "Не вдалося змінити статус. Недопустимий перехід."
+    },
     "author_not_found_message": {
         "en": "I couldn`t find the machinimator you selected. Perhaps it was removed due to a violation… 🙁",
         "pl": "Nie mogłem odnaleźć wybranego przez ciebie machinimatora. Być może został usunięty z powodu naruszenia… 🙁",
