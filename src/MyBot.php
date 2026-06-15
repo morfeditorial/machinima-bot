@@ -384,9 +384,9 @@ class MyBot extends tgLib
             $role_name = $state_data['role_name'] ?? '';
 
             if ($role_service->assignRole($target_user_id, $role_name)) {
-                $this->sendMessage($chat_id, str_replace(['{user}', '{role}'], [(string) $target_user_id, $role_name], $this->translate('role_assigned_message')));
+                $this->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('assign_role_message')));
             } else {
-                $this->sendMessage($chat_id, $this->translate('role_assign_failure_message'));
+                $this->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_assignment_failure_message')));
             }
 
             $user_state_service->clearState($user_id, 'awaiting_user_id_for_role');
@@ -684,7 +684,7 @@ class MyBot extends tgLib
                 $role = $role_service->getRoleByName($role_name);
 
                 if (! $role) {
-                    $this->sendMessage($chat_id, $this->translate('role_not_found_message'));
+                    $this->sendMessage($chat_id, str_replace('{roleName}', htmlspecialchars($role_name), $this->translate('role_not_found_message')));
 
                     return;
                 }
@@ -1112,80 +1112,6 @@ class MyBot extends tgLib
         }
 
         return $keyboard;
-    }
-
-    public function sendUpdateRolesPriorityPanel(int $chat_id, int $user_id, $callback_query_id) : void
-    {
-        $role_service = $this->container->get('role_service');
-        $user_state_service = $this->container->get('user_state_service');
-        $user_service = $this->container->get('user_service');
-
-        if (! $this->isGranted('admin')) {
-            $this->sendMessage($chat_id, $this->translate('no_permission_message'));
-
-            return;
-        }
-
-        $roles = $role_service->queryRolesOrderedByPriority();
-        $selected_role = $user_state_service->getState($user_id, 'selected_role');
-
-        $keyboard = ['inline_keyboard' => []];
-
-        foreach ($roles as $role) {
-            $keyboard_row = [];
-            $this->buildRoleButton($keyboard_row, $selected_role, $role);
-            $keyboard['inline_keyboard'][] = $keyboard_row;
-        }
-
-        $keyboard['inline_keyboard'][] = [
-            ['text' => $this->translate('go_back'), 'callback_data' => 'access_control'],
-        ];
-
-        $visuals_links = $this->container->get('visuals_links');
-
-        $this->editMediaMessage($chat_id, $user_service->getCurrentPanel($user_id), $visuals_links[1], 'Ви можете змінити пріоритети ролей:', $keyboard);
-    }
-
-    public function toggleRoleSelection(int $chat_id, int $user_id, mixed $callback_query_id, string $role_name) : void
-    {
-        $user_state_service = $this->container->get('user_state_service');
-        $selected_role = $user_state_service->getState($user_id, 'selected_role');
-
-        if ($selected_role && $selected_role['role_name'] === $role_name) {
-            $user_state_service->clearState($user_id, 'selected_role');
-            $this->callbackAnswer($callback_query_id, 'Ви зняли виділення з ролі «' . $role_name . '».');
-        } elseif ($selected_role) {
-            $this->updateRolePriority($chat_id, $user_id, $callback_query_id, $selected_role['role_name'], $role_name);
-        } else {
-            $user_state_service->setState($user_id, ['role_name' => $role_name], 'selected_role');
-            $this->callbackAnswer($callback_query_id, 'Ви вибрали роль «' . $role_name . '» для зміни пріоритету.');
-        }
-
-        $this->sendUpdateRolesPriorityPanel($chat_id, $user_id, $callback_query_id);
-    }
-
-    private function buildRoleButton(array &$keyboard_row, ?array $selected_role, array $role) : void
-    {
-        $button_text = ($selected_role && $selected_role['role_name'] === $role['role_name']) ?
-            "✔ {$role['role_name']} ({$role['priority']})" :
-            "{$role['role_name']} ({$role['priority']})";
-        $keyboard_row[] = [
-            'text' => $button_text,
-            'callback_data' => "select_role:{$role['role_name']}",
-        ];
-    }
-
-    public function updateRolePriority(int $chat_id, int $user_id, mixed $callback_query_id, string $selected_role_name, string $target_role_name) : void
-    {
-        $role_service = $this->container->get('role_service');
-        $user_state_service = $this->container->get('user_state_service');
-        $target_priority = $role_service->getRolePriority($target_role_name);
-
-        $role_service->updateRolePriorities($selected_role_name, $target_priority);
-
-        $user_state_service->clearState($user_id, 'selected_role');
-        $this->callbackAnswer($callback_query_id, 'Роль «' . $selected_role_name . '» оновлена.');
-        $this->sendUpdateRolesPriorityPanel($chat_id, $user_id, $callback_query_id);
     }
 
     private function translate(string $key)

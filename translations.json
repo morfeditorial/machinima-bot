@@ -360,10 +360,10 @@
         "uk": "Створити роль"
     },
     "create_role_message": {
-        "en": "Role «{roleName}» with priority {priority} has been created.",
-        "pl": "Rola «{roleName}» z priorytetem {priority} została utworzona.",
-        "be": "Роля «{roleName}» з прыярытэтам {priority} была створана.",
-        "uk": "Роль «{roleName}» з пріоритетом {priority} була створена."
+        "en": "Role «{roleName}» has been created.",
+        "pl": "Rola «{roleName}» została utworzona.",
+        "be": "Роля «{roleName}» была створана.",
+        "uk": "Роль «{roleName}» була створена."
     },
     "role_already_exist_message": {
         "en": "Role «{roleName}» already exists. Choose a different name.",
@@ -371,11 +371,12 @@
         "be": "Роля з назвай «{roleName}» ужо існуе. Выберыце іншую назву.",
         "uk": "Роль з назвою «{roleName}» вже існує. Виберіть іншу назву."
     },
+
     "create_role_usage_message": {
-        "en": "Incorrect command format. Use: \/create_role roleName priority",
-        "pl": "Niepoprawny format polecenia. Użyj: \/create_role roleName priority",
-        "be": "Няправільны фармат каманды. Выкарыстоўвайце: \/create_role roleName priority",
-        "uk": "Неправильний формат команди. Використовуйте: \/create_role roleName priority"
+        "en": "Incorrect command format. Use: \/create_role roleName",
+        "pl": "Niepoprawny format polecenia. Użyj: \/create_role roleName",
+        "be": "Няправільны фармат каманды. Выкарыстоўвайце: \/create_role roleName",
+        "uk": "Неправильний формат команди. Використовуйте: \/create_role roleName"
     },
     "delete_role": {
         "en": "Delete role",
@@ -388,12 +389,6 @@
         "pl": "Zobacz role",
         "be": "Прагледзець ролі",
         "uk": "Переглянути ролі"
-    },
-    "change_priorities": {
-        "en": "Change priorities",
-        "pl": "Zmień priorytety",
-        "be": "Змяніць прыярытэты",
-        "uk": "Зміна пріоритетів"
     },
     "assign_role_message": {
         "en": "Role «{roleName}» has been assigned to user {userId}.",
@@ -568,17 +563,5 @@
         "pl": "Nieprawidłowe ID użytkownika.",
         "be": "Няправільны ID карыстальніка.",
         "uk": "Невірний ID користувача."
-    },
-    "role_assigned_message": {
-        "en": "Role {role} assigned to user {user}.",
-        "pl": "Rola {role} została przypisana użytkownikowi {user}.",
-        "be": "Роля {role} прызначаная карыстальніку {user}.",
-        "uk": "Роль {role} призначена користувачу {user}."
-    },
-    "role_assign_failure_message": {
-        "en": "Failed to assign role.",
-        "pl": "Nie udało się przypisać roli.",
-        "be": "Не атрымалася прызначыць ролю.",
-        "uk": "Не вдалося призначити роль."
     }
 }
