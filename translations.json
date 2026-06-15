@@ -487,7 +487,7 @@
     },
     "select_child_to_remove_message": {
         "en": "Select child of {role} to remove relationship:",
-        "pl": "Wybierz rolę podrzędную {role}, aby usunąć powiązanie:",
+        "pl": "Wybierz rolę podrzędną {role}, aby usunąć powiązanie:",
         "be": "Абярыце даччыную ролю {role} для выдалення сувязі:",
         "uk": "Оберіть дитину ролі {role} для видалення зв'язку:"
     },
