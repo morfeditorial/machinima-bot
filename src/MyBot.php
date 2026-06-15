@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace morfeditorial;
 
+use morfeditorial\commands\CommandInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
