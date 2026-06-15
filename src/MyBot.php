@@ -355,7 +355,7 @@ class MyBot extends tgLib
             $role_service->createRole($message);
             $user_state_service->clearState($user_id, 'default');
 
-            $all_roles = $role_service->getAllRoles();
+            $all_roles = $role_service->getAllRolesSorted();
             $keyboard = ['inline_keyboard' => []];
 
             foreach ($all_roles as $role) {
@@ -647,14 +647,14 @@ class MyBot extends tgLib
                 }
 
                 $role_service = $this->container->get('role_service');
-                $all_roles = $role_service->getAllRoles();
+                $all_roles = $role_service->getAllRolesSorted();
                 $hierarchy = $role_service->getRoleHierarchy();
 
                 $keyboard = ['inline_keyboard' => []];
 
                 foreach ($all_roles as $role) {
                     $raw_children = $hierarchy['ROLE_' . $role['role_name']] ?? [];
-                    $children_names = array_map(fn($r) => str_replace('ROLE_', '', $r), $raw_children);
+                    $children_names = array_map(fn ($r) => str_replace('ROLE_', '', $r), $raw_children);
                     $children_text = ! empty($children_names) ? implode(', ', $children_names) : "\u{2014}";
 
                     $keyboard['inline_keyboard'][] = [
@@ -727,7 +727,7 @@ class MyBot extends tgLib
 
                 $role_service = $this->container->get('role_service');
                 $role_name = $matches[1];
-                $all_roles = $role_service->getAllRoles();
+                $all_roles = $role_service->getAllRolesSorted();
                 $existing_parents = $role_service->getParents($role_name);
                 $existing_parent_names = array_column($existing_parents, 'role_name');
 
@@ -967,7 +967,7 @@ class MyBot extends tgLib
                 }
 
                 $role_service = $this->container->get('role_service');
-                $all_roles = $role_service->getAllRoles();
+                $all_roles = $role_service->getAllRolesSorted();
 
                 $keyboard = ['inline_keyboard' => []];
 

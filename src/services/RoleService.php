@@ -174,6 +174,46 @@ class RoleService
         return $this->db->fetchAllAssociative('SELECT * FROM roles');
     }
 
+    public function getAllRolesSorted() : array
+    {
+        $roles = $this->getAllRoles();
+
+        $depths = [];
+        foreach ($roles as $role) {
+            $depths[$role['role_name']] = $this->calculateRoleDepth($role['role_name']);
+        }
+
+        usort($roles, function ($a, $b) use ($depths) {
+            if ($depths[$a['role_name']] === $depths[$b['role_name']]) {
+                return strcmp($a['role_name'], $b['role_name']);
+            }
+
+            return $depths[$a['role_name']] <=> $depths[$b['role_name']];
+        });
+
+        return $roles;
+    }
+
+    private function calculateRoleDepth(string $role_name, array $visited = []) : int
+    {
+        if (in_array($role_name, $visited, true)) {
+            return 999; // Cycle protection
+        }
+
+        $parents = $this->getParents($role_name);
+        if (empty($parents)) {
+            return 0;
+        }
+
+        $visited[] = $role_name;
+        $max_depth = 0;
+        foreach ($parents as $parent) {
+            $max_depth = max($max_depth, $this->calculateRoleDepth($parent['role_name'], $visited));
+        }
+
+        return $max_depth + 1;
+    }
+
     public function getRoleByName(string $role_name) : ?array
     {
         $result = $this->db->fetchAssociative(

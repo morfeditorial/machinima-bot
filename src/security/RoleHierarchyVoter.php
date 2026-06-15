@@ -30,7 +30,7 @@ class RoleHierarchyVoter extends Voter
         }
 
         $role_hierarchy = new RoleHierarchy($this->role_service->getRoleHierarchy());
-        $reachable = $role_hierarchy->getReachableRoleNames(array_map(fn($role) => 'ROLE_' . $role, $user->getRoles()));
+        $reachable = $role_hierarchy->getReachableRoleNames(array_map(fn ($role) => 'ROLE_' . $role, $user->getRoles()));
         $attribute = 'ROLE_' . $attribute;
 
         return in_array($attribute, $reachable, true);
