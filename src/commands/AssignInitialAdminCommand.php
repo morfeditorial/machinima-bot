@@ -65,6 +65,9 @@ class AssignInitialAdminCommand extends AbstractCommand
             $this->getRoleService()->createRole('user');
         }
 
+        $this->getRoleService()->addParentChild('admin', 'moderator');
+        $this->getRoleService()->addParentChild('moderator', 'user');
+
         if ($this->getRoleService()->getUsersCountByRole('admin') > 0) {
             $this->bot->sendMessage($chat_id, $this->translate('already_initialled_admin_message'));
 

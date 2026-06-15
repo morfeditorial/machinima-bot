@@ -83,7 +83,7 @@ class RoleService
         $hierarchy = [];
 
         foreach ($rows as $row) {
-            $hierarchy[$row['parent']][] = $row['child'];
+            $hierarchy['ROLE_' . $row['parent']][] = 'ROLE_' . $row['child'];
         }
 
         return $hierarchy;
