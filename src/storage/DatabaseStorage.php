@@ -107,10 +107,19 @@ class DatabaseStorage implements StorageInterface
                     role_id INTEGER NOT NULL,
                     FOREIGN KEY (user_id) REFERENCES user_data(user_id),
                     FOREIGN KEY (role_id) REFERENCES roles(id),
-                    PRIMARY KEY (user_id)
+                    PRIMARY KEY (user_id, role_id)
                 )
             ");
         }
+
+        $this->connection->executeStatement(
+            'INSERT OR IGNORE INTO roles (role_name, priority) VALUES (?, ?)',
+            ['admin', 100]
+        );
+        $this->connection->executeStatement(
+            'INSERT OR IGNORE INTO roles (role_name, priority) VALUES (?, ?)',
+            ['moderator', 50]
+        );
     }
 
     public function getConnection() : Connection
