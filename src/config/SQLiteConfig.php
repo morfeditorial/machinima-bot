@@ -21,8 +21,6 @@ declare(strict_types=1);
 
 namespace morfeditorial\config;
 
-use morfeditorial\interfaces\DatabaseConfigInterface;
-
 class SQLiteConfig implements DatabaseConfigInterface
 {
     public function __construct(private string $filePath) {}

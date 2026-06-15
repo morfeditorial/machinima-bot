@@ -19,7 +19,7 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial\interfaces;
+namespace morfeditorial\storage;
 
 use Doctrine\DBAL\Connection;
 

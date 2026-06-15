@@ -23,8 +23,7 @@ namespace morfeditorial\storage;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use morfeditorial\interfaces\DatabaseConfigInterface;
-use morfeditorial\interfaces\StorageInterface;
+use morfeditorial\config\DatabaseConfigInterface;
 use RuntimeException;
 
 class DatabaseStorage implements StorageInterface

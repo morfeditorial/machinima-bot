@@ -22,7 +22,7 @@ declare(strict_types=1);
 namespace morfeditorial\services;
 
 use Exception;
-use morfeditorial\interfaces\StorageInterface;
+use morfeditorial\storage\StorageInterface;
 
 class RoleService
 {

@@ -21,7 +21,7 @@ declare(strict_types=1);
 
 namespace morfeditorial\services;
 
-use morfeditorial\interfaces\StorageInterface;
+use morfeditorial\storage\StorageInterface;
 
 class UserStateService
 {
