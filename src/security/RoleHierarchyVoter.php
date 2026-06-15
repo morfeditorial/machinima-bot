@@ -8,8 +8,9 @@ use morfeditorial\services\RoleService;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Role\RoleHierarchy;
 
-class RolePriorityVoter extends Voter
+class RoleHierarchyVoter extends Voter
 {
     public function __construct(
         private RoleService $role_service,
@@ -22,28 +23,15 @@ class RolePriorityVoter extends Voter
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null) : bool
     {
-        $required_role = $this->role_service->getRoleByName($attribute);
-
-        if (null === $required_role) {
-            return false;
-        }
-
         $user = $token->getUser();
 
         if (! $user instanceof BotUser) {
             return false;
         }
 
-        $max_user_priority = 0;
+        $role_hierarchy = new RoleHierarchy($this->role_service->getRoleHierarchy());
+        $reachable = $role_hierarchy->getReachableRoleNames($user->getRoles());
 
-        foreach ($user->getRoles() as $role_name) {
-            $role = $this->role_service->getRoleByName($role_name);
-
-            if (null !== $role && $role['priority'] > $max_user_priority) {
-                $max_user_priority = $role['priority'];
-            }
-        }
-
-        return $max_user_priority >= $required_role['priority'];
+        return in_array($attribute, $reachable, true);
     }
 }

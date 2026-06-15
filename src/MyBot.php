@@ -82,11 +82,11 @@ class MyBot extends tgLib
 
         $container_builder->register('token_storage', \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage::class)
             ->setPublic(true);
-        $container_builder->register('role_priority_voter', \morfeditorial\security\RolePriorityVoter::class)
+        $container_builder->register('role_hierarchy_voter', \morfeditorial\security\RoleHierarchyVoter::class)
             ->setAutowired(true)
             ->setPublic(true);
         $container_builder->register('access_decision_manager', \Symfony\Component\Security\Core\Authorization\AccessDecisionManager::class)
-            ->setArgument('$voters', [new Reference('role_priority_voter')])
+            ->setArgument('$voters', [new Reference('role_hierarchy_voter')])
             ->setPublic(true);
         $container_builder->register('authorization_checker', \Symfony\Component\Security\Core\Authorization\AuthorizationChecker::class)
             ->setArguments([
