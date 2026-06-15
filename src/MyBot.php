@@ -653,8 +653,9 @@ class MyBot extends tgLib
                 $keyboard = ['inline_keyboard' => []];
 
                 foreach ($all_roles as $role) {
-                    $children = $hierarchy[$role['role_name']] ?? [];
-                    $children_text = ! empty($children) ? implode(', ', $children) : "\u{2014}";
+                    $raw_children = $hierarchy['ROLE_' . $role['role_name']] ?? [];
+                    $children_names = array_map(fn($r) => str_replace('ROLE_', '', $r), $raw_children);
+                    $children_text = ! empty($children_names) ? implode(', ', $children_names) : "\u{2014}";
 
                     $keyboard['inline_keyboard'][] = [
                         [
