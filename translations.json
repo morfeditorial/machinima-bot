@@ -11,18 +11,6 @@
         "be": "Даведайцеся больш пра бота",
         "uk": "Дізнатися більше про бота"
     },
-    "time_command_description": {
-        "en": "Check the current time",
-        "pl": "Sprawdź aktualny czas",
-        "be": "Даведайцеся актуальны час",
-        "uk": "Дізнатися поточний час"
-    },
-    "whois_command_description": {
-        "en": "Get information about an IP or domain",
-        "pl": "Uzyskaj informacje o adresie IP lub domenie",
-        "be": "Атрымаць інфармацыю пра IP або дамен",
-        "uk": "Отримати інформацію про IP або домен"
-    },
     "update_command_description": {
         "en": "Update the bot, including name, description, and localized information",
         "pl": "Zaktualizuj bota, w tym nazwę, opis i informacje lokalne",
@@ -112,30 +100,6 @@
         "pl": "📑 Znalazłem kilku autorów ({count}) dla twojego zapytania: «<code>{searchQuery}<\/code>». Możesz je przejrzeć, naciskając przyciski poniżej:",
         "be": "📑 Знойдзена некалькі аўтараў ({count}) па вашым запыце: «<code>{searchQuery}<\/code>». Вы можаце праглядзець іх, націскаючы кнопкі ніжэй:",
         "uk": "📑 Я знайшов кілька авторів ({count}) за твоїм запитом: «<code>{searchQuery}<\/code>». Ти можеш оглянути їх, натискаючи кнопки знизу:"
-    },
-    "time_message": {
-        "en": "🕰️ Server time: {date}",
-        "pl": "🕰️ Czas serwera: {date}",
-        "be": "🕰️ Час сервера: {date}",
-        "uk": "🕰️ Серверний час: {date}"
-    },
-    "whois_usage_message": {
-        "en": "Usage: \/whois &lt;IP address&gt;",
-        "pl": "Użycie: \/whois &lt;adres IP&gt;",
-        "be": "Выкарыстанне: \/whois &lt;IP-адрас&gt;",
-        "uk": "Використання: \/whois &lt;IP-адреса&gt;"
-    },
-    "whois_no_response_message": {
-        "en": "IP address not responding!",
-        "pl": "Adres IP nie odpowiada!",
-        "be": "IP-адрас не адказвае!",
-        "uk": "IP-адреса не відповідає!"
-    },
-    "whois_info_message": {
-        "en": "Information about {ip_address}:\n\n🌐 IP address › {query}\n\nCountry › {country}\nCountry Code › {country_code}\nRegion\/City › {region}\/{city}\nTimezone › {timezone}\nLatitude, Longitude › {lat}, {lon}\n\n👥 Organization › {org}\n⚙️ Provider › {isp}",
-        "pl": "Informacje o {ip_address}:\n\n🌐 Adres IP › {query}\n\nKraj › {country}\nKod kraju › {country_code}\nRegion\/Miasto › {region}\/{city}\nStrefa czasowa › {timezone}\nSzerokość, Długość › {lat}, {lon}\n\n👥 Organizacja › {org}\n⚙️ Dostawca › {isp}",
-        "be": "Інфармацыя пра {ip_address}:\n\n🌐 IP-адрас › {query}\n\nКраіна › {country}\nКод краіны › {country_code}\nРэгіён\/Горад › {region}\/{city}\nЧасавы пояс › {timezone}\nШырата, даўгата › {lat}, {lon}\n\n👥 Арганізацыя › {org}\n⚙️ Пастаўшчык › {isp}",
-        "uk": "Інформація про {ip_address}:\n\n🌐 IP-адреса › {query}\n\nКраїна › {country}\nКод країни › {country_code}\nРегіон\/Місто › {region}\/{city}\nЧасовий пояс › {timezone}\nШирота, довгота › {lat}, {lon}\n\n👥 Організація › {org}\n⚙️ Провайдер › {isp}"
     },
     "update_message": {
         "en": "I successfully updated the bot`s data! 🔄",
