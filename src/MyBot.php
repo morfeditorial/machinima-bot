@@ -79,6 +79,7 @@ class MyBot extends tgLib
         $container_builder->register('role_service', \morfeditorial\services\RoleService::class)
             ->setAutowired(true)
             ->setPublic(true);
+        $container_builder->setAlias(\morfeditorial\services\RoleService::class, 'role_service');
 
         $container_builder->register('token_storage', \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage::class)
             ->setPublic(true);
