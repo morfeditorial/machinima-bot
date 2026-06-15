@@ -323,6 +323,60 @@
         "be": "Выдаліць удзельніка",
         "uk": "Видалити учасника"
     },
+    "manage_categories": {
+        "en": "Manage Categories 🏷",
+        "pl": "Zarządzaj kategoriami 🏷",
+        "be": "Кіраванне катэгорыямі 🏷",
+        "uk": "Управління категоріями 🏷"
+    },
+    "add_category": {
+        "en": "Add Category",
+        "pl": "Dodaj kategorię",
+        "be": "Дадаць катэгорыю",
+        "uk": "Додати категорію"
+    },
+    "enter_category_name_message": {
+        "en": "Enter the name of the new category:",
+        "pl": "Wprowadź nazwę nowej kategorii:",
+        "be": "Увядзіце назву новай катэгорыі:",
+        "uk": "Введи назву нової категорії:"
+    },
+    "category_added_message": {
+        "en": "Category «{name}» added!",
+        "pl": "Kategoria «{name}» została dodana!",
+        "be": "Катэгорыя «{name}» дададзена!",
+        "uk": "Категорію «{name}» додано!"
+    },
+    "delete_category": {
+        "en": "Delete Category",
+        "pl": "Usuń kategorię",
+        "be": "Выдаліць катэгорыю",
+        "uk": "Видалити категорію"
+    },
+    "confirm_delete_category_message": {
+        "en": "Are you sure you want to delete category «{name}»? This will NOT delete subcategories but will remove links.",
+        "pl": "Czy na pewno chcesz usunąć kategorię «{name}»? To NIE usunie podkategorii, ale usunie powiązania.",
+        "be": "Вы ўпэўнены, што хочаце выдаліць катэгорыю «{name}»? Гэта НЕ выдаліць падкатэгорыі, але выдаліць сувязі.",
+        "uk": "Ти впевнений, що хочеш видалити категорію «{name}»? Це НЕ видалить підкатегорії, але розірве зв'язки."
+    },
+    "category_deleted_message": {
+        "en": "Category deleted!",
+        "pl": "Kategoria usunięta!",
+        "be": "Катэгорыя выдалена!",
+        "uk": "Категорію видалено!"
+    },
+    "select_categories_for_project": {
+        "en": "Select Categories",
+        "pl": "Wybierz kategorie",
+        "be": "Абярыце катэгорыі",
+        "uk": "Обрати категорії"
+    },
+    "no_categories_message": {
+        "en": "No categories found.",
+        "pl": "Nie znaleziono żadnych kategorii.",
+        "be": "Катэгорый не знойдзена.",
+        "uk": "Категорій не знайдено."
+    },
     "author_not_found_message": {
         "en": "I couldn`t find the machinimator you selected. Perhaps it was removed due to a violation… 🙁",
         "pl": "Nie mogłem odnaleźć wybranego przez ciebie machinimatora. Być może został usunięty z powodu naruszenia… 🙁",
