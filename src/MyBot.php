@@ -86,6 +86,16 @@ class MyBot extends tgLib
             ->setPublic(true);
         $container_builder->setAlias(\morfeditorial\services\ContentService::class, 'content_service');
 
+        $container_builder->register('content_workflow_definition', \Symfony\Component\Workflow\Definition::class)
+            ->setFactory([self::class, 'createContentWorkflowDefinition']);
+
+        $container_builder->register('content_workflow', \Symfony\Component\Workflow\Workflow::class)
+            ->setArguments([
+                new Reference('content_workflow_definition'),
+                new \Symfony\Component\Workflow\MarkingStore\MethodMarkingStore(true, 'status'),
+            ])
+            ->setPublic(true);
+
         $container_builder->register('token_storage', \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage::class)
             ->setPublic(true);
         $container_builder->register('role_hierarchy_voter', \morfeditorial\security\RoleHierarchyVoter::class)
@@ -1025,6 +1035,19 @@ class MyBot extends tgLib
     public function isGranted(string $role) : bool
     {
         return $this->container->get('authorization_checker')->isGranted($role);
+    }
+
+    public static function createContentWorkflowDefinition() : \Symfony\Component\Workflow\Definition
+    {
+        $builder = new \Symfony\Component\Workflow\DefinitionBuilder();
+        $builder->addPlaces(['draft', 'pending_review', 'published', 'rejected']);
+
+        $builder->addTransition(new \Symfony\Component\Workflow\Transition('submit', 'draft', 'pending_review'));
+        $builder->addTransition(new \Symfony\Component\Workflow\Transition('publish', 'pending_review', 'published'));
+        $builder->addTransition(new \Symfony\Component\Workflow\Transition('reject', 'pending_review', 'rejected'));
+        $builder->addTransition(new \Symfony\Component\Workflow\Transition('re-draft', 'rejected', 'draft'));
+
+        return $builder->build();
     }
 
     protected function createAvatar($author_name, $author_link, $author_image = 'path/to/author_image.jpg')

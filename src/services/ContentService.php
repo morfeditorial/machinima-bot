@@ -23,14 +23,35 @@ namespace morfeditorial\services;
 
 use Doctrine\DBAL\Connection;
 use morfeditorial\storage\StorageInterface;
+use Symfony\Component\Workflow\Workflow;
 
 class ContentService
 {
     private Connection $db;
 
-    public function __construct(private StorageInterface $storage)
-    {
+    public function __construct(
+        private StorageInterface $storage,
+        private Workflow $workflow
+    ) {
         $this->db = $storage->getConnection();
+    }
+
+    public function applyTransition(int $content_id, string $transition) : bool
+    {
+        $content = $this->getContentById($content_id);
+        if (!$content) {
+            return false;
+        }
+
+        $contentItem = new ContentItem($content_id, $content['status']);
+
+        if ($this->workflow->can($contentItem, $transition)) {
+            $this->workflow->apply($contentItem, $transition);
+            $this->updateContent($content_id, ['status' => $contentItem->getStatus()]);
+            return true;
+        }
+
+        return false;
     }
 
     // --- Content CRUD ---
