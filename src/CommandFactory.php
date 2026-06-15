@@ -22,16 +22,17 @@ declare(strict_types=1);
 namespace morfeditorial;
 
 use morfeditorial\commands\CommandInterface;
+use Psr\Container\ContainerInterface;
 
 class CommandFactory
 {
     private MyBot $bot;
 
-    private DependencyContainer $container;
+    private ContainerInterface $container;
 
     private array $commands = [];
 
-    public function __construct(MyBot $bot, DependencyContainer &$container)
+    public function __construct(MyBot $bot, ContainerInterface $container)
     {
         $this->bot = $bot;
         $this->container = $container;
