@@ -54,20 +54,21 @@ class MyBot extends tgLib
         $containerBuilder->register('db_manager', DatabaseManager::class)
             ->setArguments([$storage->getConnection()]);
 
-        $containerBuilder->setParameter('visuals_links', [
-            'https://i.ibb.co/mC7sv0W/01.png', // WELCOME_TO_MORF
-            'https://i.ibb.co/ygqgFMV/02.png', // WELCOME_ADMIN_PANEL
-            'https://i.ibb.co/1KysC55/03.png', // NEW_MACHINIMATOR_ADDED
-            'https://i.ibb.co/64vFVfS/04.png', // AUTHOR_NAME_CHANGE
-            'https://i.ibb.co/TLDzmVf/05.png', // ADD_MACHINIMATOR_BIO
-            'https://i.ibb.co/85LB6PW/06.png', // EDIT_MACHINIMATOR_BIO
-            'https://i.ibb.co/fDbmdMM/07.png', // SUCCESSFUL_NAME_CHANGE
-            'https://i.ibb.co/tqMNGtX/08.png', // BIOGRAPHY_ADDED
-            'https://i.ibb.co/xF1QQXk/09.png', // BIOGRAPHY_EDITED
-            'https://i.ibb.co/LPYBSBX/10.png', // LIST_ALL_MACHINIMATORS
-            'https://i.ibb.co/Fn2HJJQ/11.png', // CREATE_NEW_MACHINIMATOR
-            'https://i.ibb.co/TYPWsLQ/12.png', // AUTHOR_INFO_MANAGEMENT
-        ]);
+        $containerBuilder->register('visuals_links', \ArrayObject::class)
+            ->setArguments([[
+                'https://i.ibb.co/mC7sv0W/01.png', // WELCOME_TO_MORF
+                'https://i.ibb.co/ygqgFMV/02.png', // WELCOME_ADMIN_PANEL
+                'https://i.ibb.co/1KysC55/03.png', // NEW_MACHINIMATOR_ADDED
+                'https://i.ibb.co/64vFVfS/04.png', // AUTHOR_NAME_CHANGE
+                'https://i.ibb.co/TLDzmVf/05.png', // ADD_MACHINIMATOR_BIO
+                'https://i.ibb.co/85LB6PW/06.png', // EDIT_MACHINIMATOR_BIO
+                'https://i.ibb.co/fDbmdMM/07.png', // SUCCESSFUL_NAME_CHANGE
+                'https://i.ibb.co/tqMNGtX/08.png', // BIOGRAPHY_ADDED
+                'https://i.ibb.co/xF1QQXk/09.png', // BIOGRAPHY_EDITED
+                'https://i.ibb.co/LPYBSBX/10.png', // LIST_ALL_MACHINIMATORS
+                'https://i.ibb.co/Fn2HJJQ/11.png', // CREATE_NEW_MACHINIMATOR
+                'https://i.ibb.co/TYPWsLQ/12.png', // AUTHOR_INFO_MANAGEMENT
+            ]]);
 
         $containerBuilder->compile();
 
@@ -167,7 +168,7 @@ class MyBot extends tgLib
         $payload = $message_data['payload'];
         $first_name = $message_data['first_name'];
         $db_manager = $this->container->get('db_manager');
-        $visuals_links = $this->container->getParameter('visuals_links');
+        $visuals_links = $this->container->get('visuals_links');
         $current_panel = $db_manager->getCurrentPanel($user_id);
         $current_page = $db_manager->getCurrentPage($user_id);
         $default_state = $db_manager->getState($user_id);
@@ -328,7 +329,7 @@ class MyBot extends tgLib
         $callback_query_id = $message_data['callback_query_id'];
         $first_name = $message_data['first_name'];
         $db_manager = $this->container->get('db_manager');
-        $visuals_links = $this->container->getParameter('visuals_links');
+        $visuals_links = $this->container->get('visuals_links');
 
         if (null !== $payload) {
             $current_panel = $db_manager->getCurrentPanel($user_id);
@@ -710,7 +711,7 @@ class MyBot extends tgLib
             ['text' => $this->translate('go_back'), 'callback_data' => 'access_control'],
         ];
 
-        $visuals_links = $this->container->getParameter('visuals_links');
+        $visuals_links = $this->container->get('visuals_links');
 
         $this->editMediaMessage($chat_id, $db_manager->getCurrentPanel($user_id), $visuals_links[1], 'Ви можете змінити пріоритети ролей:', $keyboard);
     }

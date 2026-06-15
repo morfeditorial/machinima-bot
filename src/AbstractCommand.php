@@ -22,12 +22,13 @@ declare(strict_types=1);
 namespace morfeditorial;
 
 use morfeditorial\commands\CommandInterface;
+use Psr\Container\ContainerInterface;
 
 abstract class AbstractCommand implements CommandInterface
 {
     protected MyBot $bot;
 
-    protected DependencyContainer $container;
+    protected ContainerInterface $container;
 
     protected string $description = '';
 
@@ -40,7 +41,7 @@ abstract class AbstractCommand implements CommandInterface
         $this->bot = $bot;
     }
 
-    public function setContainer(DependencyContainer &$container) : void
+    public function setContainer(ContainerInterface $container) : void
     {
         $this->container = $container;
     }
