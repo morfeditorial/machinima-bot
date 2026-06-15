@@ -215,6 +215,58 @@
         "be": "Прывітанне, выглядае, што вы мадэратар гэтага бота. Вось кнопкі, якія дапамогуць вам у справе! 🔧",
         "uk": "Привіт, виглядає, що ти модератор цього бота. Тримай кнопки, які допоможуть тобі у справі! 🔧"
     },
+    "manage_projects": {
+        "en": "Manage Projects 📦",
+        "pl": "Zarządzaj projektami 📦",
+        "be": "Кіраванне праектамі 📦",
+        "uk": "Управління проєктами 📦"
+    },
+    "add_project": {
+        "en": "Add Project",
+        "pl": "Dodaj projekt",
+        "be": "Дадаць праект",
+        "uk": "Додати проєкт"
+    },
+    "enter_project_title_message": {
+        "en": "Enter the title of the project:",
+        "pl": "Wprowadź tytuł projektu:",
+        "be": "Увядзіце назву праекта:",
+        "uk": "Введи назву проєкту:"
+    },
+    "select_project_type_message": {
+        "en": "Select project type:",
+        "pl": "Wybierz typ projektu:",
+        "be": "Выберыце тып праекта:",
+        "uk": "Обери тип проєкту:"
+    },
+    "project_type_short": {
+        "en": "Short Film",
+        "uk": "Короткометражка"
+    },
+    "project_type_series": {
+        "en": "Series",
+        "uk": "Серіал"
+    },
+    "project_type_music_video": {
+        "en": "Music Video",
+        "uk": "Музичний кліп"
+    },
+    "enter_project_description_message": {
+        "en": "Enter project description:",
+        "uk": "Введи опис проєкту:"
+    },
+    "enter_project_url_message": {
+        "en": "Enter YouTube link:",
+        "uk": "Введи посилання на YouTube:"
+    },
+    "upload_project_cover_message": {
+        "en": "Upload project cover (image):",
+        "uk": "Завантаж обкладинку проєкту (зображення):"
+    },
+    "project_created_message": {
+        "en": "Project «{title}» created as draft! 📝",
+        "uk": "Проєкт «{title}» створено як чернетку! 📝"
+    },
     "author_not_found_message": {
         "en": "I couldn`t find the machinimator you selected. Perhaps it was removed due to a violation… 🙁",
         "pl": "Nie mogłem odnaleźć wybranego przez ciebie machinimatora. Być może został usunięty z powodu naruszenia… 🙁",
