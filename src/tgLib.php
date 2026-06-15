@@ -49,13 +49,10 @@ class tgLib
         $response = curl_exec($curl);
 
         if (false === $response) {
-            curl_close($curl);
-
             return null;
         }
 
         $decoded = json_decode($response, true);
-        curl_close($curl);
 
         return is_array($decoded) ? $decoded : null;
     }
