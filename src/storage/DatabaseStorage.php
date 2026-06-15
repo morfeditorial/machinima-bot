@@ -9,7 +9,7 @@
  * \__/__/__/\________/\____/___/\_______/
  *
  * This program is licensed under the CSSM Unlimited License v2.0.
- * Copyright (c) 2024 Sergiy Chernega
+ * Copyright (c) 2024 Serhii Cherneha
  *
  * @author CSSM Group
  * @link https://cssm.pp.ua/
