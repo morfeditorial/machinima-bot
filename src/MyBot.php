@@ -1001,7 +1001,7 @@ class MyBot extends tgLib
             'message_id' => $callback_query['message']['message_id'] ?? $data['message']['message_id'] ?? null,
             'chat_type' => $callback_query['message']['chat']['type'] ?? $data['message']['chat']['type'] ?? null,
             'chat_id' => $callback_query['message']['chat']['id'] ?? $data['message']['chat']['id'] ?? null,
-            'user_id' => $callback_query['message']['from']['id'] ?? $data['message']['from']['id'] ?? null,
+            'user_id' => $callback_query['from']['id'] ?? $data['message']['from']['id'] ?? null,
             'language_code' => $callback_query['from']['language_code'] ?? $data['message']['from']['language_code'] ?? null,
             'payload' => $callback_query['data'] ?? null,
             'callback_query_id' => $callback_query['id'] ?? null,
