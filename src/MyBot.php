@@ -345,14 +345,51 @@ class MyBot extends tgLib
             ];
             $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), htmlspecialchars($message)], $this->translate('link_changed_message')), $keyboard);
         } elseif ('awaiting_role_creation' === $default_state) {
+            if ($role_service->getRoleByName($message)) {
+                $this->sendMessage($chat_id, $this->translate('role_already_exist_text_message'));
+
+                return;
+            }
+
             $role_service->createRole($message);
-            $this->sendMessage($chat_id, 'Роль ' . $message . ' була створена.');
             $user_state_service->clearState($user_id, 'default');
-        } elseif ('awaiting_role_deletion' === $default_state) {
-            $role_name = $message;
-            $role_service->deleteRole($role_name);
-            $this->sendMessage($chat_id, 'Роль ' . $role_name . ' була видалена.');
-            $user_state_service->clearState($user_id, 'default');
+
+            $all_roles = $role_service->getAllRoles();
+            $keyboard = ['inline_keyboard' => []];
+
+            foreach ($all_roles as $role) {
+                if ($role['role_name'] === $message) {
+                    continue;
+                }
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $role['role_name'], 'callback_data' => 'confirm_parent:' . $role['role_name'] . ':' . $message],
+                ];
+            }
+
+            $keyboard['inline_keyboard'][] = [
+                ['text' => $this->translate('no_parent'), 'callback_data' => 'view_roles'],
+            ];
+
+            $this->sendMessage($chat_id, str_replace('{role}', $message, $this->translate('role_created_redirect_message')));
+            $this->editMediaMessage($chat_id, $user_service->getCurrentPanel($user_id), $visuals_links[1], str_replace('{role}', $message, $this->translate('select_parent_message')), $keyboard);
+        } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_user_id_for_role')) {
+            $target_user_id = (int) $message;
+
+            if ($target_user_id <= 0) {
+                $this->sendMessage($chat_id, $this->translate('invalid_user_id_message'));
+
+                return;
+            }
+
+            $role_name = $state_data['role_name'] ?? '';
+
+            if ($role_service->assignRole($target_user_id, $role_name)) {
+                $this->sendMessage($chat_id, str_replace(['{user}', '{role}'], [(string) $target_user_id, $role_name], $this->translate('role_assigned_message')));
+            } else {
+                $this->sendMessage($chat_id, $this->translate('role_assign_failure_message'));
+            }
+
+            $user_state_service->clearState($user_id, 'awaiting_user_id_for_role');
         }
     }
 
@@ -594,7 +631,6 @@ class MyBot extends tgLib
                         ],
                         [
                             ['text' => $this->translate('view_roles'), 'callback_data' => 'view_roles'],
-                            ['text' => $this->translate('change_priorities'), 'callback_data' => 'change_priorities'],
                         ],
                         [
                             ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
@@ -602,16 +638,355 @@ class MyBot extends tgLib
                     ],
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('access_control_panel_message'), $keyboard);
-            } elseif ('change_priorities' === $payload) {
-                $this->sendUpdateRolesPriorityPanel($chat_id, $user_id, $callback_query_id);
-            } elseif (0 === strpos($payload, 'select_role:')) {
-                [, $role_name, $role_level] = explode(':', $payload);
-                $this->toggleRoleSelection($chat_id, $user_id, $callback_query_id, $role_name, $role_level);
-            } elseif (0 === strpos($payload, 'noop:')) {
-                if ($selected_role = $user_state_service->getState($user_id, 'selected_role')) {
-                    [, $priority] = explode(':', $payload);
-                    $this->updateRolePriorityAndLevel($chat_id, $user_id, $callback_query_id, $selected_role['role_name'], $selected_role['role_level'], null, 'secondary', (int) $priority);
+            } elseif ('view_roles' === $payload) {
+                if (! $this->isGranted('admin')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
                 }
+
+                $role_service = $this->container->get('role_service');
+                $all_roles = $role_service->getAllRoles();
+                $hierarchy = $role_service->getRoleHierarchy();
+
+                $keyboard = ['inline_keyboard' => []];
+
+                foreach ($all_roles as $role) {
+                    $children = $hierarchy[$role['role_name']] ?? [];
+                    $children_text = ! empty($children) ? implode(', ', $children) : "\u{2014}";
+
+                    $keyboard['inline_keyboard'][] = [
+                        [
+                            'text' => $role['role_name'],
+                            'callback_data' => 'show_role:' . $role['role_name'],
+                        ],
+                        [
+                            'text' => $children_text,
+                            'callback_data' => 'show_role:' . $role['role_name'],
+                        ],
+                    ];
+                }
+
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('go_back'), 'callback_data' => 'access_control'],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('role_hierarchy_message'), $keyboard);
+            } elseif (preg_match("/^show_role:(.+)$/", $payload, $matches)) {
+                if (! $this->isGranted('admin')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+
+                $role_service = $this->container->get('role_service');
+                $role_name = $matches[1];
+                $role = $role_service->getRoleByName($role_name);
+
+                if (! $role) {
+                    $this->sendMessage($chat_id, $this->translate('role_not_found_message'));
+
+                    return;
+                }
+
+                $parents = $role_service->getParents($role_name);
+                $children = $role_service->getChildren($role_name);
+                $parents_text = ! empty($parents) ? implode(', ', array_column($parents, 'role_name')) : "\u{2014}";
+                $children_text = ! empty($children) ? implode(', ', array_column($children, 'role_name')) : "\u{2014}";
+
+                $message_text = str_replace(
+                    ['{role}', '{parents}', '{children}'],
+                    [$role_name, $parents_text, $children_text],
+                    $this->translate('role_detail_message')
+                );
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('add_parent'), 'callback_data' => 'add_parent:' . $role_name],
+                            ['text' => $this->translate('remove_child'), 'callback_data' => 'remove_child:' . $role_name],
+                        ],
+                        [
+                            ['text' => $this->translate('assign_role_to_user'), 'callback_data' => 'assign_role_to:' . $role_name],
+                        ],
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'view_roles'],
+                        ],
+                    ],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $message_text, $keyboard);
+            } elseif (preg_match("/^add_parent:(.+)$/", $payload, $matches)) {
+                if (! $this->isGranted('admin')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+
+                $role_service = $this->container->get('role_service');
+                $role_name = $matches[1];
+                $all_roles = $role_service->getAllRoles();
+                $existing_parents = $role_service->getParents($role_name);
+                $existing_parent_names = array_column($existing_parents, 'role_name');
+
+                $keyboard = ['inline_keyboard' => []];
+
+                foreach ($all_roles as $role) {
+                    if ($role['role_name'] === $role_name || in_array($role['role_name'], $existing_parent_names, true)) {
+                        continue;
+                    }
+
+                    $children = $role_service->getChildren($role['role_name']);
+                    $children_text = ! empty($children) ? implode(', ', array_column($children, 'role_name')) : "\u{2014}";
+
+                    $keyboard['inline_keyboard'][] = [
+                        [
+                            'text' => $role['role_name'],
+                            'callback_data' => 'confirm_parent:' . $role['role_name'] . ':' . $role_name,
+                        ],
+                        [
+                            'text' => $children_text,
+                            'callback_data' => 'confirm_parent:' . $role['role_name'] . ':' . $role_name,
+                        ],
+                    ];
+                }
+
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('go_back'), 'callback_data' => 'show_role:' . $role_name],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('select_parent_message')), $keyboard);
+            } elseif (preg_match("/^confirm_parent:(.+):(.+)$/", $payload, $matches)) {
+                if (! $this->isGranted('admin')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+
+                $role_service = $this->container->get('role_service');
+                $parent_name = $matches[1];
+                $child_name = $matches[2];
+
+                $role_service->addParentChild($parent_name, $child_name);
+                $this->callbackAnswer($callback_query_id, str_replace(['{parent}', '{child}'], [$parent_name, $child_name], $this->translate('parent_added_message')));
+
+                // Refresh role detail panel
+                $parents = $role_service->getParents($child_name);
+                $children = $role_service->getChildren($child_name);
+                $parents_text = ! empty($parents) ? implode(', ', array_column($parents, 'role_name')) : "\u{2014}";
+                $children_text = ! empty($children) ? implode(', ', array_column($children, 'role_name')) : "\u{2014}";
+
+                $message_text = str_replace(
+                    ['{role}', '{parents}', '{children}'],
+                    [$child_name, $parents_text, $children_text],
+                    $this->translate('role_detail_message')
+                );
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('add_parent'), 'callback_data' => 'add_parent:' . $child_name],
+                            ['text' => $this->translate('remove_child'), 'callback_data' => 'remove_child:' . $child_name],
+                        ],
+                        [
+                            ['text' => $this->translate('assign_role_to_user'), 'callback_data' => 'assign_role_to:' . $child_name],
+                        ],
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'view_roles'],
+                        ],
+                    ],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $message_text, $keyboard);
+            } elseif (preg_match("/^remove_child:(.+)$/", $payload, $matches)) {
+                if (! $this->isGranted('admin')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+
+                $role_service = $this->container->get('role_service');
+                $role_name = $matches[1];
+                $children = $role_service->getChildren($role_name);
+
+                if (empty($children)) {
+                    $this->callbackAnswer($callback_query_id, $this->translate('no_children_message'));
+                } else {
+                    $keyboard = ['inline_keyboard' => []];
+
+                    foreach ($children as $child) {
+                        $child_hierarchy = $role_service->getChildren($child['role_name']);
+                        $children_text = ! empty($child_hierarchy) ? implode(', ', array_column($child_hierarchy, 'role_name')) : "\u{2014}";
+
+                        $keyboard['inline_keyboard'][] = [
+                            [
+                                'text' => $child['role_name'],
+                                'callback_data' => 'show_role:' . $child['role_name'],
+                            ],
+                            [
+                                'text' => $this->translate('remove') . ' ' . $child['role_name'],
+                                'callback_data' => 'confirm_remove_child:' . $role_name . ':' . $child['role_name'],
+                            ],
+                        ];
+                    }
+
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $this->translate('go_back'), 'callback_data' => 'show_role:' . $role_name],
+                    ];
+
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('select_child_to_remove_message')), $keyboard);
+                }
+            } elseif (preg_match("/^confirm_remove_child:(.+):(.+)$/", $payload, $matches)) {
+                if (! $this->isGranted('admin')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+
+                $role_service = $this->container->get('role_service');
+                $parent_name = $matches[1];
+                $child_name = $matches[2];
+
+                $role_service->removeParentChild($parent_name, $child_name);
+                $this->callbackAnswer($callback_query_id, str_replace(['{parent}', '{child}'], [$parent_name, $child_name], $this->translate('child_removed_message')));
+
+                // Refresh to parent's detail panel
+                $parents = $role_service->getParents($parent_name);
+                $children = $role_service->getChildren($parent_name);
+                $parents_text = ! empty($parents) ? implode(', ', array_column($parents, 'role_name')) : "\u{2014}";
+                $children_text = ! empty($children) ? implode(', ', array_column($children, 'role_name')) : "\u{2014}";
+
+                $message_text = str_replace(
+                    ['{role}', '{parents}', '{children}'],
+                    [$parent_name, $parents_text, $children_text],
+                    $this->translate('role_detail_message')
+                );
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('add_parent'), 'callback_data' => 'add_parent:' . $parent_name],
+                            ['text' => $this->translate('remove_child'), 'callback_data' => 'remove_child:' . $parent_name],
+                        ],
+                        [
+                            ['text' => $this->translate('assign_role_to_user'), 'callback_data' => 'assign_role_to:' . $parent_name],
+                        ],
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'view_roles'],
+                        ],
+                    ],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $message_text, $keyboard);
+            } elseif (preg_match("/^confirm_delete_role:(.+)$/", $payload, $matches)) {
+                if (! $this->isGranted('admin')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+
+                $role_name = $matches[1];
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('confirm_yes'), 'callback_data' => 'do_delete_role:' . $role_name],
+                            ['text' => $this->translate('confirm_no'), 'callback_data' => 'view_roles'],
+                        ],
+                    ],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('confirm_delete_role_message')), $keyboard);
+            } elseif (preg_match("/^do_delete_role:(.+)$/", $payload, $matches)) {
+                if (! $this->isGranted('admin')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+
+                $role_service = $this->container->get('role_service');
+                $role_name = $matches[1];
+
+                if ($role_service->deleteRole($role_name)) {
+                    $this->callbackAnswer($callback_query_id, str_replace('{role}', $role_name, $this->translate('role_deleted_message')));
+
+                    // Refresh to access control panel
+                    $keyboard = [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => $this->translate('create_role'), 'callback_data' => 'create_role'],
+                                ['text' => $this->translate('delete_role'), 'callback_data' => 'delete_role'],
+                            ],
+                            [
+                                ['text' => $this->translate('view_roles'), 'callback_data' => 'view_roles'],
+                            ],
+                            [
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
+                            ],
+                        ],
+                    ];
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('access_control_panel_message'), $keyboard);
+                } else {
+                    $this->callbackAnswer($callback_query_id, $this->translate('delete_role_failure_message'));
+                }
+            } elseif (preg_match("/^assign_role_to:(.+)$/", $payload, $matches)) {
+                if (! $this->isGranted('admin')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+
+                $role_name = $matches[1];
+                $user_state_service->setState($user_id, ['role_name' => $role_name], 'awaiting_user_id_for_role');
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'show_role:' . $role_name],
+                        ],
+                    ],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('enter_user_id_for_role_message')), $keyboard);
+            } elseif ('create_role' === $payload) {
+                if (! $this->isGranted('admin')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+
+                $user_state_service->setState($user_id, 'awaiting_role_creation');
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'access_control'],
+                        ],
+                    ],
+                ];
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('enter_role_name_message'), $keyboard);
+            } elseif ('delete_role' === $payload) {
+                if (! $this->isGranted('admin')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+
+                $role_service = $this->container->get('role_service');
+                $all_roles = $role_service->getAllRoles();
+
+                $keyboard = ['inline_keyboard' => []];
+
+                foreach ($all_roles as $role) {
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $role['role_name'], 'callback_data' => 'confirm_delete_role:' . $role['role_name']],
+                    ];
+                }
+
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('go_back'), 'callback_data' => 'access_control'],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('select_role_to_delete_message'), $keyboard);
             }
         }
     }

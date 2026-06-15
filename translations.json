@@ -430,5 +430,155 @@
         "pl": "Administrator już istnieje.",
         "be": "Адміністратар ужо існуе.",
         "uk": "Адміністратор вже існує."
+    },
+    "role_hierarchy_message": {
+        "en": "Role Hierarchy:",
+        "pl": "Hierarchia ról:",
+        "be": "Іерархія роляў:",
+        "uk": "Ієрархія ролей:"
+    },
+    "role_detail_message": {
+        "en": "Role: {role}\nParents: {parents}\nChildren: {children}",
+        "pl": "Rola: {role}\nRodzice: {parents}\nDzieci: {children}",
+        "be": "Роля: {role}\nБацькі: {parents}\nДзеці: {children}",
+        "uk": "Роль: {role}\nБатьки: {parents}\nДіти: {children}"
+    },
+    "add_parent": {
+        "en": "Add Parent",
+        "pl": "Dodaj rodzica",
+        "be": "Дадаць бацькоўскую ролю",
+        "uk": "Додати батька"
+    },
+    "remove_child": {
+        "en": "Remove Child",
+        "pl": "Usuń dziecko",
+        "be": "Выдаліць даччыную ролю",
+        "uk": "Видалити дитину"
+    },
+    "assign_role_to_user": {
+        "en": "Assign Role to User",
+        "pl": "Przypisz rolę użytkownikowi",
+        "be": "Прызначыць ролю карыстальніку",
+        "uk": "Призначити роль користувачу"
+    },
+    "select_parent_message": {
+        "en": "Select parent role for {role}:",
+        "pl": "Wybierz rolę nadrzędną dla {role}:",
+        "be": "Абярыце бацькоўскую ролю для {role}:",
+        "uk": "Оберіть батьківську роль для {role}:"
+    },
+    "parent_added_message": {
+        "en": "Role {parent} is now a parent of {child}.",
+        "pl": "Rola {parent} jest teraz rolą nadrzędną dla {child}.",
+        "be": "Роля {parent} цяпер з'яўляецца бацькоўскай для {child}.",
+        "uk": "Роль {parent} тепер є батьківською для {child}."
+    },
+    "no_children_message": {
+        "en": "This role has no children.",
+        "pl": "Ta rola nie ma ról podrzędnych.",
+        "be": "Гэтая роля не мае даччыных роляў.",
+        "uk": "Ця роль не має дочірніх ролей."
+    },
+    "remove": {
+        "en": "Remove",
+        "pl": "Usuń",
+        "be": "Выдаліць",
+        "uk": "Видалити"
+    },
+    "select_child_to_remove_message": {
+        "en": "Select child of {role} to remove relationship:",
+        "pl": "Wybierz rolę podrzędную {role}, aby usunąć powiązanie:",
+        "be": "Абярыце даччыную ролю {role} для выдалення сувязі:",
+        "uk": "Оберіть дитину ролі {role} для видалення зв'язку:"
+    },
+    "child_removed_message": {
+        "en": "Relationship between {parent} and {child} removed.",
+        "pl": "Powiązanie między {parent} a {child} zostało usunięte.",
+        "be": "Сувязь паміж {parent} і {child} выдалена.",
+        "uk": "Зв'язок між {parent} та {child} видалено."
+    },
+    "confirm_yes": {
+        "en": "Yes, delete",
+        "pl": "Tak, usuń",
+        "be": "Так, выдаліць",
+        "uk": "Так, видалити"
+    },
+    "confirm_no": {
+        "en": "No, back",
+        "pl": "Nie, wróć",
+        "be": "Не, назад",
+        "uk": "Ні, назад"
+    },
+    "confirm_delete_role_message": {
+        "en": "Are you sure you want to delete role {role}? This will also remove all hierarchy links and user assignments.",
+        "pl": "Czy na pewno chcesz usunąć rolę {role}? Spowoduje to również usunięcie wszystkich powiązań w hierarchii i przypisań do użytkowników.",
+        "be": "Вы ўпэўнены, што хочаце выдаліць ролю {role}? Гэта таксама выдаліць усе іерархічныя сувязі і прызначэнні карыстальнікам.",
+        "uk": "Ви впевнені, що хочете видалити роль {role}? Це також видалить всі ієрархічні зв'язки та призначення користувачам."
+    },
+    "role_deleted_message": {
+        "en": "Role {role} deleted.",
+        "pl": "Rola {role} została usunięta.",
+        "be": "Роля {role} выдалена.",
+        "uk": "Роль {role} видалена."
+    },
+    "delete_role_failure_message": {
+        "en": "Failed to delete role.",
+        "pl": "Nie udało się usunąć roli.",
+        "be": "Не атрымалася выдаліць ролю.",
+        "uk": "Не вдалося видалити роль."
+    },
+    "enter_user_id_for_role_message": {
+        "en": "Enter User ID to assign role {role}:",
+        "pl": "Wprowadź ID użytkownika, aby przypisać rolę {role}:",
+        "be": "Увядзіце ID карыстальніка, якому хочаце прызначыць ролю {role}:",
+        "uk": "Введіть ID користувача, якому хочете призначити роль {role}:"
+    },
+    "no_parent": {
+        "en": "\u2014 No parent \u2014",
+        "pl": "\u2014 Brak roli nadrzędnej \u2014",
+        "be": "\u2014 Без бацькоўскай ролі \u2014",
+        "uk": "\u2014 Без батьківської ролі \u2014"
+    },
+    "enter_role_name_message": {
+        "en": "Enter name for the new role:",
+        "pl": "Wprowadź nazwę dla nowej roli:",
+        "be": "Увядзіце назву новай ролі:",
+        "uk": "Введіть назву нової ролі:"
+    },
+    "select_role_to_delete_message": {
+        "en": "Select role to delete:",
+        "pl": "Wybierz rolę do usunięcia:",
+        "be": "Абярыце ролю для выдалення:",
+        "uk": "Оберіть роль для видалення:"
+    },
+    "role_already_exist_text_message": {
+        "en": "Role with this name already exists.",
+        "pl": "Rola o tej nazwie już istnieje.",
+        "be": "Роля з такой назвай ужо існуе.",
+        "uk": "Роль з такою назвою вже існує."
+    },
+    "role_created_redirect_message": {
+        "en": "Role {role} created. Now you can configure its hierarchy.",
+        "pl": "Rola {role} została utworzona. Teraz możesz skonfigurować jej hierarchię.",
+        "be": "Роля {role} створана. Цяпер вы можаце наладзіць яе іерархію.",
+        "uk": "Роль {role} створена. Тепер ви можете налаштувати її ієрархію."
+    },
+    "invalid_user_id_message": {
+        "en": "Invalid User ID.",
+        "pl": "Nieprawidłowe ID użytkownika.",
+        "be": "Няправільны ID карыстальніка.",
+        "uk": "Невірний ID користувача."
+    },
+    "role_assigned_message": {
+        "en": "Role {role} assigned to user {user}.",
+        "pl": "Rola {role} została przypisana użytkownikowi {user}.",
+        "be": "Роля {role} прызначаная карыстальніку {user}.",
+        "uk": "Роль {role} призначена користувачу {user}."
+    },
+    "role_assign_failure_message": {
+        "en": "Failed to assign role.",
+        "pl": "Nie udało się przypisać roli.",
+        "be": "Не атрымалася прызначыць ролю.",
+        "uk": "Не вдалося призначити роль."
     }
 }

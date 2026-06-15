@@ -102,6 +102,11 @@ class RoleService
             [$role['id'], $role['id']]
         );
 
+        $this->db->executeStatement(
+            'DELETE FROM user_roles WHERE role_id = ?',
+            [$role['id']]
+        );
+
         return (bool) $this->db->executeStatement(
             'DELETE FROM roles WHERE role_name = ?',
             [$role_name]
