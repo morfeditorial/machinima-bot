@@ -101,6 +101,24 @@
         "be": "📑 Знойдзена некалькі аўтараў ({count}) па вашым запыце: «<code>{searchQuery}<\/code>». Вы можаце праглядзець іх, націскаючы кнопкі ніжэй:",
         "uk": "📑 Я знайшов кілька авторів ({count}) за твоїм запитом: «<code>{searchQuery}<\/code>». Ти можеш оглянути їх, натискаючи кнопки знизу:"
     },
+    "bot_name": {
+        "en": "Morf — centralized chatbot",
+        "pl": "Morf — scentralizowany chatbot",
+        "be": "Morf — цэнтралізаваны чат-бот",
+        "uk": "Morf — централізований чат‐бот"
+    },
+    "bot_description": {
+        "en": "Hello, I will help you discover interesting projects, short films, and series created based on Minecraft. You won't be bored with me!\n\nMy purpose is to centralize Ukrainian machinimators in one list.",
+        "pl": "Cześć, pomogę Ci odkryć interesujące projekty, krótkie filmy i seriale stworzone na podstawie Minecrafta. Z nami nie będziesz się nudzić!\n\nMoim celem jest skupienie ukraińskich machinimatorów w jednym miejscu.",
+        "be": "Прывітанне, я дапаможу табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft. За мной табе не будзе нудна!\n\nМой мэт — цэнтралізаваць украінскіх машыніматараў у адным спісе.",
+        "uk": "Привіт, я допоможу тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft. Зі мною тобі не буде нудно!\n\nМоє покликання — централізувати українських машиніматорів в одному списку."
+    },
+    "bot_short_description": {
+        "en": "A bot that helps you discover interesting projects, short films, and series created based on Minecraft.",
+        "pl": "Bot, który pomoże Ci odkryć interesujące projekty, krótkie filmy i seriale stworzone na podstawie Minecrafta.",
+        "be": "Бот, які дапаможа табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft.",
+        "uk": "Бот, який допоможе тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft."
+    },
     "update_message": {
         "en": "I successfully updated the bot`s data! 🔄",
         "pl": "Pomyślnie zaktualizowałem dane bota! 🔄",

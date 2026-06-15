@@ -53,25 +53,18 @@ class UpdateCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        if (! $this->db_manager->hasHigherRole($user_id, "admin")) {
+        if (! $this->getDbManager()->hasHigherRole($user_id, "admin")) {
             $this->bot->sendMessage($chat_id, $this->translate("no_permission_message"));
             return;
         }
 
-        $this->bot->setMyName("Morf — centralized chatbot", "en");
-        $this->bot->setMyName("Morf — scentralizowany chatbot", "pl");
-        $this->bot->setMyName("Morf — цэнтралізаваны чат-бот", "be");
-        $this->bot->setMyName("Morf — централізований чат‐бот", "uk");
+        $translator = $this->getTranslator();
 
-        $this->bot->setMyDescription("Hello, I will help you discover interesting projects, short films, and series created based on Minecraft. You won't be bored with me!\n\nMy purpose is to centralize Ukrainian machinimators in one list.", "en");
-        $this->bot->setMyDescription("Cześć, pomogę Ci odkryć interesujące projekty, krótkie filmy i seriale stworzone na podstawie Minecrafta. Z nami nie będziesz się nudzić!\n\nMoim celem jest skupienie ukraińskich machinimatorów w jednym miejscu.", "pl");
-        $this->bot->setMyDescription("Прывітанне, я дапаможу табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft. За мной табе не будзе нудна!\n\nМой мэт — цэнтралізаваць украінскіх машыніматараў у адным спісе.", "be");
-        $this->bot->setMyDescription("Привіт, я допоможу тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft. Зі мною тобі не буде нудно!\n\nМоє покликання — централізувати українських машиніматорів в одному списку.", "uk");
-
-        $this->bot->setMyShortDescription("A bot that helps you discover interesting projects, short films, and series created based on Minecraft.", "en");
-        $this->bot->setMyShortDescription("Bot, który pomoże Ci odkryć interesujące projekty, krótkie filmy i seriale stworzone na podstawie Minecrafta.", "pl");
-        $this->bot->setMyShortDescription("Бот, які дапаможа табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft.", "be");
-        $this->bot->setMyShortDescription("Бот, який допоможе тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft.", "uk");
+        foreach ($translator->getAvailableLocales() as $locale) {
+            $this->bot->setMyName($translator->translateForLocale("bot_name", $locale), $locale);
+            $this->bot->setMyDescription($translator->translateForLocale("bot_description", $locale), $locale);
+            $this->bot->setMyShortDescription($translator->translateForLocale("bot_short_description", $locale), $locale);
+        }
 
         $this->bot->sendMessage($chat_id, $this->translate("update_message"));
     }

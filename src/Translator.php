@@ -79,6 +79,26 @@ class Translator
     }
 
     /**
+     * Translate a given key for a specific locale.
+     *
+     * @param  string $key    The key for the translation.
+     * @param  string $locale The locale to translate to.
+     * @return string The translated string or a not found message.
+     */
+    public function translateForLocale(string $key, string $locale) : string
+    {
+        if (isset($this->translations[$key][$locale])) {
+            return $this->translations[$key][$locale];
+        }
+
+        if (isset($this->translations[$key]['en'])) {
+            return $this->translations[$key]['en'];
+        }
+
+        return "Translation not found for key: $key";
+    }
+
+    /**
      * Returns all available locales in the translations.
      *
      * @return array An array of available locales.
