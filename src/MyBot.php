@@ -161,6 +161,7 @@ class MyBot extends tgLib
     {
         $message_data = $this->extractMessageData($update);
         $message = $message_data['message'] ?? null;
+        $photo = $message_data['photo'] ?? null;
 
         if (null !== $message_data['user_id']) {
             $this->setupUserToken($message_data['user_id']);
@@ -168,7 +169,7 @@ class MyBot extends tgLib
 
         $this->container->get('translator')->setUserLocale($message_data['language_code'] ?? 'en');
 
-        if ($message) {
+        if (null !== $message || null !== $photo) {
             $this->processMessage($message_data, $message);
         } else {
             $this->handlePanels($message_data);
@@ -180,9 +181,9 @@ class MyBot extends tgLib
         return $this->container;
     }
 
-    private function processMessage(array $message_data, string $message) : void
+    private function processMessage(array $message_data, ?string $message) : void
     {
-        $command_data = $this->parseCommand($message);
+        $command_data = null !== $message ? $this->parseCommand($message) : null;
         if ($command_data) {
             $this->executeCommand($command_data, $message_data);
         } else {
