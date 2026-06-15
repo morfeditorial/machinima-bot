@@ -1579,10 +1579,11 @@ class MyBot extends tgLib
                 }
 
                 $add_callback = $parent_id ? 'add_category:' . $parent_id : 'add_category';
+                $add_text = $parent_id ? 'add_subcategory' : 'add_category';
                 $back_callback = $parent_id ? 'manage_categories' : 'control_panel'; // Simplified back logic
 
                 $keyboard['inline_keyboard'][] = [
-                    ['text' => $this->translate('add_category'), 'callback_data' => $add_callback],
+                    ['text' => $this->translate($add_text), 'callback_data' => $add_callback],
                 ];
                 $keyboard['inline_keyboard'][] = [
                     ['text' => $this->translate('go_back'), 'callback_data' => $back_callback],

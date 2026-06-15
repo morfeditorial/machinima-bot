@@ -335,6 +335,12 @@
         "be": "Дадаць катэгорыю",
         "uk": "Додати категорію"
     },
+    "add_subcategory": {
+        "en": "Add Subcategory",
+        "pl": "Dodaj podkategorię",
+        "be": "Дадаць падкатэгорыю",
+        "uk": "Додати підкатегорію"
+    },
     "enter_category_name_message": {
         "en": "Enter the name of the new category:",
         "pl": "Wprowadź nazwę nowej kategorii:",
