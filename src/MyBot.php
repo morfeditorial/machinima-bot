@@ -397,6 +397,7 @@ class MyBot extends tgLib
             $this->editMediaMessage($chat_id, $user_service->getCurrentPanel($user_id), $visuals_links[1], str_replace('{role}', $message, $this->translate('select_parent_message')), $keyboard);
         } elseif ('awaiting_project_title' === $default_state) {
             $this->deleteMessage($chat_id, $message_id);
+            $user_state_service->clearState($user_id, 'default');
             $user_state_service->setState($user_id, ['title' => $message], 'awaiting_project_description');
 
             $keyboard = [
@@ -416,6 +417,7 @@ class MyBot extends tgLib
             $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('select_project_type_message'), $keyboard);
         } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_project_description')) {
             $this->deleteMessage($chat_id, $message_id);
+            $user_state_service->clearState($user_id, 'awaiting_project_description');
             $user_state_service->setState($user_id, array_merge($state_data, ['description' => $message]), 'awaiting_project_url');
 
             $keyboard = [
@@ -428,6 +430,7 @@ class MyBot extends tgLib
             $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('enter_project_url_message'), $keyboard);
         } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_project_url')) {
             $this->deleteMessage($chat_id, $message_id);
+            $user_state_service->clearState($user_id, 'awaiting_project_url');
             $user_state_service->setState($user_id, array_merge($state_data, ['url' => $message]), 'awaiting_project_cover');
 
             $keyboard = [
@@ -463,6 +466,7 @@ class MyBot extends tgLib
             }
         } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_staff_role')) {
             $this->deleteMessage($chat_id, $message_id);
+            $user_state_service->clearState($user_id, 'awaiting_staff_role');
             $content_service = $this->container->get('content_service');
             $author_service = $this->container->get('author_service');
 
