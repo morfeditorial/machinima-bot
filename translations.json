@@ -241,30 +241,44 @@
     },
     "project_type_short": {
         "en": "Short Film",
+        "pl": "Film krótkometrażowy",
+        "be": "Кароткаметражны фільм",
         "uk": "Короткометражка"
     },
     "project_type_series": {
         "en": "Series",
+        "pl": "Serial",
+        "be": "Серыял",
         "uk": "Серіал"
     },
     "project_type_music_video": {
         "en": "Music Video",
+        "pl": "Teledysk",
+        "be": "Музычны кліп",
         "uk": "Музичний кліп"
     },
     "enter_project_description_message": {
         "en": "Enter project description:",
+        "pl": "Wprowadź opis projektu:",
+        "be": "Увядзіце апісанне праекта:",
         "uk": "Введи опис проєкту:"
     },
     "enter_project_url_message": {
         "en": "Enter YouTube link:",
+        "pl": "Wprowadź link do YouTube:",
+        "be": "Увядзіце спасылку на YouTube:",
         "uk": "Введи посилання на YouTube:"
     },
     "upload_project_cover_message": {
         "en": "Upload project cover (image):",
+        "pl": "Prześlij okładkę projektu (obraz):",
+        "be": "Загрузіце вокладку праекта (выява):",
         "uk": "Завантаж обкладинку проєкту (зображення):"
     },
     "project_created_message": {
         "en": "Project «{title}» created as draft! 📝",
+        "pl": "Projekt «{title}» został utworzony jako wersja robocza! 📝",
+        "be": "Праект «{title}» створаны як чарнавік! 📝",
         "uk": "Проєкт «{title}» створено як чернетку! 📝"
     },
     "author_not_found_message": {
