@@ -1223,14 +1223,10 @@ class MyBot extends tgLib
                         'inline_keyboard' => [
                             [
                                 ['text' => $this->translate('edit_project'), 'callback_data' => 'edit_project:' . $project_id],
-                            ],
-                            [
                                 ['text' => $this->translate('manage_staff'), 'callback_data' => 'manage_staff:' . $project_id],
                             ],
                             [
                                 ['text' => $this->translate('select_categories_for_project'), 'callback_data' => 'select_project_categories:' . $project_id],
-                            ],
-                            [
                                 ['text' => $this->translate('delete_this_project'), 'callback_data' => 'confirm_delete_project:' . $project_id],
                             ],
                             [
