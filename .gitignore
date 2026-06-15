@@ -2,3 +2,4 @@
 .env
 /logs/
 /vendor/
+.php-cs-fixer.cache
