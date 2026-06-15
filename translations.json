@@ -17,6 +17,18 @@
         "be": "Абнавіце бота, уключаючы назву, апісанне і лакалізаваную інфармацыю",
         "uk": "Оновити бота, включаючи назву, опис та локалізовану інформацію"
     },
+    "delete_role_command_description": {
+        "en": "Delete a role",
+        "pl": "Usuń rolę",
+        "be": "Выдаліць ролю",
+        "uk": "Видалити роль"
+    },
+    "delete_role_usage_message": {
+        "en": "Incorrect command format. Use: \/delete_role roleName",
+        "pl": "Niepoprawny format polecenia. Użyj: \/delete_role roleName",
+        "be": "Няправільны фармат каманды. Выкарыстоўвайце: \/delete_role roleName",
+        "uk": "Неправильний формат команди. Використовуйте: \/delete_role roleName"
+    },
     "admin_panel_command_description": {
         "en": "Access the admin panel",
         "pl": "Uzyskaj dostęp do panelu administratora",
