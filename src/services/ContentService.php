@@ -107,6 +107,22 @@ class ContentService
         return $this->db->fetchAllAssociative('SELECT * FROM content ORDER BY created_at DESC');
     }
 
+    public function getProjectsByOwner(int $user_id) : array
+    {
+        return $this->db->fetchAllAssociative('SELECT * FROM content WHERE created_by = ? ORDER BY created_at DESC', [$user_id]);
+    }
+
+    public function canManageProject(int $user_id, int $project_id, bool $is_moderator = false) : bool
+    {
+        if ($is_moderator) {
+            return true;
+        }
+
+        $project = $this->getContentById($project_id);
+
+        return $project && (int) $project['created_by'] === $user_id;
+    }
+
     public function deleteContent(int $id) : bool
     {
         return (bool) $this->db->executeStatement('DELETE FROM content WHERE id = ?', [$id]);

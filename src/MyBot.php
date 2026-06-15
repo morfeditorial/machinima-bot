@@ -1340,6 +1340,13 @@ class MyBot extends tgLib
                 }
                 $project_id = (int) $matches[1];
                 $content_service = $this->container->get('content_service');
+
+                if (! $content_service->canManageProject($user_id, $project_id, $this->isGranted('moderator'))) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+
                 $project = $content_service->getContentById($project_id);
 
                 if ($project) {
