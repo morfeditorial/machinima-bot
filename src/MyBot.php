@@ -21,6 +21,9 @@ declare(strict_types=1);
 
 namespace morfeditorial;
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 class MyBot extends tgLib
 {
     private const DATABASE_FILE = __DIR__ . '/../machinimators.db';
@@ -29,22 +32,29 @@ class MyBot extends tgLib
 
     private CommandFactory $command_factory;
 
-    private DependencyContainer $container;
+    private ContainerInterface $container;
 
     public function __construct($token)
     {
         parent::__construct($token);
 
         $translations = json_decode(file_get_contents(self::TRANSLATIONS_FILE), true);
-        $this->container = new DependencyContainer($translations, 'en');
 
         $dbConfig = new \morfeditorial\config\SQLiteConfig(self::DATABASE_FILE);
         $storage = new \morfeditorial\storage\DatabaseStorage($dbConfig);
 
-        $this->container->set('db_manager', new DatabaseManager($storage->getConnection()));
-        $this->container->set('storage', $storage);
-        $this->container->set('fuzzy_search', new FuzzySearch());
-        $this->container->set('visuals_links', [
+        $containerBuilder = new ContainerBuilder();
+
+        $containerBuilder->register('translator', Translator::class)
+            ->setArguments([$translations, 'en']);
+
+        $containerBuilder->register('fuzzy_search', FuzzySearch::class)
+            ->setAutowired(true);
+
+        $containerBuilder->register('db_manager', DatabaseManager::class)
+            ->setArguments([$storage->getConnection()]);
+
+        $containerBuilder->setParameter('visuals_links', [
             'https://i.ibb.co/mC7sv0W/01.png', // WELCOME_TO_MORF
             'https://i.ibb.co/ygqgFMV/02.png', // WELCOME_ADMIN_PANEL
             'https://i.ibb.co/1KysC55/03.png', // NEW_MACHINIMATOR_ADDED
@@ -58,6 +68,10 @@ class MyBot extends tgLib
             'https://i.ibb.co/Fn2HJJQ/11.png', // CREATE_NEW_MACHINIMATOR
             'https://i.ibb.co/TYPWsLQ/12.png', // AUTHOR_INFO_MANAGEMENT
         ]);
+
+        $containerBuilder->compile();
+
+        $this->container = $containerBuilder;
 
         $this->command_factory = new CommandFactory($this, $this->container);
         $this->initializeCommands();
@@ -153,7 +167,7 @@ class MyBot extends tgLib
         $payload = $message_data['payload'];
         $first_name = $message_data['first_name'];
         $db_manager = $this->container->get('db_manager');
-        $visuals_links = $this->container->get('visuals_links');
+        $visuals_links = $this->container->getParameter('visuals_links');
         $current_panel = $db_manager->getCurrentPanel($user_id);
         $current_page = $db_manager->getCurrentPage($user_id);
         $default_state = $db_manager->getState($user_id);
@@ -314,7 +328,7 @@ class MyBot extends tgLib
         $callback_query_id = $message_data['callback_query_id'];
         $first_name = $message_data['first_name'];
         $db_manager = $this->container->get('db_manager');
-        $visuals_links = $this->container->get('visuals_links');
+        $visuals_links = $this->container->getParameter('visuals_links');
 
         if (null !== $payload) {
             $current_panel = $db_manager->getCurrentPanel($user_id);
@@ -696,7 +710,7 @@ class MyBot extends tgLib
             ['text' => $this->translate('go_back'), 'callback_data' => 'access_control'],
         ];
 
-        $visuals_links = $this->container->get('visuals_links');
+        $visuals_links = $this->container->getParameter('visuals_links');
 
         $this->editMediaMessage($chat_id, $db_manager->getCurrentPanel($user_id), $visuals_links[1], 'Ви можете змінити пріоритети ролей:', $keyboard);
     }
