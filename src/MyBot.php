@@ -51,13 +51,11 @@ class MyBot extends tgLib
             ->setAutowired(true)
             ->setPublic(true);
 
-        $container_builder->register('db_config', \morfeditorial\config\SQLiteConfig::class)
-            ->setArgument('$filePath', self::DATABASE_FILE)
-            ->setPublic(true);
-        $container_builder->setAlias(\morfeditorial\config\DatabaseConfigInterface::class, 'db_config');
-
         $container_builder->register('storage', \morfeditorial\storage\DatabaseStorage::class)
-            ->setAutowired(true)
+            ->setArgument('$connection_params', [
+                'driver' => 'pdo_sqlite',
+                'path' => self::DATABASE_FILE,
+            ])
             ->setPublic(true);
         $container_builder->setAlias(\morfeditorial\storage\StorageInterface::class, 'storage');
 

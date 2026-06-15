@@ -23,29 +23,24 @@ namespace morfeditorial\storage;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use morfeditorial\config\DatabaseConfigInterface;
 use RuntimeException;
 
 class DatabaseStorage implements StorageInterface
 {
     private ?Connection $connection = null;
 
-    public function __construct(private DatabaseConfigInterface $config) {}
+    public function __construct(private array $connection_params) {}
 
     public function connect() : void
     {
         if (! $this->connection) {
             try {
-                $connectionParams = [
-                    'url' => $this->config->getDsn(),
-                    'user' => $this->config->getUsername(),
-                    'password' => $this->config->getPassword(),
+                $connection_params = $this->connection_params;
+                $connection_params['driverOptions'] = [
+                    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 ];
 
-                // Add PDO options if needed
-                $connectionParams['driverOptions'] = $this->config->getOptions();
-
-                $this->connection = DriverManager::getConnection($connectionParams);
+                $this->connection = DriverManager::getConnection($connection_params);
                 $this->initializeSchema();
             } catch (\Exception $e) {
                 throw new RuntimeException('Connection failed: ' . $e->getMessage());
