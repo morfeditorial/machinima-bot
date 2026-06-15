@@ -712,7 +712,7 @@ class MyBot extends tgLib
                             ['text' => $this->translate('assign_role_to_user'), 'callback_data' => 'assign_role_to:' . $role_name],
                         ],
                         [
-                            ['text' => $this->translate('delete_role'), 'callback_data' => 'confirm_delete_role:' . $role_name],
+                            ['text' => $this->translate('delete_this_role'), 'callback_data' => 'confirm_delete_role:' . $role_name],
                         ],
                         [
                             ['text' => $this->translate('go_back'), 'callback_data' => 'view_roles'],
