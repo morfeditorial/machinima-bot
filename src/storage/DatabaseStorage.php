@@ -46,9 +46,75 @@ class DatabaseStorage implements StorageInterface
                 $connectionParams['driverOptions'] = $this->config->getOptions();
 
                 $this->connection = DriverManager::getConnection($connectionParams);
+                $this->initializeSchema();
             } catch (\Exception $e) {
                 throw new RuntimeException('Connection failed: ' . $e->getMessage());
             }
+        }
+    }
+
+    private function initializeSchema() : void
+    {
+        $schemaManager = $this->connection->createSchemaManager();
+
+        if (! $schemaManager->tablesExist(['authors'])) {
+            $this->connection->executeStatement("
+                CREATE TABLE authors (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    biography TEXT DEFAULT NULL,
+                    channel_link TEXT DEFAULT NULL,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    state TEXT
+                )
+            ");
+
+            $this->connection->executeStatement("
+                CREATE TABLE content (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    author_id INTEGER,
+                    description TEXT,
+                    tags TEXT,
+                    FOREIGN KEY (author_id) REFERENCES authors(id)
+                )
+            ");
+
+            $this->connection->executeStatement("
+                CREATE TABLE user_data (
+                    user_id INTEGER PRIMARY KEY,
+                    user_state TEXT,
+                    current_panel INTEGER,
+                    current_page TEXT,
+                    role TEXT
+                )
+            ");
+
+            $this->connection->executeStatement("
+                CREATE TABLE user_states (
+                    user_id INTEGER,
+                    state_key TEXT,
+                    state_value TEXT,
+                    PRIMARY KEY (user_id, state_key)
+                )
+            ");
+
+            $this->connection->executeStatement("
+                CREATE TABLE roles (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    role_name TEXT NOT NULL UNIQUE,
+                    priority INTEGER NOT NULL
+                )
+            ");
+
+            $this->connection->executeStatement("
+                CREATE TABLE user_roles (
+                    user_id INTEGER NOT NULL,
+                    role_id INTEGER NOT NULL,
+                    FOREIGN KEY (user_id) REFERENCES user_data(user_id),
+                    FOREIGN KEY (role_id) REFERENCES roles(id),
+                    PRIMARY KEY (user_id)
+                )
+            ");
         }
     }
 

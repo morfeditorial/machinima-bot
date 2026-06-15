@@ -53,19 +53,17 @@ class AssignInitialAdminCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        $db_manager = $this->getDbManager();
-
-        if (! $db_manager->getRoleByName('admin')) {
-            $db_manager->createRole('admin', 100);
+        if (! $this->getRoleService()->getRoleByName('admin')) {
+            $this->getRoleService()->createRole('admin', 100);
         }
 
-        if ($db_manager->getUsersCountByRole('admin') > 0) {
+        if ($this->getRoleService()->getUsersCountByRole('admin') > 0) {
             $this->bot->sendMessage($chat_id, $this->translate('already_initialled_admin_message'));
 
             return;
         }
 
-        $db_manager->assignRole($user_id, 'admin');
+        $this->getRoleService()->assignRole($user_id, 'admin');
 
         $this->bot->sendMessage($chat_id, $this->translate('success_initialled_admin_message'));
     }

@@ -40,9 +40,6 @@ class MyBot extends tgLib
 
         $translations = json_decode(file_get_contents(self::TRANSLATIONS_FILE), true);
 
-        $dbConfig = new \morfeditorial\config\SQLiteConfig(self::DATABASE_FILE);
-        $storage = new \morfeditorial\storage\DatabaseStorage($dbConfig);
-
         $containerBuilder = new ContainerBuilder();
 
         $containerBuilder->register('translator', Translator::class)
@@ -51,8 +48,20 @@ class MyBot extends tgLib
         $containerBuilder->register('fuzzy_search', FuzzySearch::class)
             ->setAutowired(true);
 
-        $containerBuilder->register('db_manager', DatabaseManager::class)
-            ->setArguments([$storage->getConnection()]);
+        $containerBuilder->register('db_config', \morfeditorial\config\SQLiteConfig::class)
+            ->setArgument('$filePath', self::DATABASE_FILE);
+
+        $containerBuilder->register('storage', \morfeditorial\storage\DatabaseStorage::class)
+            ->setAutowired(true);
+
+        $containerBuilder->register('author_service', \morfeditorial\services\AuthorService::class)
+            ->setAutowired(true);
+        $containerBuilder->register('user_service', \morfeditorial\services\UserService::class)
+            ->setAutowired(true);
+        $containerBuilder->register('user_state_service', \morfeditorial\services\UserStateService::class)
+            ->setAutowired(true);
+        $containerBuilder->register('role_service', \morfeditorial\services\RoleService::class)
+            ->setAutowired(true);
 
         $containerBuilder->register('visuals_links', \ArrayObject::class)
             ->setArguments([[
@@ -148,8 +157,8 @@ class MyBot extends tgLib
                 $message_data['reply_message_id'],
                 $message_data['reply_author'],
                 $message_data['first_name'],
-                $this->container->get('db_manager')->getCurrentPanel($message_data['user_id']),
-                $this->container->get('db_manager')->getCurrentPage($message_data['user_id']),
+                $this->container->get('user_service')->getCurrentPanel($message_data['user_id']),
+                $this->container->get('user_service')->getCurrentPage($message_data['user_id']),
                 $command_data['cmd'],
                 $command_data['args']
             );
@@ -167,22 +176,25 @@ class MyBot extends tgLib
         $user_id = $message_data['user_id'] !== $chat_id ? $chat_id : $message_data['user_id'];
         $payload = $message_data['payload'];
         $first_name = $message_data['first_name'];
-        $db_manager = $this->container->get('db_manager');
+        $user_service = $this->container->get('user_service');
+        $user_state_service = $this->container->get('user_state_service');
+        $role_service = $this->container->get('role_service');
+        $author_service = $this->container->get('author_service');
         $visuals_links = $this->container->get('visuals_links');
-        $current_panel = $db_manager->getCurrentPanel($user_id);
-        $current_page = $db_manager->getCurrentPage($user_id);
-        $default_state = $db_manager->getState($user_id);
+        $current_panel = $user_service->getCurrentPanel($user_id);
+        $current_page = $user_service->getCurrentPage($user_id);
+        $default_state = $user_state_service->getState($user_id);
 
         if ('awaiting_author_name_creation' === $default_state) {
-            if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+            if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                 return;
             }
             $this->deleteMessage($chat_id, $message_id);
-            $db_manager->clearState($user_id, 'default');
-            $author_id = $db_manager->createAuthor($message);
-            $author_status = $db_manager->isPrivate($author_id);
+            $user_state_service->clearState($user_id, 'default');
+            $author_id = $author_service->createAuthor($message);
+            $author_status = $author_service->isPrivate($author_id);
             $keyboard = [
                 'inline_keyboard' => [
                     [
@@ -202,18 +214,18 @@ class MyBot extends tgLib
                 ],
             ];
             $this->editMediaMessage($chat_id, $current_panel, $visuals_links[2], str_replace('{author}', htmlspecialchars($message), $this->translate('author_added_message')), $keyboard);
-        } elseif ($state = $db_manager->getState($user_id, 'change_name')) {
-            if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+        } elseif ($state = $user_state_service->getState($user_id, 'change_name')) {
+            if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                 return;
             }
             $this->deleteMessage($chat_id, $message_id);
-            $db_manager->clearState($user_id, 'change_name');
+            $user_state_service->clearState($user_id, 'change_name');
             $author_id = $state['author_id'];
-            $author = $db_manager->getAuthorById($author_id);
-            $db_manager->updateAuthorName($author_id, $message);
-            $author_status = $db_manager->isPrivate($author_id);
+            $author = $author_service->getAuthorById($author_id);
+            $author_service->updateAuthorName($author_id, $message);
+            $author_status = $author_service->isPrivate($author_id);
             $keyboard = [
                 'inline_keyboard' => [
                     [
@@ -233,18 +245,18 @@ class MyBot extends tgLib
                 ],
             ];
             $this->editMediaMessage($chat_id, $current_panel, $visuals_links[6], str_replace(['{author}', '{oldName}', '{biography}', '{link}'], [htmlspecialchars($message), htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], $this->translate('name_changed_message')), $keyboard);
-        } elseif ($state = $db_manager->getState($user_id, 'set_author_about')) {
-            if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+        } elseif ($state = $user_state_service->getState($user_id, 'set_author_about')) {
+            if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                 return;
             }
             $this->deleteMessage($chat_id, $message_id);
-            $db_manager->clearState($user_id, 'set_author_about');
+            $user_state_service->clearState($user_id, 'set_author_about');
             $author_id = $state['author_id'];
-            $author = $db_manager->getAuthorById($author_id);
-            $db_manager->setBiography($author_id, $message);
-            $author_status = $db_manager->isPrivate($author_id);
+            $author = $author_service->getAuthorById($author_id);
+            $author_service->setBiography($author_id, $message);
+            $author_status = $author_service->isPrivate($author_id);
             $keyboard = [
                 'inline_keyboard' => [
                     [
@@ -264,18 +276,18 @@ class MyBot extends tgLib
                 ],
             ];
             $this->editMediaMessage($chat_id, $current_panel, ($author['biography'] ? $visuals_links[8] : $visuals_links[7]), str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), htmlspecialchars($message), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], ($author['biography'] ? $this->translate('bio_changed_message') : $this->translate('bio_added_message'))), $keyboard);
-        } elseif ($state = $db_manager->getState($user_id, 'add_author_link')) {
-            if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+        } elseif ($state = $user_state_service->getState($user_id, 'add_author_link')) {
+            if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                 return;
             }
             $this->deleteMessage($chat_id, $message_id);
-            $db_manager->clearState($user_id, 'add_author_link');
+            $user_state_service->clearState($user_id, 'add_author_link');
             $author_id = $state['author_id'];
-            $author = $db_manager->getAuthorById($author_id);
-            $db_manager->setChannelLink($author_id, $message);
-            $author_status = $db_manager->isPrivate($author_id);
+            $author = $author_service->getAuthorById($author_id);
+            $author_service->setChannelLink($author_id, $message);
+            $author_status = $author_service->isPrivate($author_id);
             $keyboard = [
                 'inline_keyboard' => [
                     [
@@ -309,12 +321,12 @@ class MyBot extends tgLib
             } else {
                 $this->sendMessage($chat_id, 'Неправильний формат. Використовуйте: <code>назва_ролі пріоритет</code>');
             }
-            $db_manager->clearState($user_id, 'default');
+            $user_state_service->clearState($user_id, 'default');
         } elseif ('awaiting_role_deletion' === $default_state) {
             $role_name = $message;
-            $db_manager->deleteRole($role_name);
+            $role_service->deleteRole($role_name);
             $this->sendMessage($chat_id, 'Роль ' . $role_name . ' була видалена.');
-            $db_manager->clearState($user_id, 'default');
+            $user_state_service->clearState($user_id, 'default');
         }
     }
 
@@ -328,22 +340,25 @@ class MyBot extends tgLib
         $payload = $message_data['payload'];
         $callback_query_id = $message_data['callback_query_id'];
         $first_name = $message_data['first_name'];
-        $db_manager = $this->container->get('db_manager');
+        $user_service = $this->container->get('user_service');
+        $user_state_service = $this->container->get('user_state_service');
+        $role_service = $this->container->get('role_service');
+        $author_service = $this->container->get('author_service');
         $visuals_links = $this->container->get('visuals_links');
 
         if (null !== $payload) {
-            $current_panel = $db_manager->getCurrentPanel($user_id);
-            $current_page = $db_manager->getCurrentPage($user_id);
+            $current_panel = $user_service->getCurrentPanel($user_id);
+            $current_page = $user_service->getCurrentPage($user_id);
 
             if ('control_panel' === $payload) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $db_manager->clearState($user_id);
+                $user_state_service->clearState($user_id);
                 if (! is_null($current_page)) {
-                    $db_manager->resetCurrentPage($user_id);
+                    $user_service->resetCurrentPage($user_id);
                 }
                 $keyboard = [
                     'inline_keyboard' => [
@@ -361,12 +376,12 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('admin_panel_message'), $keyboard);
             } elseif ('add_author' === $payload) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $db_manager->setState($user_id, 'awaiting_author_name_creation');
+                $user_state_service->setState($user_id, 'awaiting_author_name_creation');
                 $keyboard = [
                     'inline_keyboard' => [
                         [
@@ -376,23 +391,23 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[10], $this->translate('add_author_message'), $keyboard);
             } elseif ('delete_author' === $payload) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $db_manager->setCurrentPage($user_id, 'delete_page_1');
+                $user_service->setCurrentPage($user_id, 'delete_page_1');
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard(1, 3, 1, 'author_to_delete_', 'delete_page_'));
             } elseif (preg_match("/^delete_page_(\d+)$/", $payload, $matches)) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $db_manager->setCurrentPage($user_id, $payload);
+                $user_service->setCurrentPage($user_id, $payload);
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard((int) $matches[1], 3, 1, 'author_to_delete_', 'delete_page_'));
             } elseif (preg_match("/^author_to_delete_(\d+)$/", $payload, $matches)) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -408,14 +423,14 @@ class MyBot extends tgLib
                         ],
                     ],
                 ];
-                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{author}', htmlspecialchars($db_manager->getAuthorById(intval($matches[1]))['name']), $this->translate('confirm_delete_message')), $keyboard);
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{author}', htmlspecialchars($author_service->getAuthorById(intval($matches[1]))['name']), $this->translate('confirm_delete_message')), $keyboard);
             } elseif (preg_match("/^delete_confirmation_(\d+)$/", $payload, $matches)) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $author = $db_manager->getAuthorById(intval($matches[1]));
+                $author = $author_service->getAuthorById(intval($matches[1]));
                 $this->deleteAuthor($matches[1]);
                 $keyboard = [
                     'inline_keyboard' => [
@@ -426,12 +441,12 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{author}', htmlspecialchars($author['name']), $this->translate('author_deleted_message')), $keyboard);
             } elseif (preg_match("/^change_name_(\d+)$/", $payload, $matches)) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $db_manager->setState($user_id, ['author_id' => intval($matches[1])], 'change_name');
+                $user_state_service->setState($user_id, ['author_id' => intval($matches[1])], 'change_name');
                 $keyboard = [
                     'inline_keyboard' => [
                         [
@@ -441,13 +456,13 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[3], $this->translate('pending_name_change'), $keyboard);
             } elseif (preg_match("/^set_author_about_(\d+)$/", $payload, $matches)) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $author = $db_manager->getAuthorById(intval($matches[1]));
-                $db_manager->setState($user_id, ['author_id' => intval($matches[1])], 'set_author_about');
+                $author = $author_service->getAuthorById(intval($matches[1]));
+                $user_state_service->setState($user_id, ['author_id' => intval($matches[1])], 'set_author_about');
                 $keyboard = [
                     'inline_keyboard' => [
                         [
@@ -457,12 +472,12 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, ($author['biography'] ? $visuals_links[5] : $visuals_links[4]), ($author['biography'] ? $this->translate('pending_bio_change') : $this->translate('pending_bio_add')), $keyboard);
             } elseif (preg_match("/^add_author_link_(\d+)$/", $payload, $matches)) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $db_manager->setState($user_id, ['author_id' => intval($matches[1])], 'add_author_link');
+                $user_state_service->setState($user_id, ['author_id' => intval($matches[1])], 'add_author_link');
                 $keyboard = [
                     'inline_keyboard' => [
                         [
@@ -472,30 +487,30 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('pending_link_change'), $keyboard);
             } elseif ('list_of_authors' === $payload) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $db_manager->setCurrentPage($user_id, 'page_1');
+                $user_service->setCurrentPage($user_id, 'page_1');
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[9], $this->translate('list_of_authors_message'), $this->generateAuthorsKeyboard());
             } elseif (preg_match("/^page_(\d+)$/", $payload, $matches)) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $db_manager->setCurrentPage($user_id, $payload);
+                $user_service->setCurrentPage($user_id, $payload);
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[9], $this->translate('list_of_authors_message'), $this->generateAuthorsKeyboard((int) $matches[1]));
             } elseif (preg_match("/^author_(\d+)$/", $payload, $matches)) {
-                if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $author = $db_manager->getAuthorById(intval($matches[1]));
+                $author = $author_service->getAuthorById(intval($matches[1]));
                 if (false !== $author) {
-                    $author_status = $db_manager->isPrivate(intval($matches[1]));
+                    $author_status = $author_service->isPrivate(intval($matches[1]));
                     $keyboard = [
                         'inline_keyboard' => [
                             [
@@ -527,7 +542,7 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('author_not_found_message'), $keyboard);
             } elseif (preg_match("/^profile_author_(\d+)$/", $payload, $matches)) {
-                $author = $db_manager->getAuthorById(intval($matches[1]));
+                $author = $author_service->getAuthorById(intval($matches[1]));
                 if (false !== $author) {
                     $avatar = $this->createAvatar($author['name'], $author['channel_link']);
                     $this->pictureReply($chat_id, str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], $this->translate('author_info_message')), $avatar);
@@ -537,14 +552,14 @@ class MyBot extends tgLib
                 }
                 $this->sendMessage($chat_id, $this->translate('author_not_found_message'));
             } elseif ('access_control' === $payload) {
-                if (! $db_manager->hasHigherRole($user_id, 'admin')) {
+                if (! $role_service->hasHigherRole($user_id, 'admin')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
-                $db_manager->clearState($user_id);
+                $user_state_service->clearState($user_id);
                 if (! is_null($current_page)) {
-                    $db_manager->resetCurrentPage($user_id);
+                    $user_service->resetCurrentPage($user_id);
                 }
                 $keyboard = [
                     'inline_keyboard' => [
@@ -568,7 +583,7 @@ class MyBot extends tgLib
                 [, $role_name, $role_level] = explode(':', $payload);
                 $this->toggleRoleSelection($chat_id, $user_id, $callback_query_id, $role_name, $role_level);
             } elseif (0 === strpos($payload, 'noop:')) {
-                if ($selected_role = $db_manager->getState($user_id, 'selected_role')) {
+                if ($selected_role = $user_state_service->getState($user_id, 'selected_role')) {
                     [, $priority] = explode(':', $payload);
                     $this->updateRolePriorityAndLevel($chat_id, $user_id, $callback_query_id, $selected_role['role_name'], $selected_role['role_level'], null, 'secondary', (int) $priority);
                 }
@@ -648,7 +663,7 @@ class MyBot extends tgLib
         ?array $authors = null
     ) : array {
         $is_from_database = is_null($authors);
-        $authors = $authors ?? $this->container->get('db_manager')->getAllAuthors();
+        $authors = $authors ?? $this->container->get('author_service')->getAllAuthors();
         $total_buttons = count($authors);
         $total_pages = (int) ceil($total_buttons / $buttons_per_page);
         $page_number = max(1, min($page_number, $total_pages));
@@ -688,16 +703,18 @@ class MyBot extends tgLib
 
     public function sendUpdateRolesPriorityPanel(int $chat_id, int $user_id, $callback_query_id) : void
     {
-        $db_manager = $this->container->get('db_manager');
+        $role_service = $this->container->get('role_service');
+        $user_state_service = $this->container->get('user_state_service');
+        $user_service = $this->container->get('user_service');
 
-        if (! $db_manager->hasHigherRole($user_id, 'admin')) {
+        if (! $role_service->hasHigherRole($user_id, 'admin')) {
             $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
             return;
         }
 
-        $roles = $db_manager->queryRolesOrderedByPriority();
-        $selected_role = $db_manager->getState($user_id, 'selected_role');
+        $roles = $role_service->queryRolesOrderedByPriority();
+        $selected_role = $user_state_service->getState($user_id, 'selected_role');
 
         $keyboard = ['inline_keyboard' => []];
 
@@ -713,21 +730,21 @@ class MyBot extends tgLib
 
         $visuals_links = $this->container->get('visuals_links');
 
-        $this->editMediaMessage($chat_id, $db_manager->getCurrentPanel($user_id), $visuals_links[1], 'Ви можете змінити пріоритети ролей:', $keyboard);
+        $this->editMediaMessage($chat_id, $user_service->getCurrentPanel($user_id), $visuals_links[1], 'Ви можете змінити пріоритети ролей:', $keyboard);
     }
 
     public function toggleRoleSelection(int $chat_id, int $user_id, mixed $callback_query_id, string $role_name) : void
     {
-        $db_manager = $this->container->get('db_manager');
-        $selected_role = $db_manager->getState($user_id, 'selected_role');
+        $user_state_service = $this->container->get('user_state_service');
+        $selected_role = $user_state_service->getState($user_id, 'selected_role');
 
         if ($selected_role && $selected_role['role_name'] === $role_name) {
-            $db_manager->clearState($user_id, 'selected_role');
+            $user_state_service->clearState($user_id, 'selected_role');
             $this->callbackAnswer($callback_query_id, 'Ви зняли виділення з ролі «' . $role_name . '».');
         } elseif ($selected_role) {
             $this->updateRolePriority($chat_id, $user_id, $callback_query_id, $selected_role['role_name'], $role_name);
         } else {
-            $db_manager->setState($user_id, ['role_name' => $role_name], 'selected_role');
+            $user_state_service->setState($user_id, ['role_name' => $role_name], 'selected_role');
             $this->callbackAnswer($callback_query_id, 'Ви вибрали роль «' . $role_name . '» для зміни пріоритету.');
         }
 
@@ -747,12 +764,13 @@ class MyBot extends tgLib
 
     public function updateRolePriority(int $chat_id, int $user_id, mixed $callback_query_id, string $selected_role_name, string $target_role_name) : void
     {
-        $db_manager = $this->container->get('db_manager');
-        $target_priority = $db_manager->getRolePriority($target_role_name);
+        $role_service = $this->container->get('role_service');
+        $user_state_service = $this->container->get('user_state_service');
+        $target_priority = $role_service->getRolePriority($target_role_name);
 
-        $db_manager->updateRolePriorities($selected_role_name, $target_priority);
+        $role_service->updateRolePriorities($selected_role_name, $target_priority);
 
-        $db_manager->clearState($user_id, 'selected_role');
+        $user_state_service->clearState($user_id, 'selected_role');
         $this->callbackAnswer($callback_query_id, 'Роль «' . $selected_role_name . '» оновлена.');
         $this->sendUpdateRolesPriorityPanel($chat_id, $user_id, $callback_query_id);
     }

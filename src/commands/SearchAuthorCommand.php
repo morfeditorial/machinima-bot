@@ -58,7 +58,7 @@ class SearchAuthorCommand extends AbstractCommand
             return;
         }
 
-        $authors = $this->getDbManager()->getAllAuthors();
+        $authors = $this->getAuthorService()->getAllAuthors();
         $search_query = implode(' ', $args);
         $results = $this->getSearch()->fuzzySearch($search_query, $authors);
 

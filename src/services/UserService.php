@@ -35,7 +35,7 @@ class UserService
     public function setCurrentPanel(int $userId, int $messageId) : void
     {
         $this->db->executeStatement(
-            'INSERT INTO user_data (user_id, current_panel) VALUES (?, ?)',
+            'INSERT OR REPLACE INTO user_data (user_id, current_panel) VALUES (?, ?)',
             [$userId, $messageId]
         );
     }
@@ -73,40 +73,6 @@ class UserService
         $this->db->executeStatement(
             'UPDATE user_data SET current_page = NULL WHERE user_id = ?',
             [$userId]
-        );
-    }
-
-    public function assignRole(int $userId, string $role) : void
-    {
-        $this->db->executeStatement(
-            'UPDATE user_data SET role = ? WHERE user_id = ?',
-            [$role, $userId]
-        );
-    }
-
-    public function removeRole(int $userId) : void
-    {
-        $this->db->executeStatement(
-            'UPDATE user_data SET role = NULL WHERE user_id = ?',
-            [$userId]
-        );
-    }
-
-    public function getRole(int $userId) : ?string
-    {
-        $result = $this->db->fetchOne(
-            'SELECT role FROM user_data WHERE user_id = ?',
-            [$userId]
-        );
-
-        return false !== $result ? (string) $result : null;
-    }
-
-    public function getUsersCountByRole(string $role) : int
-    {
-        return (int) $this->db->fetchOne(
-            'SELECT COUNT(*) FROM user_data WHERE role = ?',
-            [$role]
         );
     }
 }

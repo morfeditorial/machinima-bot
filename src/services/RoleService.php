@@ -21,12 +21,13 @@ declare(strict_types=1);
 
 namespace morfeditorial\services;
 
+use Doctrine\DBAL\Connection;
 use Exception;
 use morfeditorial\storage\StorageInterface;
 
 class RoleService
 {
-    private $db;
+    private Connection $db;
 
     public function __construct(private StorageInterface $storage)
     {
@@ -35,22 +36,98 @@ class RoleService
 
     public function createRole(string $roleName, int $priority) : bool
     {
-        $this->db->executeStatement(
+        return (bool) $this->db->executeStatement(
             'INSERT INTO roles (role_name, priority) VALUES (?, ?)',
             [$roleName, $priority]
         );
-
-        return true;
     }
 
     public function deleteRole(string $roleName) : bool
     {
-        $this->db->executeStatement(
+        return (bool) $this->db->executeStatement(
             'DELETE FROM roles WHERE role_name = ?',
             [$roleName]
         );
+    }
 
-        return true;
+    public function assignRole(int $userId, string $roleName) : bool
+    {
+        $role = $this->getRoleByName($roleName);
+        if (! $role) {
+            return false;
+        }
+
+        $exists = $this->db->fetchOne(
+            'SELECT COUNT(*) FROM user_roles WHERE user_id = ? AND role_id = ?',
+            [$userId, $role['id']]
+        );
+
+        if ($exists > 0) {
+            return false;
+        }
+
+        return (bool) $this->db->executeStatement(
+            'INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)',
+            [$userId, $role['id']]
+        );
+    }
+
+    public function removeUserRole(int $userId, string $roleName) : bool
+    {
+        $role = $this->getRoleByName($roleName);
+        if (! $role) {
+            return false;
+        }
+
+        return (bool) $this->db->executeStatement(
+            'DELETE FROM user_roles WHERE user_id = ? AND role_id = ?',
+            [$userId, $role['id']]
+        );
+    }
+
+    public function hasRole(int $userId, string $roleName) : bool
+    {
+        $result = $this->db->fetchAssociative('
+            SELECT ur.user_id FROM user_roles ur
+            JOIN roles r ON ur.role_id = r.id
+            WHERE ur.user_id = ? AND r.role_name = ?
+        ', [$userId, $roleName]);
+
+        return (bool) $result;
+    }
+
+    public function hasHigherRole(int $userId, string $roleName) : bool
+    {
+        $role = $this->db->fetchAssociative(
+            'SELECT priority FROM roles WHERE role_name = ?',
+            [$roleName]
+        );
+
+        if ($role) {
+            $requiredPriority = $role['priority'];
+
+            $userPriority = $this->db->fetchOne('
+                SELECT MAX(r.priority) as max_priority FROM user_roles ur
+                JOIN roles r ON ur.role_id = r.id
+                WHERE ur.user_id = ?
+            ', [$userId]);
+
+            if (null !== $userPriority) {
+                return $userPriority >= $requiredPriority;
+            }
+        }
+
+        return false;
+    }
+
+    public function getUsersCountByRole(string $roleName) : int
+    {
+        return (int) $this->db->fetchOne('
+            SELECT COUNT(ur.user_id) AS user_count
+            FROM user_roles ur
+            JOIN roles r ON ur.role_id = r.id
+            WHERE r.role_name = ?
+        ', [$roleName]);
     }
 
     public function getAllRoles() : array
@@ -70,12 +147,10 @@ class RoleService
 
     public function getRolePriority(string $roleName) : int
     {
-        $result = $this->db->fetchOne(
+        return (int) $this->db->fetchOne(
             'SELECT priority FROM roles WHERE role_name = ?',
             [$roleName]
         );
-
-        return false !== $result ? (int) $result : 0;
     }
 
     public function getRolesCount() : int
@@ -85,44 +160,34 @@ class RoleService
 
     public function updateRolePriority(string $roleName, int $priority) : bool
     {
-        $this->db->executeStatement(
+        return (bool) $this->db->executeStatement(
             'UPDATE roles SET priority = ? WHERE role_name = ?',
             [$priority, $roleName]
         );
-
-        return true;
     }
 
     public function updateRolePriorities(string $roleName, int $newPriority) : void
     {
         $currentPriority = $this->getRolePriority($roleName);
-
-        if (0 === $currentPriority) {
+        if (0 === $currentPriority && ! $this->getRoleByName($roleName)) {
             throw new Exception('Role not found.');
         }
 
         $this->db->beginTransaction();
+
         try {
             if ($currentPriority < $newPriority) {
-                $roles = $this->db->fetchAllAssociative(
-                    'SELECT id, priority FROM roles WHERE priority > ? AND priority <= ?',
+                $this->db->executeStatement(
+                    'UPDATE roles SET priority = priority - 1 WHERE priority > ? AND priority <= ?',
                     [$currentPriority, $newPriority]
                 );
             } elseif ($currentPriority > $newPriority) {
-                $roles = $this->db->fetchAllAssociative(
-                    'SELECT id, priority FROM roles WHERE priority < ? AND priority >= ?',
+                $this->db->executeStatement(
+                    'UPDATE roles SET priority = priority + 1 WHERE priority < ? AND priority >= ?',
                     [$currentPriority, $newPriority]
                 );
             } else {
-                $roles = [];
-            }
-
-            foreach ($roles as $role) {
-                $newRolePriority = ($currentPriority < $newPriority) ? $role['priority'] - 1 : $role['priority'] + 1;
-                $this->db->executeStatement(
-                    'UPDATE roles SET priority = ? WHERE id = ?',
-                    [$newRolePriority, $role['id']]
-                );
+                return;
             }
 
             $this->updateRolePriority($roleName, $newPriority);
@@ -135,6 +200,8 @@ class RoleService
 
     public function queryRolesOrderedByPriority() : array
     {
-        return $this->getAllRoles();
+        return $this->db->fetchAllAssociative(
+            "SELECT role_name, priority FROM roles ORDER BY priority DESC"
+        );
     }
 }

@@ -37,7 +37,7 @@ class UserStateService
         $this->db->executeStatement(
             'INSERT INTO user_states (user_id, state_key, state_value) VALUES (?, ?, ?)
              ON CONFLICT(user_id, state_key) DO UPDATE SET state_value = excluded.state_value',
-            [$userId, $key, is_string($value) ? $value : json_encode($value)]
+            [$userId, $key, json_encode($value)]
         );
     }
 
@@ -48,7 +48,7 @@ class UserStateService
             [$userId, $key]
         );
 
-        return false !== $result ? $result : null;
+        return false !== $result ? json_decode($result, true) : null;
     }
 
     public function clearState(int $userId, ?string $key = null) : void

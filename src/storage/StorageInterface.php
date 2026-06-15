@@ -36,4 +36,8 @@ interface StorageInterface
     public function rollBack() : void;
 
     public function lastInsertId() : string|int;
+
+    public function query(string $query, array $params = []) : array;
+
+    public function execute(string $query, array $params = []) : void;
 }

@@ -22,6 +22,10 @@ declare(strict_types=1);
 namespace morfeditorial;
 
 use morfeditorial\commands\CommandInterface;
+use morfeditorial\services\AuthorService;
+use morfeditorial\services\RoleService;
+use morfeditorial\services\UserService;
+use morfeditorial\services\UserStateService;
 use Psr\Container\ContainerInterface;
 
 abstract class AbstractCommand implements CommandInterface
@@ -56,9 +60,24 @@ abstract class AbstractCommand implements CommandInterface
         return $this->getTranslator()->translate($key);
     }
 
-    public function getDbManager()
+    public function getAuthorService() : AuthorService
     {
-        return $this->container->get('db_manager');
+        return $this->container->get('author_service');
+    }
+
+    public function getUserService() : UserService
+    {
+        return $this->container->get('user_service');
+    }
+
+    public function getUserStateService() : UserStateService
+    {
+        return $this->container->get('user_state_service');
+    }
+
+    public function getRoleService() : RoleService
+    {
+        return $this->container->get('role_service');
     }
 
     public function getSearch()

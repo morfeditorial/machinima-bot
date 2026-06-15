@@ -53,9 +53,7 @@ class AssignRoleCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        $db_manager = $this->getDbManager();
-
-        if (! $db_manager->hasHigherRole($user_id, 'admin')) {
+        if (! $this->getRoleService()->hasHigherRole($user_id, 'admin')) {
             $this->bot->sendMessage($chat_id, $this->translate('no_permission_message'));
 
             return;
@@ -70,13 +68,13 @@ class AssignRoleCommand extends AbstractCommand
         $target_user_id = intval($args[0]);
         $role_name = $args[1];
 
-        if (! $db_manager->getRoleByName($role_name)) {
+        if (! $this->getRoleService()->getRoleByName($role_name)) {
             $this->bot->sendMessage($chat_id, str_replace('{roleName}', htmlspecialchars($role_name), $this->translate('role_not_found_message')));
 
             return;
         }
 
-        if ($db_manager->assignRole($target_user_id, $role_name)) {
+        if ($this->getRoleService()->assignRole($target_user_id, $role_name)) {
             $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('assign_role_message')));
         } else {
             $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_assignment_failure_message')));

@@ -25,6 +25,10 @@ use morfeditorial\storage\StorageInterface;
 
 class AuthorService
 {
+    private const STATE_PRIVATE = 'private';
+
+    private const STATE_PUBLIC = 'public';
+
     private $db;
 
     public function __construct(private StorageInterface $storage)
@@ -35,8 +39,8 @@ class AuthorService
     public function createAuthor(string $name) : int
     {
         $this->db->executeStatement(
-            'INSERT INTO authors (name) VALUES (?)',
-            [$name]
+            'INSERT INTO authors (name, state) VALUES (?, ?)',
+            [trim($name), self::STATE_PRIVATE]
         );
 
         return (int) $this->db->lastInsertId();
@@ -65,11 +69,19 @@ class AuthorService
         return $this->db->fetchAllAssociative('SELECT * FROM authors');
     }
 
+    public function getContentByAuthorId(int $authorId) : array
+    {
+        return $this->db->fetchAllAssociative(
+            'SELECT description FROM content WHERE author_id = ?',
+            [$authorId]
+        );
+    }
+
     public function updateAuthorName(int $authorId, string $name) : void
     {
         $this->db->executeStatement(
             'UPDATE authors SET name = ? WHERE id = ?',
-            [$name, $authorId]
+            [trim($name), $authorId]
         );
     }
 
@@ -77,7 +89,7 @@ class AuthorService
     {
         $this->db->executeStatement(
             'UPDATE authors SET biography = ? WHERE id = ?',
-            [$biography, $authorId]
+            [trim($biography), $authorId]
         );
     }
 
@@ -85,26 +97,27 @@ class AuthorService
     {
         $this->db->executeStatement(
             'UPDATE authors SET channel_link = ? WHERE id = ?',
-            [$link, $authorId]
+            [trim($link), $authorId]
         );
     }
 
     public function setPrivate(int $authorId, bool $private = true) : void
     {
+        $state = $private ? self::STATE_PRIVATE : self::STATE_PUBLIC;
         $this->db->executeStatement(
-            'UPDATE authors SET private = ? WHERE id = ?',
-            [$private, $authorId]
+            'UPDATE authors SET state = ? WHERE id = ?',
+            [$state, $authorId]
         );
     }
 
     public function isPrivate(int $authorId) : bool
     {
-        $result = $this->db->fetchOne(
-            'SELECT private FROM authors WHERE id = ?',
+        $result = $this->db->fetchAssociative(
+            'SELECT state FROM authors WHERE id = ?',
             [$authorId]
         );
 
-        return (bool) $result;
+        return $result && self::STATE_PRIVATE === $result['state'];
     }
 
     public function getAuthorCreationTime(int $authorId) : ?string

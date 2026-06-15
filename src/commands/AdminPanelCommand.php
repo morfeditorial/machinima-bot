@@ -53,23 +53,21 @@ class AdminPanelCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        $db_manager = $this->getDbManager();
-
-        if (! $db_manager->hasHigherRole($user_id, 'moderator')) {
+        if (! $this->getRoleService()->hasHigherRole($user_id, 'moderator')) {
             $this->bot->sendMessage($chat_id, $this->translate('no_permission_message'));
 
             return;
         }
 
-        $db_manager->clearState($user_id);
+        $this->getUserStateService()->clearState($user_id);
         if (! is_null($current_panel)) {
             $this->bot->deleteMessage($chat_id, $current_panel);
         }
 
-        $db_manager->setCurrentPanel($user_id, $message_id + 1);
+        $this->getUserService()->setCurrentPanel($user_id, $message_id + 1);
 
         if (! is_null($current_page)) {
-            $db_manager->resetCurrentPage($user_id);
+            $this->getUserService()->resetCurrentPage($user_id);
         }
 
         $keyboard = [
