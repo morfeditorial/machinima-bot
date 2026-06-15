@@ -465,6 +465,29 @@ class MyBot extends tgLib
                 // Return to manage projects
                 $this->handlePanels(array_merge($message_data, ['payload' => 'manage_projects']));
             }
+        } elseif ($state_data = $user_state_service->getState($user_id, 'editing_project_field')) {
+            $this->deleteMessage($chat_id, $message_id);
+            $user_state_service->clearState($user_id, 'editing_project_field');
+            $content_service = $this->container->get('content_service');
+
+            $project_id = $state_data['project_id'];
+            $field = $state_data['field'];
+            $value = $message;
+
+            if ('cover' === $field) {
+                $photo = $message_data['photo'] ?? null;
+                if ($photo) {
+                    $value = end($photo)['file_id'];
+                } else {
+                    return; // Ignore if no photo is sent when expecting one
+                }
+            }
+
+            $content_service->updateContent($project_id, [$field => $value]);
+            $this->sendMessage($chat_id, $this->translate('project_updated_message'));
+
+            // Return to edit menu
+            $this->handlePanels(array_merge($message_data, ['payload' => 'edit_project:' . $project_id]));
         } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_staff_role')) {
             $this->deleteMessage($chat_id, $message_id);
             $user_state_service->clearState($user_id, 'awaiting_staff_role');
@@ -1188,6 +1211,9 @@ class MyBot extends tgLib
                     $keyboard = [
                         'inline_keyboard' => [
                             [
+                                ['text' => $this->translate('edit_project'), 'callback_data' => 'edit_project:' . $project_id],
+                            ],
+                            [
                                 ['text' => $this->translate('manage_staff'), 'callback_data' => 'manage_staff:' . $project_id],
                             ],
                             [
@@ -1331,6 +1357,89 @@ class MyBot extends tgLib
 
                 // Return to manage projects list
                 $this->handlePanels(array_merge($message_data, ['payload' => 'manage_projects']));
+            } elseif (preg_match("/^edit_project:(\d+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $content_service = $this->container->get('content_service');
+                $project = $content_service->getContentById($project_id);
+
+                if ($project) {
+                    $keyboard = [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => $this->translate('edit_title'), 'callback_data' => 'edit_project_field:' . $project_id . ':title'],
+                                ['text' => $this->translate('edit_type'), 'callback_data' => 'edit_project_field:' . $project_id . ':type'],
+                            ],
+                            [
+                                ['text' => $this->translate('edit_description'), 'callback_data' => 'edit_project_field:' . $project_id . ':description'],
+                                ['text' => $this->translate('edit_url'), 'callback_data' => 'edit_project_field:' . $project_id . ':url'],
+                            ],
+                            [
+                                ['text' => $this->translate('edit_cover'), 'callback_data' => 'edit_project_field:' . $project_id . ':cover'],
+                            ],
+                            [
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'view_project:' . $project_id],
+                            ],
+                        ],
+                    ];
+                    $this->editMediaMessage($chat_id, $current_panel, $project['cover_file_id'] ?? $visuals_links[1], $this->translate('edit_project'), $keyboard);
+                }
+            } elseif (preg_match("/^edit_project_field:(\d+):([a-z_]+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $field = $matches[2];
+
+                if ('type' === $field) {
+                    $keyboard = [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => $this->translate('project_type_short'), 'callback_data' => 'set_edited_project_type:' . $project_id . ':short'],
+                                ['text' => $this->translate('project_type_series'), 'callback_data' => 'set_edited_project_type:' . $project_id . ':series'],
+                            ],
+                            [
+                                ['text' => $this->translate('project_type_music_video'), 'callback_data' => 'set_edited_project_type:' . $project_id . ':music_video'],
+                            ],
+                            [
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'edit_project:' . $project_id],
+                            ],
+                        ],
+                    ];
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('select_project_type_message'), $keyboard);
+                } else {
+                    $user_state_service->setState($user_id, ['project_id' => $project_id, 'field' => $field], 'editing_project_field');
+
+                    $msg_key = 'cover' === $field ? 'upload_project_cover_message' : 'enter_new_value_message';
+                    $keyboard = [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'edit_project:' . $project_id],
+                            ],
+                        ],
+                    ];
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate($msg_key), $keyboard);
+                }
+            } elseif (preg_match("/^set_edited_project_type:(\d+):(.+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $type = $matches[2];
+
+                $content_service = $this->container->get('content_service');
+                $content_service->updateContent($project_id, ['type' => $type]);
+                $this->callbackAnswer($callback_query_id, $this->translate('project_updated_message'));
+
+                $this->handlePanels(array_merge($message_data, ['payload' => 'edit_project:' . $project_id]));
             } elseif (preg_match("/^manage_staff:(\d+)$/", $payload, $matches)) {
                 if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));

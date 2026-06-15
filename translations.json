@@ -419,6 +419,54 @@
         "be": "Выдаліць праект",
         "uk": "Видалити проєкт"
     },
+    "edit_project": {
+        "en": "Edit Project ✏️",
+        "pl": "Edytuj projekt ✏️",
+        "be": "Рэдагаваць праект ✏️",
+        "uk": "Редагувати проєкт ✏️"
+    },
+    "edit_title": {
+        "en": "Edit Title",
+        "pl": "Edytuj tytuł",
+        "be": "Рэдагаваць назву",
+        "uk": "Змінити назву"
+    },
+    "edit_description": {
+        "en": "Edit Description",
+        "pl": "Edytuj opis",
+        "be": "Рэдагаваць апісанне",
+        "uk": "Змінити опис"
+    },
+    "edit_url": {
+        "en": "Edit URL",
+        "pl": "Edytuj URL",
+        "be": "Рэдагаваць URL",
+        "uk": "Змінити URL"
+    },
+    "edit_cover": {
+        "en": "Edit Cover",
+        "pl": "Edytuj okładkę",
+        "be": "Рэдагаваць вокладку",
+        "uk": "Змінити обкладинку"
+    },
+    "edit_type": {
+        "en": "Edit Type",
+        "pl": "Edytuj typ",
+        "be": "Рэдагаваць тып",
+        "uk": "Змінити тип"
+    },
+    "enter_new_value_message": {
+        "en": "Enter the new value:",
+        "pl": "Wprowadź nową wartość:",
+        "be": "Увядзіце новае значэнне:",
+        "uk": "Введи нове значення:"
+    },
+    "project_updated_message": {
+        "en": "Project updated!",
+        "pl": "Projekt zaktualizowany!",
+        "be": "Праект абноўлены!",
+        "uk": "Проєкт оновлено!"
+    },
     "confirm_delete_project_message": {
         "en": "Are you sure you want to delete project «{title}»?",
         "pl": "Czy na pewno chcesz usunąć projekt «{title}»?",
