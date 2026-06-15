@@ -60,19 +60,16 @@ class UpdateCommand extends AbstractCommand
 
         $this->bot->setMyName("MORF — centralized chatbot", "en");
         $this->bot->setMyName("MORF — scentralizowany chatbot", "pl");
-        $this->bot->setMyName("MORF — централизованный чат-бот", "ru");
         $this->bot->setMyName("MORF — цэнтралізаваны чат-бот", "be");
         $this->bot->setMyName("MORF — централізований чат‐бот", "uk");
 
         $this->bot->setMyDescription("Hello, I will help you discover interesting projects, short films, and series created based on Minecraft. You won't be bored with me!\n\nMy purpose is to centralize Ukrainian machinimators in one list.", "en");
         $this->bot->setMyDescription("Cześć, pomogę Ci odkryć interesujące projekty, krótkie filmy i seriale stworzone na podstawie Minecrafta. Z nami nie będziesz się nudzić!\n\nMoim celem jest skupienie ukraińskich machinimatorów w jednym miejscu.", "pl");
-        $this->bot->setMyDescription("Привет, я помогу тебе найти интересные проекты, короткометражные фильмы и сериалы, снятые на основе Minecraft. Со мной тебе не будет скучно!\n\nМоя цель — централизовать украинских машиниматоров в одном списке.", "ru");
         $this->bot->setMyDescription("Прывітанне, я дапаможу табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft. За мной табе не будзе нудна!\n\nМой мэт — цэнтралізаваць украінскіх машыніматараў у адным спісе.", "be");
         $this->bot->setMyDescription("Привіт, я допоможу тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft. Зі мною тобі не буде нудно!\n\nМоє покликання — централізувати українських машиніматорів в одному списку.", "uk");
 
         $this->bot->setMyShortDescription("A bot that helps you discover interesting projects, short films, and series created based on Minecraft.", "en");
         $this->bot->setMyShortDescription("Bot, który pomoże Ci odkryć interesujące projekty, krótkie filmy i seriale stworzone na podstawie Minecrafta.", "pl");
-        $this->bot->setMyShortDescription("Бот, который поможет вам найти интересные проекты, короткометражные фильмы и сериалы, созданные на основе Minecraft.", "ru");
         $this->bot->setMyShortDescription("Бот, які дапаможа табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft.", "be");
         $this->bot->setMyShortDescription("Бот, який допоможе тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft.", "uk");
 

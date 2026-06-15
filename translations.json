@@ -2,525 +2,450 @@
     "start_command_description": {
         "en": "Start communication with the assistant",
         "pl": "Rozpocznij komunikację z asystentem",
-        "ru": "Начать общение с помощником",
         "be": "Пачніце зносіны з памочнікам",
         "uk": "Почати спілкування з помічником"
     },
     "help_command_description": {
         "en": "Learn more about the bot",
         "pl": "Dowiedz się więcej o bocie",
-        "ru": "Узнать больше о боте",
         "be": "Даведайцеся больш пра бота",
         "uk": "Дізнатися більше про бота"
     },
     "time_command_description": {
         "en": "Check the current time",
         "pl": "Sprawdź aktualny czas",
-        "ru": "Узнать текущее время",
         "be": "Даведайцеся актуальны час",
         "uk": "Дізнатися поточний час"
     },
     "whois_command_description": {
         "en": "Get information about an IP or domain",
         "pl": "Uzyskaj informacje o adresie IP lub domenie",
-        "ru": "Получить информацию об IP или домене",
         "be": "Атрымаць інфармацыю пра IP або дамен",
         "uk": "Отримати інформацію про IP або домен"
     },
     "update_command_description": {
         "en": "Update the bot, including name, description, and localized information",
         "pl": "Zaktualizuj bota, w tym nazwę, opis i informacje lokalne",
-        "ru": "Обновить бота, включая имя, описание и локализованную информацию",
         "be": "Абнавіце бота, уключаючы назву, апісанне і лакалізаваную інфармацыю",
         "uk": "Оновити бота, включаючи назву, опис та локалізовану інформацію"
     },
     "admin_panel_command_description": {
         "en": "Access the admin panel",
         "pl": "Uzyskaj dostęp do panelu administratora",
-        "ru": "Получить доступ к панели администратора",
         "be": "Доступ да панэлі адміністратара",
         "uk": "Отримати доступ до панелі адміністратора"
     },
     "search_content_command_description": {
         "en": "Find content by tag",
         "pl": "Znajdź zawartość według tagu",
-        "ru": "Найти контент по тегам",
         "be": "Знайдзіце кантэнт па тэгу",
         "uk": "Знайти контент за тегами"
     },
     "search_author_command_description": {
         "en": "Find information about the author",
         "pl": "Znajdź informacje o autorze",
-        "ru": "Найти информацию об авторе",
         "be": "Знайдзіце звесткі пра аўтара",
         "uk": "Знайти інформацію про автора"
     },
     "categories_command_description": {
         "en": "View available categories",
         "pl": "Zobacz dostępne kategorie",
-        "ru": "Просмотреть доступные категории",
         "be": "Прагляд даступных катэгорый",
         "uk": "Переглянути доступні категорії"
     },
     "top_authors_command_description": {
         "en": "View the most popular authors",
         "pl": "Zobacz najpopularniejszych autorów",
-        "ru": "Посмотреть самых популярных авторов",
         "be": "Прагляд самых папулярных аўтараў",
         "uk": "Переглянути найпопулярніших авторів"
     },
     "random_content_command_description": {
         "en": "Get random content",
         "pl": "Zdobądź losową zawartość",
-        "ru": "Получить случайный контент",
         "be": "Атрымаць выпадковы кантэнт",
         "uk": "Отримати випадковий контент"
     },
     "create_role_command_description": {
         "en": "Create a new role",
         "pl": "Utwórz nową rolę",
-        "ru": "Создать новую роль",
         "be": "Стварыць новую ролю",
         "uk": "Створити нову роль"
     },
     "assign_initial_admin_command_description": {
         "en": "Assign the first admin role to the initiator",
         "pl": "Przypisz pierwszą rolę administratora inicjatorowi",
-        "ru": "Назначить первую роль администратора инициатору",
         "be": "Прызначыць першую ролю адміністратара ініцыятару",
         "uk": "Призначити першу роль адміністратора ініціатору"
     },
     "assign_role_command_description": {
         "en": "Assign a role to a user",
         "pl": "Przypisz rolę użytkownikowi",
-        "ru": "Назначить роль пользователю",
         "be": "Прызначыць ролю карыстальніку",
         "uk": "Призначити роль користувачу"
     },
     "welcome_message": {
-        "en": "Hello, I`m a chatbot named Pai! 👋🏻\n\nMy mission is to centralize Ukrainian machinimators in one list. I`ll help you find interesting projects, short films, and series based on <b>Minecraft</b>. You won`t be bored with me!\n\n📚 You can learn commands to interact with me by sending the word «/help».",
-        "pl": "Cześć, jestem czatbotem o imieniu Pai! 👋🏻\n\nMoje zadanie to scentralizować ukraińskich machinimatorów w jednym spisie. Pomogę ci znaleźć interesujące projekty, krótkometrażowe filmy i seriale oparte na <b>Minecraft</b>. Z pewnością się nie nudzisz ze mną!\n\n📚 Aby dowiedzieć się więcej o moich komendach, wyślij słowo «/help».",
-        "ru": "Привет, я чат‐бот по имени Пай! 👋🏻\n\nМоя задача — централизовать украинских машиниматоров в одном списке. Я помогу вам найти интересные проекты, короткометражные фильмы и сериалы, снятые на основе <b>Minecraft</b>. Со мной вам не будет скучно!\n\n📚 Узнать команды для взаимодействия со мной можно, отправив слово «/help».",
-        "be": "Прывітанне, я чат‐бот пад імем Пай! 👋🏻\n\nМая мэта — цэнтралізаваць украінскіх машыніматараў у адным спісе. Я дапаможу вам знайсці цікавыя праекты, кароткометражныя фільмы і серыялы, знятыя на аснове <b>Minecraft</b>. За мной вам не будзе нудна!\n\n📚 Каманды для взаемадзеяння з мной можна атрымаць, высылаючы слова «/help».",
-        "uk": "Привіт, я чат‐бот на ім’я Пай! 👋🏻\n\nМоє покликання — централізувати українських машиніматорів в одному списку. Я допоможу тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі <b>Minecraft</b>. Зі мною тобі не буде нудно!\n\n📚 Дізнатися команди взаємодії зі мною можна відправивши слово «/help»"
+        "en": "Hello, I`m a chatbot named Pai! 👋🏻\n\nMy mission is to centralize Ukrainian machinimators in one list. I`ll help you find interesting projects, short films, and series based on <b>Minecraft<\/b>. You won`t be bored with me!\n\n📚 You can learn commands to interact with me by sending the word «\/help».",
+        "pl": "Cześć, jestem czatbotem o imieniu Pai! 👋🏻\n\nMoje zadanie to scentralizować ukraińskich machinimatorów w jednym spisie. Pomogę ci znaleźć interesujące projekty, krótkometrażowe filmy i seriale oparte na <b>Minecraft<\/b>. Z pewnością się nie nudzisz ze mną!\n\n📚 Aby dowiedzieć się więcej o moich komendach, wyślij słowo «\/help».",
+        "be": "Прывітанне, я чат‐бот пад імем Пай! 👋🏻\n\nМая мэта — цэнтралізаваць украінскіх машыніматараў у адным спісе. Я дапаможу вам знайсці цікавыя праекты, кароткометражныя фільмы і серыялы, знятыя на аснове <b>Minecraft<\/b>. За мной вам не будзе нудна!\n\n📚 Каманды для взаемадзеяння з мной можна атрымаць, высылаючы слова «\/help».",
+        "uk": "Привіт, я чат‐бот на ім’я Пай! 👋🏻\n\nМоє покликання — централізувати українських машиніматорів в одному списку. Я допоможу тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі <b>Minecraft<\/b>. Зі мною тобі не буде нудно!\n\n📚 Дізнатися команди взаємодії зі мною можна відправивши слово «\/help»"
     },
     "help_message": {
-        "en": "🌟 These commands might be useful:\n\n/help — learn more about me\n/search_content — find content by tags\n/search_author — find information about an author\n/categories — view available categories\n/top_authors — view top authors\n/random_content — get random content\n\nBut I`m not allowed to add new content or authors. Please contact the bot administrator for that.",
-        "pl": "🌟 Oto kilka przydatnych poleceń:\n\n/help — dowiedz się więcej o mnie\n/search_content — znajdź treści według tagów\n/search_author — znajdź informacje o autorze\n/categories — przeglądaj dostępne kategorie\n/top_authors — przeglądaj najlepszych autorów\n/random_content — otrzymaj losową treść\n\nJednak nie mam uprawnień do dodawania nowych treści ani autorów. Skontaktuj się z administratorem bota w celu uzyskania pomocy.",
-        "ru": "🌟 Вот несколько полезных команд:\n\n/help — узнать больше обо мне\n/search_content — найти контент по тегам\n/search_author — найти информацию об авторе\n/categories — просмотреть доступные категории\n/top_authors — посмотреть лучших авторов\n/random_content — получить случайный контент\n\nНо у меня нет прав добавлять новый контент или авторов. Обратитесь к администратору бота за помощью.",
-        "be": "🌟 Вось некалькі карысных каманд:\n\n/help — даведацца больш пра мяне\n/search_content — знайсці кантэнт па тэгах\n/search_author — знайсці інфармацыю аб аўтары\n/categories — праглядзець даступныя катэгорыі\n/top_authors — праглядзець лепшых аўтароў\n/random_content — атрымаць выпадковы кантэнт\n\nАле ў мяне няма праваў дадаць новы кантэнт ці аўтараў. Звярніцеся да адміністратара бота за дапамогай.",
-        "uk": "🌟 Тобі можуть бути корисними ось ці команди:\n\n/help — дізнатися більше про мене\n/search_content — знайти контент за теґами\n/search_author — знайти інформацію про автора\n/categories — переглянути доступні категорії\n/top_authors — переглянути найпопулярніших авторів\n/random_content — отримати випадковий контент\n\nАле мені не дозволено додавати новий контент або авторів. Для цього слід звернутися до адміністратора бота."
+        "en": "🌟 These commands might be useful:\n\n\/help — learn more about me\n\/search_content — find content by tags\n\/search_author — find information about an author\n\/categories — view available categories\n\/top_authors — view top authors\n\/random_content — get random content\n\nBut I`m not allowed to add new content or authors. Please contact the bot administrator for that.",
+        "pl": "🌟 Oto kilka przydatnych poleceń:\n\n\/help — dowiedz się więcej o mnie\n\/search_content — znajdź treści według tagów\n\/search_author — znajdź informacje o autorze\n\/categories — przeglądaj dostępne kategorie\n\/top_authors — przeglądaj najlepszych autorów\n\/random_content — otrzymaj losową treść\n\nJednak nie mam uprawnień do dodawania nowych treści ani autorów. Skontaktuj się z administratorem bota w celu uzyskania pomocy.",
+        "be": "🌟 Вось некалькі карысных каманд:\n\n\/help — даведацца больш пра мяне\n\/search_content — знайсці кантэнт па тэгах\n\/search_author — знайсці інфармацыю аб аўтары\n\/categories — праглядзець даступныя катэгорыі\n\/top_authors — праглядзець лепшых аўтароў\n\/random_content — атрымаць выпадковы кантэнт\n\nАле ў мяне няма праваў дадаць новы кантэнт ці аўтараў. Звярніцеся да адміністратара бота за дапамогай.",
+        "uk": "🌟 Тобі можуть бути корисними ось ці команди:\n\n\/help — дізнатися більше про мене\n\/search_content — знайти контент за теґами\n\/search_author — знайти інформацію про автора\n\/categories — переглянути доступні категорії\n\/top_authors — переглянути найпопулярніших авторів\n\/random_content — отримати випадковий контент\n\nАле мені не дозволено додавати новий контент або авторів. Для цього слід звернутися до адміністратора бота."
     },
     "search_author_usage_message": {
-        "en": "Usage: /search_author &lt;query&gt;",
-        "pl": "Użycie: /search_author &lt;zapytanie&gt;",
-        "ru": "Использование: /search_author &lt;запрос&gt;",
-        "be": "Выкарыстанне: /search_author &lt;запыт&gt;",
-        "uk": "Використання: /search_author &lt;запит&gt;"
+        "en": "Usage: \/search_author &lt;query&gt;",
+        "pl": "Użycie: \/search_author &lt;zapytanie&gt;",
+        "be": "Выкарыстанне: \/search_author &lt;запыт&gt;",
+        "uk": "Використання: \/search_author &lt;запит&gt;"
     },
     "no_search_results_message": {
-        "en": "📑 I found nothing for the search query «<code>{searchQuery}</code>». Try again, changing your query.",
-        "pl": "📑 Nie znalazłem niczego dla zapytania «<code>{searchQuery}</code>». Spróbuj ponownie, zmieniając zapytanie.",
-        "ru": "📑 По вашему запросу «<code>{searchQuery}</code>» ничего не найдено. Попробуйте еще раз, изменяя запрос.",
-        "be": "📑 Нічога не знойдзена па запыце «<code>{searchQuery}</code>». Паспрабуйце яшчэ раз, змяняючы запыт.",
-        "uk": "📑 За пошуковим запитом «<code>{searchQuery}</code>» я нічого не знайшов. Спробуй ще раз, змінивши запит."
+        "en": "📑 I found nothing for the search query «<code>{searchQuery}<\/code>». Try again, changing your query.",
+        "pl": "📑 Nie znalazłem niczego dla zapytania «<code>{searchQuery}<\/code>». Spróbuj ponownie, zmieniając zapytanie.",
+        "be": "📑 Нічога не знойдзена па запыце «<code>{searchQuery}<\/code>». Паспрабуйце яшчэ раз, змяняючы запыт.",
+        "uk": "📑 За пошуковим запитом «<code>{searchQuery}<\/code>» я нічого не знайшов. Спробуй ще раз, змінивши запит."
     },
     "search_author_message": {
-        "en": "📑 I found several authors ({count}) for your query: «<code>{searchQuery}</code>». You can review them by pressing the buttons below:",
-        "pl": "📑 Znalazłem kilku autorów ({count}) dla twojego zapytania: «<code>{searchQuery}</code>». Możesz je przejrzeć, naciskając przyciski poniżej:",
-        "ru": "📑 Найдено несколько авторов ({count}) по вашему запросу: «<code>{searchQuery}</code>». Вы можете ознакомиться с ними, нажимая кнопки ниже:",
-        "be": "📑 Знойдзена некалькі аўтараў ({count}) па вашым запыце: «<code>{searchQuery}</code>». Вы можаце праглядзець іх, націскаючы кнопкі ніжэй:",
-        "uk": "📑 Я знайшов кілька авторів ({count}) за твоїм запитом: «<code>{searchQuery}</code>». Ти можеш оглянути їх, натискаючи кнопки знизу:"
+        "en": "📑 I found several authors ({count}) for your query: «<code>{searchQuery}<\/code>». You can review them by pressing the buttons below:",
+        "pl": "📑 Znalazłem kilku autorów ({count}) dla twojego zapytania: «<code>{searchQuery}<\/code>». Możesz je przejrzeć, naciskając przyciski poniżej:",
+        "be": "📑 Знойдзена некалькі аўтараў ({count}) па вашым запыце: «<code>{searchQuery}<\/code>». Вы можаце праглядзець іх, націскаючы кнопкі ніжэй:",
+        "uk": "📑 Я знайшов кілька авторів ({count}) за твоїм запитом: «<code>{searchQuery}<\/code>». Ти можеш оглянути їх, натискаючи кнопки знизу:"
     },
     "time_message": {
         "en": "🕰️ Server time: {date}",
         "pl": "🕰️ Czas serwera: {date}",
-        "ru": "🕰️ Время сервера: {date}",
         "be": "🕰️ Час сервера: {date}",
         "uk": "🕰️ Серверний час: {date}"
     },
     "whois_usage_message": {
-        "en": "Usage: /whois &lt;IP address&gt;",
-        "pl": "Użycie: /whois &lt;adres IP&gt;",
-        "ru": "Использование: /whois &lt;IP-адрес&gt;",
-        "be": "Выкарыстанне: /whois &lt;IP-адрас&gt;",
-        "uk": "Використання: /whois &lt;IP-адреса&gt;"
+        "en": "Usage: \/whois &lt;IP address&gt;",
+        "pl": "Użycie: \/whois &lt;adres IP&gt;",
+        "be": "Выкарыстанне: \/whois &lt;IP-адрас&gt;",
+        "uk": "Використання: \/whois &lt;IP-адреса&gt;"
     },
     "whois_no_response_message": {
         "en": "IP address not responding!",
         "pl": "Adres IP nie odpowiada!",
-        "ru": "IP-адрес не отвечает!",
         "be": "IP-адрас не адказвае!",
         "uk": "IP-адреса не відповідає!"
     },
     "whois_info_message": {
-        "en": "Information about {ip_address}:\n\n🌐 IP address › {query}\n\nCountry › {country}\nCountry Code › {country_code}\nRegion/City › {region}/{city}\nTimezone › {timezone}\nLatitude, Longitude › {lat}, {lon}\n\n👥 Organization › {org}\n⚙️ Provider › {isp}",
-        "pl": "Informacje o {ip_address}:\n\n🌐 Adres IP › {query}\n\nKraj › {country}\nKod kraju › {country_code}\nRegion/Miasto › {region}/{city}\nStrefa czasowa › {timezone}\nSzerokość, Długość › {lat}, {lon}\n\n👥 Organizacja › {org}\n⚙️ Dostawca › {isp}",
-        "ru": "Информация о {ip_address}:\n\n🌐 IP-адрес › {query}\n\nСтрана › {country}\nКод страны › {country_code}\nРегион/Город › {region}/{city}\nВременная зона › {timezone}\nШирота, долгота › {lat}, {lon}\n\n👥 Организация › {org}\n⚙️ Провайдер › {isp}",
-        "be": "Інфармацыя пра {ip_address}:\n\n🌐 IP-адрас › {query}\n\nКраіна › {country}\nКод краіны › {country_code}\nРэгіён/Горад › {region}/{city}\nЧасавы пояс › {timezone}\nШырата, даўгата › {lat}, {lon}\n\n👥 Арганізацыя › {org}\n⚙️ Пастаўшчык › {isp}",
-        "uk": "Інформація про {ip_address}:\n\n🌐 IP-адреса › {query}\n\nКраїна › {country}\nКод країни › {country_code}\nРегіон/Місто › {region}/{city}\nЧасовий пояс › {timezone}\nШирота, довгота › {lat}, {lon}\n\n👥 Організація › {org}\n⚙️ Провайдер › {isp}"
+        "en": "Information about {ip_address}:\n\n🌐 IP address › {query}\n\nCountry › {country}\nCountry Code › {country_code}\nRegion\/City › {region}\/{city}\nTimezone › {timezone}\nLatitude, Longitude › {lat}, {lon}\n\n👥 Organization › {org}\n⚙️ Provider › {isp}",
+        "pl": "Informacje o {ip_address}:\n\n🌐 Adres IP › {query}\n\nKraj › {country}\nKod kraju › {country_code}\nRegion\/Miasto › {region}\/{city}\nStrefa czasowa › {timezone}\nSzerokość, Długość › {lat}, {lon}\n\n👥 Organizacja › {org}\n⚙️ Dostawca › {isp}",
+        "be": "Інфармацыя пра {ip_address}:\n\n🌐 IP-адрас › {query}\n\nКраіна › {country}\nКод краіны › {country_code}\nРэгіён\/Горад › {region}\/{city}\nЧасавы пояс › {timezone}\nШырата, даўгата › {lat}, {lon}\n\n👥 Арганізацыя › {org}\n⚙️ Пастаўшчык › {isp}",
+        "uk": "Інформація про {ip_address}:\n\n🌐 IP-адреса › {query}\n\nКраїна › {country}\nКод країни › {country_code}\nРегіон\/Місто › {region}\/{city}\nЧасовий пояс › {timezone}\nШирота, довгота › {lat}, {lon}\n\n👥 Організація › {org}\n⚙️ Провайдер › {isp}"
     },
     "update_message": {
         "en": "I successfully updated the bot`s data! 🔄",
         "pl": "Pomyślnie zaktualizowałem dane bota! 🔄",
-        "ru": "Я успешно обновил данные бота! 🔄",
         "be": "Я паспяхова абнавіў даныя бота! 🔄",
         "uk": "Я успішно оновив дані бота! 🔄"
     },
     "add_author": {
         "en": "Add Author",
         "pl": "Dodaj autora",
-        "ru": "Добавить автора",
         "be": "Дадаць аўтара",
         "uk": "Додати автора"
     },
     "add_author_message": {
         "en": "Enter the name of the new author:",
         "pl": "Wprowadź imię nowego autora:",
-        "ru": "Введите имя нового автора:",
         "be": "Увядзіце імя новага аўтара:",
         "uk": "Введи ім’я нового автора:"
     },
     "author_added_message": {
         "en": "I`ve created machinimator {author}! Choose an action:",
         "pl": "Utworzyłem machinimatora {author}! Wybierz działanie:",
-        "ru": "Я создал машиниматора {author}! Выберите действие:",
         "be": "Я стварыў машыніматара {author}! Выберыце дзеянне:",
         "uk": "Я створив машиніматора {author}! Вибери дію:"
     },
     "delete_author": {
         "en": "Delete Authors",
         "pl": "Usuń autorów",
-        "ru": "Удаление авторов",
         "be": "Выдалення аўтараў",
         "uk": "Видалення авторів"
     },
     "delete_author_message": {
         "en": "Choose an author from the list you want to delete:",
         "pl": "Wybierz autora z listy, którego chcesz usunąć:",
-        "ru": "Выберите автора из списка, которого вы хотите удалить:",
         "be": "Выберыце аўтара з спісу, якога вы хочаце выдаліць:",
         "uk": "Вибери автора зі списку, якого бажаєш видалити:"
     },
     "confirm_delete": {
         "en": "Yes, confirm deletion",
         "pl": "Tak, potwierdź usunięcie",
-        "ru": "Да, подтвердить удаление",
         "be": "Так, пацвердзіць выдаленне",
         "uk": "Так, підтвердити видалення"
     },
     "confirm_delete_message": {
         "en": "Confirm whether you really want to delete the machinimator named {author}. This action cannot be undone!",
         "pl": "Potwierdź, czy naprawdę chcesz usunąć machinimatora o imieniu {author}. Tej operacji nie można cofnąć!",
-        "ru": "Подтвердите, хотите ли вы действительно удалить машиниматора по имени {author}. Это действие нельзя отменить!",
         "be": "Пацвердзіце, ці сапраўды вы хочаце выдаліць машыніматара па імі {author}. Гэта дзеянне немагчыма адмяніць!",
         "uk": "Підтверди, чи точно ти хочеш видалити машиніматора по імені {author}. Скасувати цю дію неможливо!"
     },
     "author_deleted_message": {
         "en": "Machinimator named {author} has been irreversibly lost.",
         "pl": "Machinimator o imieniu {author} został bezpowrotnie utracony.",
-        "ru": "Машиниматор по имени {author} был безвозвратно утрачен.",
         "be": "Машыніматар па імі {author} быў безваротна страчаны.",
         "uk": "Машиніматор по імені {author} був безповоротно втрачений."
     },
     "list_of_authors": {
         "en": "List of Authors",
         "pl": "Lista autorów",
-        "ru": "Список авторов",
         "be": "Спіс аўтараў",
         "uk": "Список авторів"
     },
-     "list_of_authors_message": {
+    "list_of_authors_message": {
         "en": "As requested, here is the list of all machinimators:",
         "pl": "Zgodnie z prośbą, oto lista wszystkich machinimatorów:",
-        "ru": "Как и просили, вот список всех машиниматоров:",
         "be": "Як і прасіў, вось спіс усіх машыніматараў:",
         "uk": "Як і просив, ось список всіх машиніматорів:"
     },
     "previous_page": {
         "en": "↩️ Back",
         "pl": "↩️ Wstecz",
-        "ru": "↩️ Назад",
         "be": "↩️ Назад",
         "uk": "↩️ Назад"
     },
     "next_page": {
         "en": "Forward ↪️",
         "pl": "Naprzód ↪️",
-        "ru": "Вперед ↪️",
         "be": "Наперад ↪️",
         "uk": "Вперед ↪️"
     },
     "admin_panel_message": {
         "en": "Hello, it looks like you`re a moderator of this bot. Here are buttons to assist you! 🔧",
         "pl": "Cześć, wygląda na to, że jesteś moderatorem tego bota. Oto przyciski, które pomogą ci w pracy! 🔧",
-        "ru": "Привет, похоже, вы модератор этого бота. Вот кнопки, которые помогут вам в работе! 🔧",
         "be": "Прывітанне, выглядае, што вы мадэратар гэтага бота. Вось кнопкі, якія дапамогуць вам у справе! 🔧",
         "uk": "Привіт, виглядає, що ти модератор цього бота. Тримай кнопки, які допоможуть тобі у справі! 🔧"
     },
     "author_not_found_message": {
         "en": "I couldn`t find the machinimator you selected. Perhaps it was removed due to a violation… 🙁",
         "pl": "Nie mogłem odnaleźć wybranego przez ciebie machinimatora. Być może został usunięty z powodu naruszenia… 🙁",
-        "ru": "Я не нашел машиниматора, которого ты выбрал. Возможно, его убрали из‐за нарушения… 🙁",
         "be": "Я не знайшоў машыніматара, якога ты выбраў. Магчыма, яго выдалілі з‐за парушэння… 🙁",
         "uk": "Я не знайшов машиніматора, якого ти вибрав. Можливо, його прибрали через порушення… 🙁"
     },
     "author_info_message": {
         "en": "Information about machinimator {author}:\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
         "pl": "Informacje o machinimatorze {author}:\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
-        "ru": "Информация о машиниматоре {author}:\n\n📚 Биография: {biography}\n🔗 Ссылка на канал: {link}",
         "be": "Інфармацыя аб машынімацары {author}:\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
         "uk": "Інформація про машиніматора {author}:\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
     },
     "bio_not_set": {
         "en": "not specified",
         "pl": "brak określonej",
-        "ru": "не указана",
         "be": "не вызначана",
         "uk": "не вказана"
     },
     "link_not_set": {
         "en": "not specified",
         "pl": "brak określonego",
-        "ru": "не указана",
         "be": "не вызначана",
         "uk": "не вказане"
     },
     "change_name": {
         "en": "✍🏻 Change name",
         "pl": "✍🏻 Zmień imię",
-        "ru": "✍🏻 Изменить имя",
         "be": "✍🏻 Змяніць імя",
         "uk": "✍🏻 Змінити ім’я"
     },
     "pending_name_change": {
         "en": "Enter the text in the next message to change the machinimator`s name:",
         "pl": "Wprowadź tekst w następnym komunikacie, aby zmienić nazwę machinimatora:",
-        "ru": "Введите текст в следующем сообщении, чтобы изменить имя машиниматора:",
         "be": "Увядзіце тэкст у наступным паведамленні, каб зменіць імя машыніматара:",
         "uk": "Введи текст в наступному повідомленні, щоб змінити ім’я машиніматора:"
     },
     "name_changed_message": {
         "en": "Updated information for machinimator {author} (formerly {oldName}):\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
         "pl": "Zaktualizowane informacje dla machinimatora {author} (dawniej {oldName}):\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
-        "ru": "Обновленная информация для машиниматора {author} (ранее {oldName}):\n\n📚 Биография: {biography}\n🔗 Ссылка на канал: {link}",
         "be": "Абноўленая інфармацыя для машыніматара {author} (раней {oldName}):\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
         "uk": "Оновлена інформація про машиніматора {author} (раніше {oldName}):\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
     },
     "make_public": {
         "en": "Make public 🔓",
         "pl": "Upublicznij 🔓",
-        "ru": "Сделать публичным 🔓",
         "be": "Зрабіць грамадскім 🔓",
         "uk": "Зробити публічним 🔓"
     },
     "make_private": {
         "en": "Make private 🔒",
         "pl": "Uprywatnij 🔒",
-        "ru": "Сделать приватным 🔒",
         "be": "Зрабіць прыватным 🔒",
         "uk": "Зробити приватним 🔒"
     },
     "change_bio": {
         "en": "Edit biography",
         "pl": "Edytuj biografię",
-        "ru": "Редактировать биографию",
         "be": "Рэдагаваць біяграфію",
         "uk": "Редагувати біографію"
     },
     "pending_bio_change": {
         "en": "Enter the text in the next message to add a biography for the machinimator:",
         "pl": "Wprowadź tekst w następnym komunikacie, aby dodać biografię machinimatora:",
-        "ru": "Введите текст в следующем сообщении, чтобы добавить биографию машиниматора:",
         "be": "Увядзіце тэкст у наступным паведамленні, каб дадаць біяграфію машыніматара:",
         "uk": "Введи текст в наступному повідомленні, щоб додати біографію машиніматора:"
     },
     "bio_changed_message": {
         "en": "Updated information for machinimator {author}:\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
         "pl": "Zaktualizowane informacje dla machinimatora {author}:\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
-        "ru": "Обновленная информация для машиниматора {author}:\n\n📚 Биография: {biography}\n🔗 Ссылка на канал: {link}",
         "be": "Абноўленая інфармацыя для машыніматара {author}:\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
         "uk": "Оновлена інформація про машиніматора {author}:\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
     },
     "add_bio": {
         "en": "Set biography",
         "pl": "Ustaw biografię",
-        "ru": "Установить биографию",
         "be": "Устанавіць біяграфію",
         "uk": "Встановити біографію"
     },
     "pending_bio_add": {
         "en": "Enter the text in the next message to add a biography for the machinimator:",
         "pl": "Wprowadź tekst w następnym komunikacie, aby dodać biografię machinimatora:",
-        "ru": "Введите текст в следующем сообщении, чтобы добавить биографию машиниматора:",
         "be": "Увядзіце тэкст у наступным паведамленні, каб дадаць біяграфію машыніматара:",
         "uk": "Введи текст в наступному повідомленні, щоб додати біографію машиніматора:"
     },
     "bio_added_message": {
         "en": "Updated information for machinimator {author}:\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
         "pl": "Zaktualizowane informacje dla machinimatora {author}:\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
-        "ru": "Обновленная информация для машиниматора {author}:\n\n📚 Биография: {biography}\n🔗 Ссылка на канал: {link}",
         "be": "Абноўленая інфармацыя для машыніматара {author}:\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
         "uk": "Оновлена інформація про машиніматора {author}:\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
     },
     "change_link": {
         "en": "Change link",
         "pl": "Zmień link",
-        "ru": "Изменить ссылку",
         "be": "Змяніць спасылку",
         "uk": "Змінити посилання"
     },
     "pending_link_change": {
         "en": "Enter the text of the link to the machinimator`s channel in the next message:",
         "pl": "Wprowadź tekst linku do kanału machinimatora w następnym komunikacie:",
-        "ru": "Введите текст ссылки на канал машиниматора в следующем сообщении:",
         "be": "Увядзіце тэкст спасылкі на канал машыніматара ў наступным паведамленні:",
         "uk": "Введи текст посилання на канал трансляцій машиніматора в наступному повідомленні:"
     },
     "link_changed_message": {
         "en": "Updated information for machinimator {author}:\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
         "pl": "Zaktualizowane informacje dla machinimatora {author}:\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
-        "ru": "Обновленная информация для машиниматора {author}:\n\n📚 Биография: {biography}\n🔗 Ссылка на канал: {link}",
         "be": "Абноўленая інфармацыя для машыніматара {author}:\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
         "uk": "Оновлена інформація про машиніматора {author}:\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
     },
     "add_link": {
         "en": "Add link",
         "pl": "Dodaj link",
-        "ru": "Добавить ссылку",
         "be": "Дадаць спасылку",
         "uk": "Додати посилання"
     },
     "delete_this_author": {
         "en": "Delete this author",
         "pl": "Usuń tego autora",
-        "ru": "Удалить этого автора",
         "be": "Выдаліць гэтага аўтара",
         "uk": "Видалити цього автора"
     },
     "go_back": {
         "en": "🔙 Go Back",
         "pl": "🔙 Wróć",
-        "ru": "🔙 Назад",
         "be": "🔙 Вярнуцца",
         "uk": "🔙 Повернутися назад"
     },
     "unknown_command_message": {
         "en": "I'm sorry, but I don't recognize that command. Please try a different command.",
         "pl": "Przepraszam, ale nie rozpoznaję tej komendy. Proszę spróbuj innej komendy.",
-        "ru": "Извините, но я не распознаю эту команду. Пожалуйста, попробуйте другую команду.",
         "be": "Прабачце, але я не распазнаю гэтую каманду. Калі ласка, паспрабуйце іншую каманду.",
         "uk": "Вибачте, але я не розпізнаю цю команду. Будь ласка, спробуйте іншу команду."
     },
     "no_permission_message": {
         "en": "You do not have permission to perform this command.",
         "pl": "Nie masz uprawnień do wykonania tego polecenia.",
-        "ru": "У вас нет прав для выполнения этой команды.",
         "be": "У вас няма правоў для выканання гэтай каманды.",
         "uk": "У вас немає прав для виконання цієї команди."
     },
     "access_control": {
         "en": "Access Control 🔐",
         "pl": "Kontrola dostępu 🔐",
-        "ru": "Контроль доступа 🔐",
         "be": "Кантроль доступу 🔐",
         "uk": "Управління доступом 🔐"
     },
     "access_control_panel_message": {
         "en": "Here you can manage access to the bot.",
         "pl": "Tutaj możesz zarządzać dostępem do bota.",
-        "ru": "Здесь вы можете управлять доступом к боту.",
         "be": "Тут вы можаце кіраваць доступам да бота.",
         "uk": "Тут ви можете керувати доступом до бота."
     },
     "create_role": {
         "en": "Create role",
         "pl": "Utwórz rolę",
-        "ru": "Создать роль",
         "be": "Стварыць ролю",
         "uk": "Створити роль"
     },
     "create_role_message": {
         "en": "Role «{roleName}» with priority {priority} has been created.",
         "pl": "Rola «{roleName}» z priorytetem {priority} została utworzona.",
-        "ru": "Роль «{roleName}» с приоритетом {priority} была создана.",
         "be": "Роля «{roleName}» з прыярытэтам {priority} была створана.",
         "uk": "Роль «{roleName}» з пріоритетом {priority} була створена."
     },
     "role_already_exist_message": {
         "en": "Role «{roleName}» already exists. Choose a different name.",
         "pl": "Rola o nazwie «{roleName}» już istnieje. Wybierz inną nazwę.",
-        "ru": "Роль с названием «{roleName}» уже существует. Выберите другое название.",
         "be": "Роля з назвай «{roleName}» ужо існуе. Выберыце іншую назву.",
         "uk": "Роль з назвою «{roleName}» вже існує. Виберіть іншу назву."
     },
     "create_role_usage_message": {
-        "en": "Incorrect command format. Use: /create_role roleName priority",
-        "pl": "Niepoprawny format polecenia. Użyj: /create_role roleName priority",
-        "ru": "Неправильный формат команды. Используйте: /create_role roleName priority",
-        "be": "Няправільны фармат каманды. Выкарыстоўвайце: /create_role roleName priority",
-        "uk": "Неправильний формат команди. Використовуйте: /create_role roleName priority"
+        "en": "Incorrect command format. Use: \/create_role roleName priority",
+        "pl": "Niepoprawny format polecenia. Użyj: \/create_role roleName priority",
+        "be": "Няправільны фармат каманды. Выкарыстоўвайце: \/create_role roleName priority",
+        "uk": "Неправильний формат команди. Використовуйте: \/create_role roleName priority"
     },
     "delete_role": {
         "en": "Delete role",
         "pl": "Usuń rolę",
-        "ru": "Удалить роль",
         "be": "Выдаліць ролю",
         "uk": "Видалити роль"
     },
     "view_roles": {
         "en": "View roles",
         "pl": "Zobacz role",
-        "ru": "Просмотр ролей",
         "be": "Прагледзець ролі",
         "uk": "Переглянути ролі"
     },
     "change_priorities": {
         "en": "Change priorities",
         "pl": "Zmień priorytety",
-        "ru": "Изменить приоритеты",
         "be": "Змяніць прыярытэты",
         "uk": "Зміна пріоритетів"
     },
     "assign_role_message": {
         "en": "Role «{roleName}» has been assigned to user {userId}.",
         "pl": "Rola «{roleName}» została przypisana do użytkownika {userId}.",
-        "ru": "Роль «{roleName}» была назначена пользователю {userId}.",
         "be": "Роля «{roleName}» была прызначаная карыстальніку {userId}.",
         "uk": "Роль «{roleName}» була призначена користувачу {userId}."
     },
     "role_assignment_failure_message": {
         "en": "Failed to assign role «{roleName}» to user {userId}.",
         "pl": "Nie udało się przypisać roli «{roleName}» użytkownikowi {userId}.",
-        "ru": "Не удалось назначить роль «{roleName}» пользователю {userId}.",
         "be": "Не атрымалася прызначыць ролю «{roleName}» карыстальніку {userId}.",
         "uk": "Не вдалося призначити роль «{roleName}» користувачу {userId}."
     },
     "role_not_found_message": {
         "en": "Role «{roleName}» not found.",
         "pl": "Nie znaleziono roli «{roleName}».",
-        "ru": "Роль «{roleName}» не найдена.",
         "be": "Ролю «{roleName}» не знойдзена.",
         "uk": "Ролі «{roleName}» не знайдено."
     },
     "assign_role_usage_message": {
-        "en": "Incorrect command format. Use: /assign_role userId roleName",
-        "pl": "Niepoprawny format polecenia. Użyj: /assign_role userId roleName",
-        "ru": "Неправильный формат команды. Используйте: /assign_role userId roleName",
-        "be": "Няправільны фармат каманды. Выкарыстоўвайце: /assign_role userId roleName",
-        "uk": "Неправильний формат команди. Використовуйте: /assign_role userId roleName"
+        "en": "Incorrect command format. Use: \/assign_role userId roleName",
+        "pl": "Niepoprawny format polecenia. Użyj: \/assign_role userId roleName",
+        "be": "Няправільны фармат каманды. Выкарыстоўвайце: \/assign_role userId roleName",
+        "uk": "Неправильний формат команди. Використовуйте: \/assign_role userId roleName"
     },
     "success_initialled_admin_message": {
         "en": "You have been appointed as an administrator.",
         "pl": "Zostałeś mianowany administratorem.",
-        "ru": "Вы были назначены администратором.",
         "be": "Вы былі прызначаныя адміністратарам.",
         "uk": "Ви були призначені адміністратором."
     },
     "already_initialled_admin_message": {
         "en": "An administrator already exists.",
         "pl": "Administrator już istnieje.",
-        "ru": "Администратор уже существует.",
         "be": "Адміністратар ужо існуе.",
         "uk": "Адміністратор вже існує."
     }
