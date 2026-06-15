@@ -32,36 +32,36 @@ class UserStateService
         $this->db = $storage->getConnection();
     }
 
-    public function setState(int $userId, mixed $value, string $key = 'default') : void
+    public function setState(int $user_id, mixed $value, string $key = 'default') : void
     {
         $this->db->executeStatement(
             'INSERT INTO user_states (user_id, state_key, state_value) VALUES (?, ?, ?)
              ON CONFLICT(user_id, state_key) DO UPDATE SET state_value = excluded.state_value',
-            [$userId, $key, json_encode($value)]
+            [$user_id, $key, json_encode($value)]
         );
     }
 
-    public function getState(int $userId, string $key = 'default') : mixed
+    public function getState(int $user_id, string $key = 'default') : mixed
     {
         $result = $this->db->fetchOne(
             'SELECT state_value FROM user_states WHERE user_id = ? AND state_key = ?',
-            [$userId, $key]
+            [$user_id, $key]
         );
 
         return false !== $result ? json_decode($result, true) : null;
     }
 
-    public function clearState(int $userId, ?string $key = null) : void
+    public function clearState(int $user_id, ?string $key = null) : void
     {
         if (null !== $key) {
             $this->db->executeStatement(
                 'DELETE FROM user_states WHERE user_id = ? AND state_key = ?',
-                [$userId, $key]
+                [$user_id, $key]
             );
         } else {
             $this->db->executeStatement(
                 'DELETE FROM user_states WHERE user_id = ?',
-                [$userId]
+                [$user_id]
             );
         }
     }

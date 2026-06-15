@@ -46,19 +46,19 @@ class AuthorService
         return (int) $this->db->lastInsertId();
     }
 
-    public function deleteAuthor(int $authorId) : void
+    public function deleteAuthor(int $author_id) : void
     {
         $this->db->executeStatement(
             'DELETE FROM authors WHERE id = ?',
-            [$authorId]
+            [$author_id]
         );
     }
 
-    public function getAuthorById(int $authorId) : ?array
+    public function getAuthorById(int $author_id) : ?array
     {
         $result = $this->db->fetchAssociative(
             'SELECT * FROM authors WHERE id = ?',
-            [$authorId]
+            [$author_id]
         );
 
         return false !== $result ? $result : null;
@@ -69,62 +69,62 @@ class AuthorService
         return $this->db->fetchAllAssociative('SELECT * FROM authors');
     }
 
-    public function getContentByAuthorId(int $authorId) : array
+    public function getContentByAuthorId(int $author_id) : array
     {
         return $this->db->fetchAllAssociative(
             'SELECT description FROM content WHERE author_id = ?',
-            [$authorId]
+            [$author_id]
         );
     }
 
-    public function updateAuthorName(int $authorId, string $name) : void
+    public function updateAuthorName(int $author_id, string $name) : void
     {
         $this->db->executeStatement(
             'UPDATE authors SET name = ? WHERE id = ?',
-            [trim($name), $authorId]
+            [trim($name), $author_id]
         );
     }
 
-    public function setBiography(int $authorId, string $biography) : void
+    public function setBiography(int $author_id, string $biography) : void
     {
         $this->db->executeStatement(
             'UPDATE authors SET biography = ? WHERE id = ?',
-            [trim($biography), $authorId]
+            [trim($biography), $author_id]
         );
     }
 
-    public function setChannelLink(int $authorId, string $link) : void
+    public function setChannelLink(int $author_id, string $link) : void
     {
         $this->db->executeStatement(
             'UPDATE authors SET channel_link = ? WHERE id = ?',
-            [trim($link), $authorId]
+            [trim($link), $author_id]
         );
     }
 
-    public function setPrivate(int $authorId, bool $private = true) : void
+    public function setPrivate(int $author_id, bool $private = true) : void
     {
         $state = $private ? self::STATE_PRIVATE : self::STATE_PUBLIC;
         $this->db->executeStatement(
             'UPDATE authors SET state = ? WHERE id = ?',
-            [$state, $authorId]
+            [$state, $author_id]
         );
     }
 
-    public function isPrivate(int $authorId) : bool
+    public function isPrivate(int $author_id) : bool
     {
         $result = $this->db->fetchAssociative(
             'SELECT state FROM authors WHERE id = ?',
-            [$authorId]
+            [$author_id]
         );
 
         return $result && self::STATE_PRIVATE === $result['state'];
     }
 
-    public function getAuthorCreationTime(int $authorId) : ?string
+    public function getAuthorCreationTime(int $author_id) : ?string
     {
         $result = $this->db->fetchOne(
             'SELECT created_at FROM authors WHERE id = ?',
-            [$authorId]
+            [$author_id]
         );
 
         return false !== $result ? (string) $result : null;

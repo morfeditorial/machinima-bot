@@ -32,47 +32,47 @@ class UserService
         $this->db = $storage->getConnection();
     }
 
-    public function setCurrentPanel(int $userId, int $messageId) : void
+    public function setCurrentPanel(int $user_id, int $message_id) : void
     {
         $this->db->executeStatement(
             'INSERT OR REPLACE INTO user_data (user_id, current_panel) VALUES (?, ?)',
-            [$userId, $messageId]
+            [$user_id, $message_id]
         );
     }
 
-    public function getCurrentPanel(int $userId) : ?int
+    public function getCurrentPanel(int $user_id) : ?int
     {
         $result = $this->db->fetchOne(
             'SELECT current_panel FROM user_data WHERE user_id = ?',
-            [$userId]
+            [$user_id]
         );
 
         return false !== $result ? (int) $result : null;
     }
 
-    public function setCurrentPage(int $userId, string $page) : void
+    public function setCurrentPage(int $user_id, string $page) : void
     {
         $this->db->executeStatement(
             'UPDATE user_data SET current_page = ? WHERE user_id = ?',
-            [$page, $userId]
+            [$page, $user_id]
         );
     }
 
-    public function getCurrentPage(int $userId) : ?string
+    public function getCurrentPage(int $user_id) : ?string
     {
         $result = $this->db->fetchOne(
             'SELECT current_page FROM user_data WHERE user_id = ?',
-            [$userId]
+            [$user_id]
         );
 
         return false !== $result ? (string) $result : null;
     }
 
-    public function resetCurrentPage(int $userId) : void
+    public function resetCurrentPage(int $user_id) : void
     {
         $this->db->executeStatement(
             'UPDATE user_data SET current_page = NULL WHERE user_id = ?',
-            [$userId]
+            [$user_id]
         );
     }
 }
