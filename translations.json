@@ -24,10 +24,10 @@
         "uk": "Видалити роль"
     },
     "delete_role_usage_message": {
-        "en": "Incorrect command format. Use: \/delete_role roleName",
-        "pl": "Niepoprawny format polecenia. Użyj: \/delete_role roleName",
-        "be": "Няправільны фармат каманды. Выкарыстоўвайце: \/delete_role roleName",
-        "uk": "Неправильний формат команди. Використовуйте: \/delete_role roleName"
+        "en": "Usage: \/delete_role &lt;roleName&gt;",
+        "pl": "Użycie: \/delete_role &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/delete_role &lt;назва_ролі&gt;",
+        "uk": "Використання: \/delete_role &lt;назва_ролі&gt;"
     },
     "admin_panel_command_description": {
         "en": "Access the admin panel",
