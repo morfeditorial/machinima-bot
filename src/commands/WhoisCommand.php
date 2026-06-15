@@ -21,8 +21,8 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\MyBot;
 use morfeditorial\AbstractCommand;
+use morfeditorial\MyBot;
 
 class WhoisCommand extends AbstractCommand
 {

@@ -94,7 +94,8 @@ class FileQueryBuilder extends BaseQueryBuilder
                     $matched = false;
                     foreach ($joinData as $joinRow) {
                         if ($this->evaluateJoinCondition($row, $joinRow, $firstColumn, $join['operator'], $secondColumn)) {
-                            $merged = array_merge($row,
+                            $merged = array_merge(
+                                $row,
                                 array_combine(
                                     array_map(fn ($key) => $joinTable . '.' . $key, array_keys($joinRow)),
                                     $joinRow
@@ -380,7 +381,7 @@ class FileQueryBuilder extends BaseQueryBuilder
         }
 
         if (! isset($this->query['having'])) {
-            $this->query['having'] = new ConditionGroup;
+            $this->query['having'] = new ConditionGroup();
         }
 
         $this->query['having']->addCondition(
@@ -401,7 +402,7 @@ class FileQueryBuilder extends BaseQueryBuilder
         }
 
         if (! isset($this->query['having'])) {
-            $this->query['having'] = new ConditionGroup;
+            $this->query['having'] = new ConditionGroup();
         }
 
         $this->query['having']->addCondition(

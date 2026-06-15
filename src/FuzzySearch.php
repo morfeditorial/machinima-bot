@@ -62,63 +62,63 @@ class FuzzySearch
         return $results;
     }
 
-public function isMatch($query, $item)
-{
-    $fieldsToSearch = ["name", "biography", "link"];
-    $contentFieldsToSearch = ["title", "description"];
+    public function isMatch($query, $item)
+    {
+        $fieldsToSearch = ["name", "biography", "link"];
+        $contentFieldsToSearch = ["title", "description"];
 
-    $query = $this->transliterate(trim(preg_replace(["/[^\p{L}\p{N}\s]+/u", "/\s+/u"], " ", $query)));
-    $queryWords = explode(" ", $query);
+        $query = $this->transliterate(trim(preg_replace(["/[^\p{L}\p{N}\s]+/u", "/\s+/u"], " ", $query)));
+        $queryWords = explode(" ", $query);
 
-    foreach ($fieldsToSearch as $field) {
-        if (!isset($item[$field])) {
-            continue; // Skip if the field does not exist
+        foreach ($fieldsToSearch as $field) {
+            if (!isset($item[$field])) {
+                continue; // Skip if the field does not exist
+            }
+
+            $fieldValue = $this->transliterate(trim(preg_replace(["/[^\p{L}\p{N}\s]+/u", "/\s+/u"], " ", $item[$field])));
+
+            similar_text($fieldValue, $query, $textSimilarity);
+
+            if ($textSimilarity >= 40) {
+                return $textSimilarity;
+            }
+
+            if (false !== mb_strpos($fieldValue, $query)) {
+                return 100;
+            }
+
+            similar_text($fieldValue, $query, $similarity);
+            if ($similarity >= 60) {
+                return $similarity;
+            }
         }
 
-        $fieldValue = $this->transliterate(trim(preg_replace(["/[^\p{L}\p{N}\s]+/u", "/\s+/u"], " ", $item[$field])));
+        foreach ($contentFieldsToSearch as $field) {
+            if (!isset($item["content"][$field])) {
+                continue;
+            }
 
-        similar_text($fieldValue, $query, $textSimilarity);
+            $contentValue = $this->transliterate(trim(preg_replace(["/[^\p{L}\p{N}\s]+/u", "/\s+/u"], " ", $item["content"][$field])));
 
-        if (40 <= $textSimilarity) {
-            return $textSimilarity;
+            if (false !== mb_strpos($contentValue, $query)) {
+                return 100;
+            }
+
+            similar_text($contentValue, $query, $similarity);
+            if ($similarity >= 60) {
+                return $similarity;
+            }
         }
 
-        if (false !== mb_strpos($fieldValue, $query)) {
-            return 100;
-        }
-
-        similar_text($fieldValue, $query, $similarity);
-        if (60 <= $similarity) {
-            return $similarity;
-        }
+        return false;
     }
-
-    foreach ($contentFieldsToSearch as $field) {
-        if (!isset($item["content"][$field])) {
-            continue;
-        }
-
-        $contentValue = $this->transliterate(trim(preg_replace(["/[^\p{L}\p{N}\s]+/u", "/\s+/u"], " ", $item["content"][$field])));
-
-        if (false !== mb_strpos($contentValue, $query)) {
-            return 100;
-        }
-
-        similar_text($contentValue, $query, $similarity);
-        if (60 <= $similarity) {
-            return $similarity;
-        }
-    }
-
-    return false;
-}
 
     public function checkPartialMatch($query, $text) : bool
     {
         $queryWords = explode(" ", $query);
 
         foreach ($queryWords as $word) {
-            if (mb_stripos($text, $word) === false) {
+            if (false === mb_stripos($text, $word)) {
                 return false;
             }
         }

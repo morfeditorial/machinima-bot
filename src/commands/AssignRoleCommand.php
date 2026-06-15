@@ -21,8 +21,8 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\MyBot;
 use morfeditorial\AbstractCommand;
+use morfeditorial\MyBot;
 
 class AssignRoleCommand extends AbstractCommand
 {
@@ -61,7 +61,7 @@ class AssignRoleCommand extends AbstractCommand
             return;
         }
 
-        if (2 > count($args)) {
+        if (count($args) < 2) {
             $this->bot->sendMessage($chat_id, $this->translate('assign_role_usage_message'));
 
             return;

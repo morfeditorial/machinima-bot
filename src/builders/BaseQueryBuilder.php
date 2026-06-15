@@ -41,7 +41,7 @@ abstract class BaseQueryBuilder implements QueryBuilderInterface
 
     public function __construct()
     {
-        $this->whereConditions = new ConditionGroup;
+        $this->whereConditions = new ConditionGroup();
         $this->currentConditionGroup = $this->whereConditions;
         $this->query['joins'] = [];
         $this->query['group'] = [];
@@ -233,7 +233,7 @@ abstract class BaseQueryBuilder implements QueryBuilderInterface
 
     public function exists(callable $callback) : QueryBuilderInterface
     {
-        $subQuery = new static;
+        $subQuery = new static();
         call_user_func($callback, $subQuery);
 
         $this->currentConditionGroup->addCondition(
@@ -248,7 +248,7 @@ abstract class BaseQueryBuilder implements QueryBuilderInterface
 
     public function notExists(callable $callback) : QueryBuilderInterface
     {
-        $subQuery = new static;
+        $subQuery = new static();
         call_user_func($callback, $subQuery);
 
         $this->currentConditionGroup->addCondition(

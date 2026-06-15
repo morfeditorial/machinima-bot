@@ -21,8 +21,8 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\MyBot;
 use morfeditorial\AbstractCommand;
+use morfeditorial\MyBot;
 
 class AssignInitialAdminCommand extends AbstractCommand
 {
@@ -59,7 +59,7 @@ class AssignInitialAdminCommand extends AbstractCommand
             $db_manager->createRole('admin', 100);
         }
 
-        if (0 < $db_manager->getUsersCountByRole('admin')) {
+        if ($db_manager->getUsersCountByRole('admin') > 0) {
             $this->bot->sendMessage($chat_id, $this->translate('already_initialled_admin_message'));
 
             return;

@@ -34,7 +34,7 @@ class DatabaseManager
     /**
      * Constructor to initialize the database connection.
      *
-     * @param  string  $dbName  The name of the database file.
+     * @param string $dbName The name of the database file.
      */
     public function __construct(string $dbName)
     {
@@ -116,8 +116,8 @@ class DatabaseManager
     /**
      * Create a new author and return the author's ID.
      *
-     * @param  string  $name  The name of the author to be created.
-     * @return int The ID of the newly created author.
+     * @param  string $name The name of the author to be created.
+     * @return int    The ID of the newly created author.
      */
     public function createAuthor(string $name) : int
     {
@@ -132,7 +132,7 @@ class DatabaseManager
     /**
      * Delete an author by ID.
      *
-     * @param  int  $authorId  The ID of the author to be deleted.
+     * @param int $authorId The ID of the author to be deleted.
      */
     public function deleteAuthor(int $authorId) : void
     {
@@ -144,7 +144,7 @@ class DatabaseManager
     /**
      * Retrieve an author by ID.
      *
-     * @param  int  $authorId  The ID of the author to be retrieved.
+     * @param  int        $authorId The ID of the author to be retrieved.
      * @return array|null The author's data if found, null otherwise.
      */
     public function getAuthorById(int $authorId) : ?array
@@ -175,7 +175,7 @@ class DatabaseManager
     /**
      * Retrieve content associated with a specific author by their ID.
      *
-     * @param  int  $authorId  The ID of the author whose content is to be retrieved.
+     * @param  int   $authorId The ID of the author whose content is to be retrieved.
      * @return array An array of content associated with the author.
      */
     public function getContentByAuthorId(int $authorId) : array
@@ -195,8 +195,8 @@ class DatabaseManager
     /**
      * Update the name of an author.
      *
-     * @param  int  $authorId  The ID of the author to be updated.
-     * @param  string  $name  The new name of the author.
+     * @param int    $authorId The ID of the author to be updated.
+     * @param string $name     The new name of the author.
      */
     public function updateAuthorName(int $authorId, string $name) : void
     {
@@ -209,8 +209,8 @@ class DatabaseManager
     /**
      * Set the biography of an author.
      *
-     * @param  int  $authorId  The ID of the author to be updated.
-     * @param  string  $biography  The biography of the author.
+     * @param int    $authorId  The ID of the author to be updated.
+     * @param string $biography The biography of the author.
      */
     public function setBiography(int $authorId, string $biography) : void
     {
@@ -223,8 +223,8 @@ class DatabaseManager
     /**
      * Set the channel link of an author.
      *
-     * @param  int  $authorId  The ID of the author to be updated.
-     * @param  string  $link  The channel link of the author.
+     * @param int    $authorId The ID of the author to be updated.
+     * @param string $link     The channel link of the author.
      */
     public function setChannelLink(int $authorId, string $link) : void
     {
@@ -237,8 +237,8 @@ class DatabaseManager
     /**
      * Set the state of an author to private or public.
      *
-     * @param  int  $authorId  The ID of the author to be updated.
-     * @param  bool  $private  Whether the author should be private or not.
+     * @param int  $authorId The ID of the author to be updated.
+     * @param bool $private  Whether the author should be private or not.
      */
     public function setPrivate(int $authorId, bool $private = true) : void
     {
@@ -252,7 +252,7 @@ class DatabaseManager
     /**
      * Check if an author is private.
      *
-     * @param  int  $authorId  The ID of the author to be checked.
+     * @param  int  $authorId The ID of the author to be checked.
      * @return bool Whether the author is private or not.
      */
     public function isPrivate(int $authorId) : bool
@@ -267,7 +267,7 @@ class DatabaseManager
     /**
      * Retrieve the creation time of an author.
      *
-     * @param  int  $authorId  The ID of the author whose creation time is to be retrieved.
+     * @param  int         $authorId The ID of the author whose creation time is to be retrieved.
      * @return string|null The creation time of the author if found, null otherwise.
      */
     public function getAuthorCreationTime(int $authorId) : ?string
@@ -292,9 +292,9 @@ class DatabaseManager
     /**
      * Set the state for a user.
      *
-     * @param  int  $userId  The ID of the user whose state is being set.
-     * @param  mixed  $value  The value to be stored as the user's state.
-     * @param  string  $key  The key under which the state is stored (default is "default").
+     * @param int    $userId The ID of the user whose state is being set.
+     * @param mixed  $value  The value to be stored as the user's state.
+     * @param string $key    The key under which the state is stored (default is "default").
      */
     public function setState(int $userId, $value, string $key = 'default') : void
     {
@@ -309,9 +309,9 @@ class DatabaseManager
     /**
      * Get the state of a user.
      *
-     * @param  int  $userId  The ID of the user whose state is being retrieved.
-     * @param  string  $key  The key of the state to retrieve (default is "default").
-     * @return mixed The value of the user's state or null if not found.
+     * @param  int    $userId The ID of the user whose state is being retrieved.
+     * @param  string $key    The key of the state to retrieve (default is "default").
+     * @return mixed  The value of the user's state or null if not found.
      */
     public function getState(int $userId, string $key = 'default') : mixed
     {
@@ -327,8 +327,8 @@ class DatabaseManager
     /**
      * Clear the state of a user.
      *
-     * @param  int  $userId  The ID of the user whose state is being cleared.
-     * @param  string|null  $key  The key of the state to clear (if null, clears all states).
+     * @param int         $userId The ID of the user whose state is being cleared.
+     * @param string|null $key    The key of the state to clear (if null, clears all states).
      */
     public function clearState(int $userId, ?string $key = null) : void
     {
@@ -346,8 +346,8 @@ class DatabaseManager
     /**
      * Set the current panel for a user.
      *
-     * @param  int  $userId  The ID of the user.
-     * @param  int  $messageId  The ID of the message representing the current panel.
+     * @param int $userId    The ID of the user.
+     * @param int $messageId The ID of the message representing the current panel.
      */
     public function setCurrentPanel(int $userId, int $messageId) : void
     {
@@ -360,7 +360,7 @@ class DatabaseManager
     /**
      * Get the current panel for a user.
      *
-     * @param  int  $userId  The ID of the user.
+     * @param  int      $userId The ID of the user.
      * @return int|null The ID of the current panel or null if not found.
      */
     public function getCurrentPanel(int $userId) : ?int
@@ -376,8 +376,8 @@ class DatabaseManager
     /**
      * Set the current page for a user.
      *
-     * @param  int  $userId  The ID of the user.
-     * @param  string  $page  The current page.
+     * @param int    $userId The ID of the user.
+     * @param string $page   The current page.
      */
     public function setCurrentPage(int $userId, string $page) : void
     {
@@ -390,7 +390,7 @@ class DatabaseManager
     /**
      * Get the current page for a user.
      *
-     * @param  int  $userId  The ID of the user.
+     * @param  int         $userId The ID of the user.
      * @return string|null The current page or null if not found.
      */
     public function getCurrentPage(int $userId) : ?string
@@ -406,7 +406,7 @@ class DatabaseManager
     /**
      * Reset the current page for a user.
      *
-     * @param  int  $userId  The ID of the user.
+     * @param int $userId The ID of the user.
      */
     public function resetCurrentPage(int $userId) : void
     {
@@ -418,9 +418,9 @@ class DatabaseManager
     /**
      * Create a new role with specified name and priority.
      *
-     * @param  string  $roleName  The name of the role to be created.
-     * @param  int  $priority  The priority level of the role.
-     * @return bool Returns true on success, false on failure.
+     * @param  string $roleName The name of the role to be created.
+     * @param  int    $priority The priority level of the role.
+     * @return bool   Returns true on success, false on failure.
      */
     public function createRole(string $roleName, int $priority) : bool
     {
@@ -434,8 +434,8 @@ class DatabaseManager
     /**
      * Delete a role by name.
      *
-     * @param  string  $roleName  The name of the role to be deleted.
-     * @return bool Returns true on success, false on failure.
+     * @param  string $roleName The name of the role to be deleted.
+     * @return bool   Returns true on success, false on failure.
      */
     public function deleteRole(string $roleName) : bool
     {
@@ -448,9 +448,9 @@ class DatabaseManager
     /**
      * Assign a specified role to a user.
      *
-     * @param  int  $userId  The ID of the user to whom the role will be assigned.
-     * @param  string  $roleName  The name of the role to be assigned.
-     * @return bool Returns true on success, false on failure.
+     * @param  int    $userId   The ID of the user to whom the role will be assigned.
+     * @param  string $roleName The name of the role to be assigned.
+     * @return bool   Returns true on success, false on failure.
      */
     public function assignRole(int $userId, string $roleName) : bool
     {
@@ -478,9 +478,9 @@ class DatabaseManager
     /**
      * Remove a specified role from a user.
      *
-     * @param  int  $userId  The ID of the user from whom the role will be removed.
-     * @param  string  $roleName  The name of the role to be removed.
-     * @return bool Returns true on success, false on failure.
+     * @param  int    $userId   The ID of the user from whom the role will be removed.
+     * @param  string $roleName The name of the role to be removed.
+     * @return bool   Returns true on success, false on failure.
      */
     public function removeUserRole(int $userId, string $roleName) : bool
     {
@@ -498,9 +498,9 @@ class DatabaseManager
     /**
      * Check if a user has a specific role.
      *
-     * @param  int  $userId  The ID of the user.
-     * @param  string  $roleName  The name of the role to check.
-     * @return bool True if the user has the role, false otherwise.
+     * @param  int    $userId   The ID of the user.
+     * @param  string $roleName The name of the role to check.
+     * @return bool   True if the user has the role, false otherwise.
      */
     public function hasRole(int $userId, string $roleName) : bool
     {
@@ -519,9 +519,9 @@ class DatabaseManager
     /**
      * Check if a user has a higher role than a specified role.
      *
-     * @param  int  $userId  The ID of the user.
-     * @param  string  $roleName  The name of the role to compare.
-     * @return bool True if the user has a higher role, false otherwise.
+     * @param  int    $userId   The ID of the user.
+     * @param  string $roleName The name of the role to compare.
+     * @return bool   True if the user has a higher role, false otherwise.
      */
     public function hasHigherRole(int $userId, string $roleName) : bool
     {
@@ -569,8 +569,8 @@ class DatabaseManager
     /**
      * Get the number of users with a specific role.
      *
-     * @param  string  $roleName  Role name.
-     * @return int Number of users with the specified role.
+     * @param  string $roleName Role name.
+     * @return int    Number of users with the specified role.
      */
     public function getUsersCountByRole(string $roleName) : int
     {
@@ -587,7 +587,7 @@ class DatabaseManager
     /**
      * Retrieve a role by its name.
      *
-     * @param  string  $roleName  The name of the role to be retrieved.
+     * @param  string     $roleName The name of the role to be retrieved.
      * @return array|null The role data if found, null otherwise.
      */
     public function getRoleByName(string $roleName) : ?array
@@ -602,8 +602,8 @@ class DatabaseManager
     /**
      * Retrieve priority of a specified role.
      *
-     * @param  string  $roleName  The name of the role for which priority is to be retrieved.
-     * @return int The priority of the role.
+     * @param  string $roleName The name of the role for which priority is to be retrieved.
+     * @return int    The priority of the role.
      */
     public function getRolePriority(string $roleName) : int
     {
@@ -626,9 +626,9 @@ class DatabaseManager
     /**
      * Update priority of a specified role.
      *
-     * @param  string  $roleName  The name of the role for which priority is to be updated.
-     * @param  int  $priority  The new priority level of the role.
-     * @return bool Returns true on success, false on failure.
+     * @param  string $roleName The name of the role for which priority is to be updated.
+     * @param  int    $priority The new priority level of the role.
+     * @return bool   Returns true on success, false on failure.
      */
     public function updateRolePriority(string $roleName, int $priority) : bool
     {
@@ -642,43 +642,43 @@ class DatabaseManager
     /**
      * Update priorities for roles within specified range.
      *
-     * @param  int  $selectedRolePriority  The priority of the selected role.
-     * @param  int  $targetPriority  The target priority level.
+     * @param int $selectedRolePriority The priority of the selected role.
+     * @param int $targetPriority       The target priority level.
      */
-public function updateRolePriorities(string $roleName, int $newPriority) : void
-{
-    $currentPriority = $this->db->querySingle("SELECT priority FROM roles WHERE role_name = '$roleName'");
-    if ($currentPriority === false) {
-        throw new Exception("Роль не знайдена.");
-    }
-
-    $this->beginTransaction();
-
-    try {
-        if ($currentPriority < $newPriority) {
-            $stmt = $this->db->prepare('UPDATE roles SET priority = priority - 1 WHERE priority > :current_priority AND priority <= :new_priority');
-        } elseif ($currentPriority > $newPriority) {
-            $stmt = $this->db->prepare('UPDATE roles SET priority = priority + 1 WHERE priority < :current_priority AND priority >= :new_priority');
-        } else {
-            // Якщо пріоритети однакові, нічого не робимо
-            return;
+    public function updateRolePriorities(string $roleName, int $newPriority) : void
+    {
+        $currentPriority = $this->db->querySingle("SELECT priority FROM roles WHERE role_name = '$roleName'");
+        if (false === $currentPriority) {
+            throw new Exception("Роль не знайдена.");
         }
-        $stmt->bindValue(':current_priority', $currentPriority, SQLITE3_INTEGER);
-        $stmt->bindValue(':new_priority', $newPriority, SQLITE3_INTEGER);
-        $stmt->execute();
 
-        // Оновлення пріоритету вибраної ролі
-        $stmt = $this->db->prepare('UPDATE roles SET priority = :new_priority WHERE role_name = :role_name');
-        $stmt->bindValue(':new_priority', $newPriority, SQLITE3_INTEGER);
-        $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
-        $stmt->execute();
+        $this->beginTransaction();
 
-        $this->commitTransaction();
-    } catch (Exception $e) {
-        $this->rollbackTransaction();
-        throw $e;
+        try {
+            if ($currentPriority < $newPriority) {
+                $stmt = $this->db->prepare('UPDATE roles SET priority = priority - 1 WHERE priority > :current_priority AND priority <= :new_priority');
+            } elseif ($currentPriority > $newPriority) {
+                $stmt = $this->db->prepare('UPDATE roles SET priority = priority + 1 WHERE priority < :current_priority AND priority >= :new_priority');
+            } else {
+                // Якщо пріоритети однакові, нічого не робимо
+                return;
+            }
+            $stmt->bindValue(':current_priority', $currentPriority, SQLITE3_INTEGER);
+            $stmt->bindValue(':new_priority', $newPriority, SQLITE3_INTEGER);
+            $stmt->execute();
+
+            // Оновлення пріоритету вибраної ролі
+            $stmt = $this->db->prepare('UPDATE roles SET priority = :new_priority WHERE role_name = :role_name');
+            $stmt->bindValue(':new_priority', $newPriority, SQLITE3_INTEGER);
+            $stmt->bindValue(':role_name', $roleName, SQLITE3_TEXT);
+            $stmt->execute();
+
+            $this->commitTransaction();
+        } catch (Exception $e) {
+            $this->rollbackTransaction();
+            throw $e;
+        }
     }
-}
 
     public function queryRolesOrderedByPriority() : array
     {

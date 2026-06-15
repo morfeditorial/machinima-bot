@@ -30,8 +30,8 @@ class Translator
     /**
      * Constructor to initialize translations and user locale.
      *
-     * @param  array  $translations  An associative array of translations.
-     * @param  string  $user_locale  The locale to be used for translations.
+     * @param array  $translations An associative array of translations.
+     * @param string $user_locale  The locale to be used for translations.
      */
     public function __construct(array $translations, string $user_locale)
     {
@@ -42,8 +42,8 @@ class Translator
     /**
      * Translate a given key to the user's locale.
      *
-     * @param  string  $key  The key for the translation.
-     * @return mixed The translated string, array, or a not found message.
+     * @param  string $key The key for the translation.
+     * @return mixed  The translated string, array, or a not found message.
      */
     public function translate(string $key)
     {
@@ -61,7 +61,7 @@ class Translator
     /**
      * Sets the user's locale used for translations.
      *
-     * @param  string  $locale  The user's locale in IETF BCP 47 format (e.g., 'uk' for Ukrainian, 'en' for English).
+     * @param string $locale The user's locale in IETF BCP 47 format (e.g., 'uk' for Ukrainian, 'en' for English).
      */
     public function setUserLocale(string $locale) : void
     {

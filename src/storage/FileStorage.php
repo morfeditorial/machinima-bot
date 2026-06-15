@@ -34,7 +34,7 @@ abstract class FileStorage implements StorageInterface
 
     public function __construct()
     {
-        $this->queryProcessor = new QueryProcessor;
+        $this->queryProcessor = new QueryProcessor();
     }
 
     abstract protected function readData() : array;

@@ -38,7 +38,7 @@ class MyBot extends tgLib
         $translations = json_decode(file_get_contents(self::TRANSLATIONS_FILE), true);
         $this->container = new DependencyContainer($translations, 'en');
         $this->container->set('db_manager', new DatabaseManager(self::DATABASE_FILE));
-        $this->container->set('fuzzy_search', new FuzzySearch);
+        $this->container->set('fuzzy_search', new FuzzySearch());
         $this->container->set('visuals_links', [
             'https://i.ibb.co/mC7sv0W/01.png', // WELCOME_TO_MORF
             'https://i.ibb.co/ygqgFMV/02.png', // WELCOME_ADMIN_PANEL
@@ -57,7 +57,7 @@ class MyBot extends tgLib
         $this->command_factory = new CommandFactory($this, $this->container);
         $this->initializeCommands();
     }
-    
+
     private function initializeCommands() : void
     {
         // Register commands

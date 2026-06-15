@@ -296,7 +296,7 @@ class SQLQueryBuilder extends BaseQueryBuilder
         }
 
         if (! isset($this->query['having'])) {
-            $this->query['having'] = new ConditionGroup;
+            $this->query['having'] = new ConditionGroup();
         }
 
         $this->query['having']->addCondition(
@@ -317,7 +317,7 @@ class SQLQueryBuilder extends BaseQueryBuilder
         }
 
         if (! isset($this->query['having'])) {
-            $this->query['having'] = new ConditionGroup;
+            $this->query['having'] = new ConditionGroup();
         }
 
         $this->query['having']->addCondition(
