@@ -53,8 +53,13 @@ class MyBot extends tgLib
 
         $container_builder->register('storage', \morfeditorial\storage\DatabaseStorage::class)
             ->setArgument('$connection_params', [
-                'driver' => 'pdo_sqlite',
-                'path' => self::DATABASE_FILE,
+                'driver' => $_ENV['DB_DRIVER'] ?? 'pdo_sqlite',
+                'path' => $_ENV['DB_PATH'] ?? self::DATABASE_FILE,
+                'host' => $_ENV['DB_HOST'] ?? null,
+                'port' => isset($_ENV['DB_PORT']) && '' !== $_ENV['DB_PORT'] ? (int) $_ENV['DB_PORT'] : null,
+                'dbname' => $_ENV['DB_NAME'] ?? null,
+                'user' => $_ENV['DB_USER'] ?? null,
+                'password' => $_ENV['DB_PASSWORD'] ?? null,
             ])
             ->setPublic(true);
         $container_builder->setAlias(\morfeditorial\storage\StorageInterface::class, 'storage');
