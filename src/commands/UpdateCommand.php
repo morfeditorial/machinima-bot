@@ -58,10 +58,10 @@ class UpdateCommand extends AbstractCommand
             return;
         }
 
-        $this->bot->setMyName("MORF — centralized chatbot", "en");
-        $this->bot->setMyName("MORF — scentralizowany chatbot", "pl");
-        $this->bot->setMyName("MORF — цэнтралізаваны чат-бот", "be");
-        $this->bot->setMyName("MORF — централізований чат‐бот", "uk");
+        $this->bot->setMyName("Morf — centralized chatbot", "en");
+        $this->bot->setMyName("Morf — scentralizowany chatbot", "pl");
+        $this->bot->setMyName("Morf — цэнтралізаваны чат-бот", "be");
+        $this->bot->setMyName("Morf — централізований чат‐бот", "uk");
 
         $this->bot->setMyDescription("Hello, I will help you discover interesting projects, short films, and series created based on Minecraft. You won't be bored with me!\n\nMy purpose is to centralize Ukrainian machinimators in one list.", "en");
         $this->bot->setMyDescription("Cześć, pomogę Ci odkryć interesujące projekty, krótkie filmy i seriale stworzone na podstawie Minecrafta. Z nami nie będziesz się nudzić!\n\nMoim celem jest skupienie ukraińskich machinimatorów w jednym miejscu.", "pl");

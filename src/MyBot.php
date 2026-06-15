@@ -56,7 +56,7 @@ class MyBot extends tgLib
 
         $containerBuilder->register('visuals_links', \ArrayObject::class)
             ->setArguments([[
-                'https://i.ibb.co/mC7sv0W/01.png', // WELCOME_TO_MORF
+                'https://i.ibb.co/mC7sv0W/01.png', // WELCOME_TO_Morf
                 'https://i.ibb.co/ygqgFMV/02.png', // WELCOME_ADMIN_PANEL
                 'https://i.ibb.co/1KysC55/03.png', // NEW_MACHINIMATOR_ADDED
                 'https://i.ibb.co/64vFVfS/04.png', // AUTHOR_NAME_CHANGE

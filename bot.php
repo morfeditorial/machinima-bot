@@ -35,7 +35,7 @@ class BotManager
         if (! $this->isDaemon) {
             $this->clearScreen();
             $this->printLogo();
-            $this->printSlowly('Initializing MORF Editorial System...', 50000);
+            $this->printSlowly('Initializing Morf Editorial System...', 50000);
             sleep(1);
         }
 
@@ -104,7 +104,7 @@ class BotManager
     public function run()
     {
         $this->initializeSystem();
-        $this->printSuccess('MORF Editorial System is now online.');
+        $this->printSuccess('Morf Editorial System is now online.');
         $this->printSlowly('Entering main loop...', 50000);
 
         $lastHealthCheck = time();
@@ -324,7 +324,7 @@ class BotManager
  /         /         /        _/        _/
  \__/__/__/\________/\____/___/\_______/
 
- MORF Editorial System v1.0
+ Morf Editorial System v1.0
  Copyright (c) 2023 CSSM Group
  https://cssm.pp.ua/
 
