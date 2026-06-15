@@ -34,12 +34,60 @@ class RoleService
         $this->db = $storage->getConnection();
     }
 
-    public function createRole(string $role_name, int $priority) : bool
+    public function createRole(string $role_name) : bool
     {
         return (bool) $this->db->executeStatement(
-            'INSERT INTO roles (role_name, priority) VALUES (?, ?)',
-            [$role_name, $priority]
+            'INSERT INTO roles (role_name) VALUES (?)',
+            [$role_name]
         );
+    }
+
+    public function addParentChild(string $parent_role_name, string $child_role_name) : bool
+    {
+        $parent = $this->getRoleByName($parent_role_name);
+        $child = $this->getRoleByName($child_role_name);
+
+        if (! $parent || ! $child) {
+            return false;
+        }
+
+        return (bool) $this->db->executeStatement(
+            'INSERT OR IGNORE INTO role_hierarchy (parent_role_id, child_role_id) VALUES (?, ?)',
+            [$parent['id'], $child['id']]
+        );
+    }
+
+    public function removeParentChild(string $parent_role_name, string $child_role_name) : bool
+    {
+        $parent = $this->getRoleByName($parent_role_name);
+        $child = $this->getRoleByName($child_role_name);
+
+        if (! $parent || ! $child) {
+            return false;
+        }
+
+        return (bool) $this->db->executeStatement(
+            'DELETE FROM role_hierarchy WHERE parent_role_id = ? AND child_role_id = ?',
+            [$parent['id'], $child['id']]
+        );
+    }
+
+    public function getRoleHierarchy() : array
+    {
+        $rows = $this->db->fetchAllAssociative('
+            SELECT p.role_name AS parent, c.role_name AS child
+            FROM role_hierarchy rh
+            JOIN roles p ON rh.parent_role_id = p.id
+            JOIN roles c ON rh.child_role_id = c.id
+        ');
+
+        $hierarchy = [];
+
+        foreach ($rows as $row) {
+            $hierarchy[$row['parent']][] = $row['child'];
+        }
+
+        return $hierarchy;
     }
 
     public function deleteRole(string $role_name) : bool

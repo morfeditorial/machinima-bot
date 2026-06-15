@@ -345,19 +345,8 @@ class MyBot extends tgLib
             ];
             $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), htmlspecialchars($message)], $this->translate('link_changed_message')), $keyboard);
         } elseif ('awaiting_role_creation' === $default_state) {
-            $parts = explode(' ', $message);
-            if (2 === count($parts)) {
-                $role_name = $parts[0];
-                $priority = intval($parts[1]);
-                try {
-                    $this->createRole($role_name, $priority);
-                    $this->sendMessage($chat_id, 'Роль ' . $role_name . ' з пріоритетом ' . $priority . ' була створена.');
-                } catch (Exception $e) {
-                    $this->sendMessage($chat_id, $e->getMessage());
-                }
-            } else {
-                $this->sendMessage($chat_id, 'Неправильний формат. Використовуйте: <code>назва_ролі пріоритет</code>');
-            }
+            $role_service->createRole($message);
+            $this->sendMessage($chat_id, 'Роль ' . $message . ' була створена.');
             $user_state_service->clearState($user_id, 'default');
         } elseif ('awaiting_role_deletion' === $default_state) {
             $role_name = $message;

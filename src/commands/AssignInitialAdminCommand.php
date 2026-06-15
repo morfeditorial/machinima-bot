@@ -54,7 +54,15 @@ class AssignInitialAdminCommand extends AbstractCommand
         array $args
     ) : void {
         if (! $this->getRoleService()->getRoleByName('admin')) {
-            $this->getRoleService()->createRole('admin', 100);
+            $this->getRoleService()->createRole('admin');
+        }
+
+        if (! $this->getRoleService()->getRoleByName('moderator')) {
+            $this->getRoleService()->createRole('moderator');
+        }
+
+        if (! $this->getRoleService()->getRoleByName('user')) {
+            $this->getRoleService()->createRole('user');
         }
 
         if ($this->getRoleService()->getUsersCountByRole('admin') > 0) {

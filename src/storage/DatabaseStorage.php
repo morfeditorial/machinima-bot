@@ -96,8 +96,17 @@ class DatabaseStorage implements StorageInterface
             $this->connection->executeStatement("
                 CREATE TABLE roles (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    role_name TEXT NOT NULL UNIQUE,
-                    priority INTEGER NOT NULL
+                    role_name TEXT NOT NULL UNIQUE
+                )
+            ");
+
+            $this->connection->executeStatement("
+                CREATE TABLE role_hierarchy (
+                    parent_role_id INTEGER NOT NULL,
+                    child_role_id INTEGER NOT NULL,
+                    PRIMARY KEY (parent_role_id, child_role_id),
+                    FOREIGN KEY (parent_role_id) REFERENCES roles(id),
+                    FOREIGN KEY (child_role_id) REFERENCES roles(id)
                 )
             ");
 
@@ -113,12 +122,42 @@ class DatabaseStorage implements StorageInterface
         }
 
         $this->connection->executeStatement(
-            'INSERT OR IGNORE INTO roles (role_name, priority) VALUES (?, ?)',
-            ['admin', 100]
+            'INSERT OR IGNORE INTO roles (role_name) VALUES (?)',
+            ['admin']
         );
         $this->connection->executeStatement(
-            'INSERT OR IGNORE INTO roles (role_name, priority) VALUES (?, ?)',
-            ['moderator', 50]
+            'INSERT OR IGNORE INTO roles (role_name) VALUES (?)',
+            ['moderator']
+        );
+        $this->connection->executeStatement(
+            'INSERT OR IGNORE INTO roles (role_name) VALUES (?)',
+            ['user']
+        );
+
+        $admin_id = $this->connection->fetchOne(
+            'SELECT id FROM roles WHERE role_name = ?',
+            ['admin']
+        );
+        $moderator_id = $this->connection->fetchOne(
+            'SELECT id FROM roles WHERE role_name = ?',
+            ['moderator']
+        );
+        $user_id = $this->connection->fetchOne(
+            'SELECT id FROM roles WHERE role_name = ?',
+            ['user']
+        );
+
+        $this->connection->executeStatement(
+            'INSERT OR IGNORE INTO role_hierarchy (parent_role_id, child_role_id) VALUES (?, ?)',
+            [$admin_id, $moderator_id]
+        );
+        $this->connection->executeStatement(
+            'INSERT OR IGNORE INTO role_hierarchy (parent_role_id, child_role_id) VALUES (?, ?)',
+            [$admin_id, $user_id]
+        );
+        $this->connection->executeStatement(
+            'INSERT OR IGNORE INTO role_hierarchy (parent_role_id, child_role_id) VALUES (?, ?)',
+            [$moderator_id, $user_id]
         );
     }
 

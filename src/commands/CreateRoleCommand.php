@@ -59,14 +59,13 @@ class CreateRoleCommand extends AbstractCommand
             return;
         }
 
-        if (count($args) < 2) {
+        if (count($args) < 1) {
             $this->bot->sendMessage($chat_id, $this->translate('create_role_usage_message'));
 
             return;
         }
 
         $role_name = $args[0];
-        $priority = intval($args[1]);
 
         if ($this->getRoleService()->getRoleByName($role_name)) {
             $this->bot->sendMessage($chat_id, str_replace('{roleName}', htmlspecialchars($role_name), $this->translate('role_already_exist_message')));
@@ -74,8 +73,8 @@ class CreateRoleCommand extends AbstractCommand
             return;
         }
 
-        if ($this->getRoleService()->createRole($role_name, $priority)) {
-            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{priority}'], [htmlspecialchars($role_name), $priority], $this->translate('create_role_message')));
+        if ($this->getRoleService()->createRole($role_name)) {
+            $this->bot->sendMessage($chat_id, str_replace(['{roleName}'], [htmlspecialchars($role_name)], $this->translate('create_role_message')));
         } else {
             $this->bot->sendMessage($chat_id, $this->translate('create_role_failure_message'));
         }
