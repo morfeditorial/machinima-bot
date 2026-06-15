@@ -23,9 +23,7 @@ namespace morfeditorial\storage;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use morfeditorial\builders\DoctrineQueryBuilder;
 use morfeditorial\interfaces\DatabaseConfigInterface;
-use morfeditorial\interfaces\QueryBuilderInterface;
 use morfeditorial\interfaces\StorageInterface;
 use RuntimeException;
 
@@ -53,13 +51,6 @@ class DatabaseStorage implements StorageInterface
                 throw new RuntimeException('Connection failed: ' . $e->getMessage());
             }
         }
-    }
-
-    public function getQueryBuilder() : QueryBuilderInterface
-    {
-        $this->connect();
-
-        return new DoctrineQueryBuilder($this->connection->createQueryBuilder());
     }
 
     public function getConnection() : Connection

@@ -26,71 +26,69 @@ use morfeditorial\interfaces\StorageInterface;
 
 class RoleService
 {
-    private $queryBuilder;
+    private $db;
 
     public function __construct(private StorageInterface $storage)
     {
-        $this->queryBuilder = $storage->getQueryBuilder();
+        $this->db = $storage->getConnection();
     }
 
     public function createRole(string $roleName, int $priority) : bool
     {
-        $this->queryBuilder->insert('roles', [
-            'role_name' => $roleName,
-            'priority' => $priority,
-        ])->execute();
+        $this->db->executeStatement(
+            'INSERT INTO roles (role_name, priority) VALUES (?, ?)',
+            [$roleName, $priority]
+        );
 
         return true;
     }
 
     public function deleteRole(string $roleName) : bool
     {
-        $this->queryBuilder->delete('roles')
-            ->where('role_name', '=', $roleName)
-            ->execute();
+        $this->db->executeStatement(
+            'DELETE FROM roles WHERE role_name = ?',
+            [$roleName]
+        );
 
         return true;
     }
 
     public function getAllRoles() : array
     {
-        return $this->queryBuilder->select(['*'])
-            ->from('roles')
-            ->orderBy('priority', 'DESC')
-            ->get();
+        return $this->db->fetchAllAssociative('SELECT * FROM roles ORDER BY priority DESC');
     }
 
     public function getRoleByName(string $roleName) : ?array
     {
-        return $this->queryBuilder->select(['*'])
-            ->from('roles')
-            ->where('role_name', '=', $roleName)
-            ->first();
+        $result = $this->db->fetchAssociative(
+            'SELECT * FROM roles WHERE role_name = ?',
+            [$roleName]
+        );
+
+        return false !== $result ? $result : null;
     }
 
     public function getRolePriority(string $roleName) : int
     {
-        $result = $this->queryBuilder->select(['priority'])
-            ->from('roles')
-            ->where('role_name', '=', $roleName)
-            ->first();
+        $result = $this->db->fetchOne(
+            'SELECT priority FROM roles WHERE role_name = ?',
+            [$roleName]
+        );
 
-        return $result['priority'] ?? 0;
+        return false !== $result ? (int) $result : 0;
     }
 
     public function getRolesCount() : int
     {
-        return $this->queryBuilder->select()
-            ->from('roles')
-            ->count();
+        return (int) $this->db->fetchOne('SELECT COUNT(*) FROM roles');
     }
 
     public function updateRolePriority(string $roleName, int $priority) : bool
     {
-        $this->queryBuilder->update('roles', [
-            'priority' => $priority,
-        ])->where('role_name', '=', $roleName)
-            ->execute();
+        $this->db->executeStatement(
+            'UPDATE roles SET priority = ? WHERE role_name = ?',
+            [$priority, $roleName]
+        );
 
         return true;
     }
@@ -103,43 +101,40 @@ class RoleService
             throw new Exception('Role not found.');
         }
 
-        $this->storage->beginTransaction();
+        $this->db->beginTransaction();
         try {
             if ($currentPriority < $newPriority) {
-                $roles = $this->queryBuilder->select(['id', 'priority'])
-                    ->from('roles')
-                    ->where('priority', '>', $currentPriority)
-                    ->andWhere('priority', '<=', $newPriority)
-                    ->get();
+                $roles = $this->db->fetchAllAssociative(
+                    'SELECT id, priority FROM roles WHERE priority > ? AND priority <= ?',
+                    [$currentPriority, $newPriority]
+                );
             } elseif ($currentPriority > $newPriority) {
-                $roles = $this->queryBuilder->select(['id', 'priority'])
-                    ->from('roles')
-                    ->where('priority', '<', $currentPriority)
-                    ->andWhere('priority', '>=', $newPriority)
-                    ->get();
+                $roles = $this->db->fetchAllAssociative(
+                    'SELECT id, priority FROM roles WHERE priority < ? AND priority >= ?',
+                    [$currentPriority, $newPriority]
+                );
+            } else {
+                $roles = [];
             }
 
             foreach ($roles as $role) {
                 $newRolePriority = ($currentPriority < $newPriority) ? $role['priority'] - 1 : $role['priority'] + 1;
-                $this->queryBuilder->update('roles', [
-                    'priority' => $newRolePriority,
-                ])->where('id', '=', $role['id'])
-                    ->execute();
+                $this->db->executeStatement(
+                    'UPDATE roles SET priority = ? WHERE id = ?',
+                    [$newRolePriority, $role['id']]
+                );
             }
 
             $this->updateRolePriority($roleName, $newPriority);
-            $this->storage->commit();
+            $this->db->commit();
         } catch (Exception $e) {
-            $this->storage->rollBack();
+            $this->db->rollBack();
             throw $e;
         }
     }
 
     public function queryRolesOrderedByPriority() : array
     {
-        return $this->queryBuilder->select(['*'])
-            ->from('roles')
-            ->orderBy('priority', 'DESC')
-            ->get();
+        return $this->getAllRoles();
     }
 }

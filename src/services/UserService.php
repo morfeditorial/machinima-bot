@@ -25,88 +25,88 @@ use morfeditorial\interfaces\StorageInterface;
 
 class UserService
 {
-    private $queryBuilder;
+    private $db;
 
     public function __construct(private StorageInterface $storage)
     {
-        $this->queryBuilder = $storage->getQueryBuilder();
+        $this->db = $storage->getConnection();
     }
 
     public function setCurrentPanel(int $userId, int $messageId) : void
     {
-        $this->queryBuilder->insert('user_data', [
-            'user_id' => $userId,
-            'current_panel' => $messageId,
-        ])->execute();
+        $this->db->executeStatement(
+            'INSERT INTO user_data (user_id, current_panel) VALUES (?, ?)',
+            [$userId, $messageId]
+        );
     }
 
     public function getCurrentPanel(int $userId) : ?int
     {
-        $result = $this->queryBuilder->select(['current_panel'])
-            ->from('user_data')
-            ->where('user_id', '=', $userId)
-            ->first();
+        $result = $this->db->fetchOne(
+            'SELECT current_panel FROM user_data WHERE user_id = ?',
+            [$userId]
+        );
 
-        return $result['current_panel'] ?? null;
+        return false !== $result ? (int) $result : null;
     }
 
     public function setCurrentPage(int $userId, string $page) : void
     {
-        $this->queryBuilder->update('user_data', [
-            'current_page' => $page,
-        ])->where('user_id', '=', $userId)
-            ->execute();
+        $this->db->executeStatement(
+            'UPDATE user_data SET current_page = ? WHERE user_id = ?',
+            [$page, $userId]
+        );
     }
 
     public function getCurrentPage(int $userId) : ?string
     {
-        $result = $this->queryBuilder->select(['current_page'])
-            ->from('user_data')
-            ->where('user_id', '=', $userId)
-            ->first();
+        $result = $this->db->fetchOne(
+            'SELECT current_page FROM user_data WHERE user_id = ?',
+            [$userId]
+        );
 
-        return $result['current_page'] ?? null;
+        return false !== $result ? (string) $result : null;
     }
 
     public function resetCurrentPage(int $userId) : void
     {
-        $this->queryBuilder->update('user_data', [
-            'current_page' => null,
-        ])->where('user_id', '=', $userId)
-            ->execute();
+        $this->db->executeStatement(
+            'UPDATE user_data SET current_page = NULL WHERE user_id = ?',
+            [$userId]
+        );
     }
 
     public function assignRole(int $userId, string $role) : void
     {
-        $this->queryBuilder->update('user_data', [
-            'role' => $role,
-        ])->where('user_id', '=', $userId)
-            ->execute();
+        $this->db->executeStatement(
+            'UPDATE user_data SET role = ? WHERE user_id = ?',
+            [$role, $userId]
+        );
     }
 
     public function removeRole(int $userId) : void
     {
-        $this->queryBuilder->update('user_data', [
-            'role' => null,
-        ])->where('user_id', '=', $userId)
-            ->execute();
+        $this->db->executeStatement(
+            'UPDATE user_data SET role = NULL WHERE user_id = ?',
+            [$userId]
+        );
     }
 
     public function getRole(int $userId) : ?string
     {
-        $result = $this->queryBuilder->select(['role'])
-            ->from('user_data')
-            ->where('user_id', '=', $userId)
-            ->first();
+        $result = $this->db->fetchOne(
+            'SELECT role FROM user_data WHERE user_id = ?',
+            [$userId]
+        );
 
-        return $result['role'] ?? null;
+        return false !== $result ? (string) $result : null;
     }
 
     public function getUsersCountByRole(string $role) : int
     {
-        return $this->queryBuilder->select()
-            ->from('user_data')
-            ->where('role', '=', $role)
-            ->count();
+        return (int) $this->db->fetchOne(
+            'SELECT COUNT(*) FROM user_data WHERE role = ?',
+            [$role]
+        );
     }
 }

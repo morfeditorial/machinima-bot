@@ -25,42 +25,44 @@ use morfeditorial\interfaces\StorageInterface;
 
 class UserStateService
 {
-    private $queryBuilder;
+    private $db;
 
     public function __construct(private StorageInterface $storage)
     {
-        $this->queryBuilder = $storage->getQueryBuilder();
+        $this->db = $storage->getConnection();
     }
 
     public function setState(int $userId, mixed $value, string $key = 'default') : void
     {
-        $this->queryBuilder->insert('user_states', [
-            'user_id' => $userId,
-            'key' => $key,
-            'value' => $value,
-        ])->execute();
+        $this->db->executeStatement(
+            'INSERT INTO user_states (user_id, state_key, state_value) VALUES (?, ?, ?)
+             ON CONFLICT(user_id, state_key) DO UPDATE SET state_value = excluded.state_value',
+            [$userId, $key, is_string($value) ? $value : json_encode($value)]
+        );
     }
 
     public function getState(int $userId, string $key = 'default') : mixed
     {
-        $result = $this->queryBuilder->select(['value'])
-            ->from('user_states')
-            ->where('user_id', '=', $userId)
-            ->andWhere('key', '=', $key)
-            ->first();
+        $result = $this->db->fetchOne(
+            'SELECT state_value FROM user_states WHERE user_id = ? AND state_key = ?',
+            [$userId, $key]
+        );
 
-        return $result['value'] ?? null;
+        return false !== $result ? $result : null;
     }
 
     public function clearState(int $userId, ?string $key = null) : void
     {
-        $query = $this->queryBuilder->delete('user_states')
-            ->where('user_id', '=', $userId);
-
         if (null !== $key) {
-            $query->andWhere('key', '=', $key);
+            $this->db->executeStatement(
+                'DELETE FROM user_states WHERE user_id = ? AND state_key = ?',
+                [$userId, $key]
+            );
+        } else {
+            $this->db->executeStatement(
+                'DELETE FROM user_states WHERE user_id = ?',
+                [$userId]
+            );
         }
-
-        $query->execute();
     }
 }

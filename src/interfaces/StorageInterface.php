@@ -27,8 +27,6 @@ interface StorageInterface
 {
     public function connect() : void;
 
-    public function getQueryBuilder() : QueryBuilderInterface;
-
     public function getConnection() : Connection;
 
     public function beginTransaction() : void;
