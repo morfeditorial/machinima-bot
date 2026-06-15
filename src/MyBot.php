@@ -43,25 +43,33 @@ class MyBot extends tgLib
         $container_builder = new ContainerBuilder();
 
         $container_builder->register('translator', Translator::class)
-            ->setArguments([$translations, 'en']);
+            ->setArguments([$translations, 'en'])
+            ->setPublic(true);
 
         $container_builder->register('fuzzy_search', FuzzySearch::class)
-            ->setAutowired(true);
+            ->setAutowired(true)
+            ->setPublic(true);
 
         $container_builder->register('db_config', \morfeditorial\config\SQLiteConfig::class)
-            ->setArgument('$filePath', self::DATABASE_FILE);
+            ->setArgument('$filePath', self::DATABASE_FILE)
+            ->setPublic(true);
 
         $container_builder->register('storage', \morfeditorial\storage\DatabaseStorage::class)
-            ->setAutowired(true);
+            ->setAutowired(true)
+            ->setPublic(true);
 
         $container_builder->register('author_service', \morfeditorial\services\AuthorService::class)
-            ->setAutowired(true);
+            ->setAutowired(true)
+            ->setPublic(true);
         $container_builder->register('user_service', \morfeditorial\services\UserService::class)
-            ->setAutowired(true);
+            ->setAutowired(true)
+            ->setPublic(true);
         $container_builder->register('user_state_service', \morfeditorial\services\UserStateService::class)
-            ->setAutowired(true);
+            ->setAutowired(true)
+            ->setPublic(true);
         $container_builder->register('role_service', \morfeditorial\services\RoleService::class)
-            ->setAutowired(true);
+            ->setAutowired(true)
+            ->setPublic(true);
 
         $container_builder->register('visuals_links', \ArrayObject::class)
             ->setArguments([[
@@ -77,7 +85,8 @@ class MyBot extends tgLib
                 'https://i.ibb.co/LPYBSBX/10.png', // LIST_ALL_MACHINIMATORS
                 'https://i.ibb.co/Fn2HJJQ/11.png', // CREATE_NEW_MACHINIMATOR
                 'https://i.ibb.co/TYPWsLQ/12.png', // AUTHOR_INFO_MANAGEMENT
-            ]]);
+            ]])
+            ->setPublic(true);
 
         $container_builder->compile();
 
