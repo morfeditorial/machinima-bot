@@ -459,18 +459,25 @@ class MyBot extends tgLib
                 $this->sendMessage($chat_id, str_replace('{title}', htmlspecialchars($state_data['title']), $this->translate('project_created_message')));
 
                 // Return to manage projects
-                $keyboard = [
-                    'inline_keyboard' => [
-                        [
-                            ['text' => $this->translate('add_project'), 'callback_data' => 'add_project'],
-                        ],
-                        [
-                            ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
-                        ],
-                    ],
-                ];
-                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('manage_projects'), $keyboard);
+                $this->handlePanels(array_merge($message_data, ['payload' => 'manage_projects']));
             }
+        } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_staff_role')) {
+            $this->deleteMessage($chat_id, $message_id);
+            $content_service = $this->container->get('content_service');
+            $author_service = $this->container->get('author_service');
+
+            $project_id = $state_data['project_id'];
+            $author_id = $state_data['author_id'];
+            $role = $message;
+
+            $content_service->assignStaff($project_id, $author_id, $role);
+            $author = $author_service->getAuthorById($author_id);
+
+            $this->sendMessage($chat_id, str_replace(['{author}', '{role}'], [htmlspecialchars($author['name']), htmlspecialchars($role)], $this->translate('staff_member_added_message')));
+            $user_state_service->clearState($user_id);
+
+            // Return to staff management
+            $this->handlePanels(array_merge($message_data, ['payload' => 'manage_staff:' . $project_id]));
         } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_user_id_for_role')) {
             $target_user_id = (int) $message;
 
@@ -1083,24 +1090,165 @@ class MyBot extends tgLib
                 ];
 
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('select_role_to_delete_message'), $keyboard);
-            } elseif ('manage_projects' === $payload) {
+            } elseif (preg_match("/^manage_projects(_page_(\d+))?$/", $payload, $matches)) {
                 if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
                 }
                 $user_state_service->clearState($user_id);
+                $page = isset($matches[2]) ? (int) $matches[2] : 1;
+                $user_service->setCurrentPage($user_id, 'manage_projects_page_' . $page);
+
+                $content_service = $this->container->get('content_service');
+                // We'll need a way to get projects with pagination. For now, let's fetch all and paginate manually
+                $all_projects = $content_service->db->fetchAllAssociative('SELECT * FROM content ORDER BY created_at DESC');
+
+                $projects_per_page = 5;
+                $total_pages = ceil(count($all_projects) / $projects_per_page);
+                $offset = ($page - 1) * $projects_per_page;
+                $projects_slice = array_slice($all_projects, $offset, $projects_per_page);
+
+                $keyboard = ['inline_keyboard' => []];
+                foreach ($projects_slice as $project) {
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $project['title'], 'callback_data' => 'view_project:' . $project['id']],
+                    ];
+                }
+
+                // Pagination
+                if ($total_pages > 1) {
+                    $pagination = [];
+                    if ($page > 1) {
+                        $pagination[] = ['text' => $this->translate('previous_page'), 'callback_data' => 'manage_projects_page_' . ($page - 1)];
+                    }
+                    if ($page < $total_pages) {
+                        $pagination[] = ['text' => $this->translate('next_page'), 'callback_data' => 'manage_projects_page_' . ($page + 1)];
+                    }
+                    $keyboard['inline_keyboard'][] = $pagination;
+                }
+
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('add_project'), 'callback_data' => 'add_project'],
+                ];
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('manage_projects'), $keyboard);
+            } elseif (preg_match("/^view_project:(\d+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $content_service = $this->container->get('content_service');
+                $project = $content_service->getContentById($project_id);
+
+                if ($project) {
+                    $staff = $content_service->getStaffByContentId($project_id);
+                    $staff_text = "";
+                    foreach ($staff as $member) {
+                        $staff_text .= "\n- " . htmlspecialchars($member['author_name']) . " (" . htmlspecialchars($member['role']) . ")";
+                    }
+
+                    $message_text = "📦 <b>" . htmlspecialchars($project['title']) . "</b>\n";
+                    $message_text .= "📝 " . htmlspecialchars($project['description'] ?? '') . "\n";
+                    $message_text .= "📊 Статус: " . $project['status'] . "\n";
+                    $message_text .= "\n👥 Команда:" . ($staff_text ?: " \u{2014}");
+
+                    $keyboard = [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => $this->translate('manage_staff'), 'callback_data' => 'manage_staff:' . $project_id],
+                            ],
+                            [
+                                ['text' => $this->translate('go_back'), 'callback_data' => $user_service->getCurrentPage($user_id) ?? 'manage_projects'],
+                            ],
+                        ],
+                    ];
+
+                    if ($project['cover_file_id']) {
+                        $this->editMediaMessage($chat_id, $current_panel, $project['cover_file_id'], $message_text, $keyboard);
+                    } else {
+                        $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $message_text, $keyboard);
+                    }
+                }
+            } elseif (preg_match("/^manage_staff:(\d+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $content_service = $this->container->get('content_service');
+                $staff = $content_service->getStaffByContentId($project_id);
+
+                $keyboard = ['inline_keyboard' => []];
+                foreach ($staff as $member) {
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => "❌ " . $member['author_name'] . " (" . $member['role'] . ")", 'callback_data' => "remove_staff:{$project_id}:{$member['author_id']}:" . base64_encode($member['role'])],
+                    ];
+                }
+
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('add_staff_member'), 'callback_data' => 'add_staff_select_author:' . $project_id],
+                ];
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('go_back'), 'callback_data' => 'view_project:' . $project_id],
+                ];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('manage_staff'), $keyboard);
+            } elseif (preg_match("/^add_staff_select_author:(\d+)(_page_(\d+))?$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $page = isset($matches[3]) ? (int) $matches[3] : 1;
+
+                $keyboard = $this->generateAuthorsKeyboard($page, 3, 1, "add_staff_to_project:{$project_id}:", "add_staff_select_author:{$project_id}_page_");
+                // Replace the default go_back from generateAuthorsKeyboard
+                array_pop($keyboard['inline_keyboard']);
+                $keyboard['inline_keyboard'][] = [['text' => $this->translate('go_back'), 'callback_data' => 'manage_staff:' . $project_id]];
+
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('select_author_for_staff_message'), $keyboard);
+            } elseif (preg_match("/^add_staff_to_project:(\d+):(\d+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $author_id = (int) $matches[2];
+
+                $user_state_service->setState($user_id, ['project_id' => $project_id, 'author_id' => $author_id], 'awaiting_staff_role');
+
                 $keyboard = [
                     'inline_keyboard' => [
                         [
-                            ['text' => $this->translate('add_project'), 'callback_data' => 'add_project'],
-                        ],
-                        [
-                            ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'manage_staff:' . $project_id],
                         ],
                     ],
                 ];
-                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('manage_projects'), $keyboard);
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('enter_staff_role_message'), $keyboard);
+            } elseif (preg_match("/^remove_staff:(\d+):(\d+):(.+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $author_id = (int) $matches[2];
+                $role = base64_decode($matches[3]);
+
+                $content_service = $this->container->get('content_service');
+                $content_service->removeStaff($project_id, $author_id, $role);
+
+                // Refresh staff menu
+                $this->handlePanels(array_merge($message_data, ['payload' => 'manage_staff:' . $project_id]));
             } elseif ('add_project' === $payload) {
                 if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
