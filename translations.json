@@ -427,10 +427,10 @@
         "uk": "Ролі «{roleName}» не знайдено."
     },
     "assign_role_usage_message": {
-        "en": "Incorrect command format. Use: \/assign_role userId roleName",
-        "pl": "Niepoprawny format polecenia. Użyj: \/assign_role userId roleName",
-        "be": "Няправільны фармат каманды. Выкарыстоўвайце: \/assign_role userId roleName",
-        "uk": "Неправильний формат команди. Використовуйте: \/assign_role userId roleName"
+        "en": "Usage: \/assign_role &lt;userId&gt; &lt;roleName&gt;",
+        "pl": "Użycie: \/assign_role &lt;userId&gt; &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/assign_role &lt;userId&gt; &lt;назва_ролі&gt;",
+        "uk": "Використання: \/assign_role &lt;userId&gt; &lt;назва_ролі&gt;"
     },
     "success_initialled_admin_message": {
         "en": "You have been appointed as an administrator.",
