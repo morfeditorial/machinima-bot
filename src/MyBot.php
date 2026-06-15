@@ -95,6 +95,7 @@ class MyBot extends tgLib
                 new \Symfony\Component\Workflow\MarkingStore\MethodMarkingStore(true, 'status'),
             ])
             ->setPublic(true);
+        $container_builder->setAlias(\Symfony\Component\Workflow\Workflow::class, 'content_workflow');
 
         $container_builder->register('token_storage', \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage::class)
             ->setPublic(true);
@@ -172,6 +173,11 @@ class MyBot extends tgLib
         } else {
             $this->handlePanels($message_data);
         }
+    }
+
+    public function getContainer() : \Symfony\Component\DependencyInjection\ContainerInterface
+    {
+        return $this->container;
     }
 
     private function processMessage(array $message_data, string $message) : void
