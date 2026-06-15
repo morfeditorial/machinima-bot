@@ -96,7 +96,7 @@ class BotManager
             sleep(1);
         } catch (\Exception $e) {
             $error = 'Failed to initialize bot core: ' . $e->getMessage();
-            $this->logError($error);
+            $this->logMessage($error, 'ERROR');
             throw new \RuntimeException($error);
         }
     }
@@ -199,7 +199,7 @@ class BotManager
         $this->printError('An exception occurred in the main loop.');
         $this->printError('Error message: ' . $e->getMessage());
         $this->printError('Attempting to recover...');
-        $this->logError($e->getMessage());
+        $this->logMessage($e->getMessage(), 'ERROR');
         sleep(5);
     }
 
