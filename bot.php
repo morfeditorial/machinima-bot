@@ -503,7 +503,7 @@ class StatisticsManager
         if (isset($_ENV['ADMIN_ID'])) {
             $this->bot->sendMessage($_ENV['ADMIN_ID'], $statsMessage);
         } else {
-            this->logMessage('ADMIN_ID not set. Unable to send stats message.', 'WARNING');
+            $this->logMessage('ADMIN_ID not set. Unable to send stats message.', 'WARNING');
         }
 
         $this->logMessage($statsMessage, 'STATS');
