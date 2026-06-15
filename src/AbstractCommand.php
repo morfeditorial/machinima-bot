@@ -80,6 +80,11 @@ abstract class AbstractCommand implements CommandInterface
         return $this->container->get('role_service');
     }
 
+    public function isGranted(string $role_name) : bool
+    {
+        return $this->bot->isGranted($role_name);
+    }
+
     public function getSearch()
     {
         return $this->container->get('fuzzy_search');

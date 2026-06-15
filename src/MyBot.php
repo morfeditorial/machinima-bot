@@ -223,7 +223,7 @@ class MyBot extends tgLib
         $default_state = $user_state_service->getState($user_id);
 
         if ('awaiting_author_name_creation' === $default_state) {
-            if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+            if (! $this->isGranted('moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                 return;
@@ -252,7 +252,7 @@ class MyBot extends tgLib
             ];
             $this->editMediaMessage($chat_id, $current_panel, $visuals_links[2], str_replace('{author}', htmlspecialchars($message), $this->translate('author_added_message')), $keyboard);
         } elseif ($state = $user_state_service->getState($user_id, 'change_name')) {
-            if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+            if (! $this->isGranted('moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                 return;
@@ -283,7 +283,7 @@ class MyBot extends tgLib
             ];
             $this->editMediaMessage($chat_id, $current_panel, $visuals_links[6], str_replace(['{author}', '{oldName}', '{biography}', '{link}'], [htmlspecialchars($message), htmlspecialchars($author['name']), ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], $this->translate('name_changed_message')), $keyboard);
         } elseif ($state = $user_state_service->getState($user_id, 'set_author_about')) {
-            if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+            if (! $this->isGranted('moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                 return;
@@ -314,7 +314,7 @@ class MyBot extends tgLib
             ];
             $this->editMediaMessage($chat_id, $current_panel, ($author['biography'] ? $visuals_links[8] : $visuals_links[7]), str_replace(['{author}', '{biography}', '{link}'], [htmlspecialchars($author['name']), htmlspecialchars($message), ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))], ($author['biography'] ? $this->translate('bio_changed_message') : $this->translate('bio_added_message'))), $keyboard);
         } elseif ($state = $user_state_service->getState($user_id, 'add_author_link')) {
-            if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+            if (! $this->isGranted('moderator')) {
                 $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                 return;
@@ -379,7 +379,6 @@ class MyBot extends tgLib
         $first_name = $message_data['first_name'];
         $user_service = $this->container->get('user_service');
         $user_state_service = $this->container->get('user_state_service');
-        $role_service = $this->container->get('role_service');
         $author_service = $this->container->get('author_service');
         $visuals_links = $this->container->get('visuals_links');
 
@@ -388,7 +387,7 @@ class MyBot extends tgLib
             $current_page = $user_service->getCurrentPage($user_id);
 
             if ('control_panel' === $payload) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -413,7 +412,7 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('admin_panel_message'), $keyboard);
             } elseif ('add_author' === $payload) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -428,7 +427,7 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[10], $this->translate('add_author_message'), $keyboard);
             } elseif ('delete_author' === $payload) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -436,7 +435,7 @@ class MyBot extends tgLib
                 $user_service->setCurrentPage($user_id, 'delete_page_1');
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard(1, 3, 1, 'author_to_delete_', 'delete_page_'));
             } elseif (preg_match("/^delete_page_(\d+)$/", $payload, $matches)) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -444,7 +443,7 @@ class MyBot extends tgLib
                 $user_service->setCurrentPage($user_id, $payload);
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('delete_author_message'), $this->generateAuthorsKeyboard((int) $matches[1], 3, 1, 'author_to_delete_', 'delete_page_'));
             } elseif (preg_match("/^author_to_delete_(\d+)$/", $payload, $matches)) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -462,7 +461,7 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{author}', htmlspecialchars($author_service->getAuthorById(intval($matches[1]))['name']), $this->translate('confirm_delete_message')), $keyboard);
             } elseif (preg_match("/^delete_confirmation_(\d+)$/", $payload, $matches)) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -478,7 +477,7 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{author}', htmlspecialchars($author['name']), $this->translate('author_deleted_message')), $keyboard);
             } elseif (preg_match("/^change_name_(\d+)$/", $payload, $matches)) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -493,7 +492,7 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[3], $this->translate('pending_name_change'), $keyboard);
             } elseif (preg_match("/^set_author_about_(\d+)$/", $payload, $matches)) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -509,7 +508,7 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, ($author['biography'] ? $visuals_links[5] : $visuals_links[4]), ($author['biography'] ? $this->translate('pending_bio_change') : $this->translate('pending_bio_add')), $keyboard);
             } elseif (preg_match("/^add_author_link_(\d+)$/", $payload, $matches)) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -524,7 +523,7 @@ class MyBot extends tgLib
                 ];
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('pending_link_change'), $keyboard);
             } elseif ('list_of_authors' === $payload) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -532,7 +531,7 @@ class MyBot extends tgLib
                 $user_service->setCurrentPage($user_id, 'page_1');
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[9], $this->translate('list_of_authors_message'), $this->generateAuthorsKeyboard());
             } elseif (preg_match("/^page_(\d+)$/", $payload, $matches)) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -540,7 +539,7 @@ class MyBot extends tgLib
                 $user_service->setCurrentPage($user_id, $payload);
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[9], $this->translate('list_of_authors_message'), $this->generateAuthorsKeyboard((int) $matches[1]));
             } elseif (preg_match("/^author_(\d+)$/", $payload, $matches)) {
-                if (! $role_service->hasHigherRole($user_id, 'moderator')) {
+                if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -589,7 +588,7 @@ class MyBot extends tgLib
                 }
                 $this->sendMessage($chat_id, $this->translate('author_not_found_message'));
             } elseif ('access_control' === $payload) {
-                if (! $role_service->hasHigherRole($user_id, 'admin')) {
+                if (! $this->isGranted('admin')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
                     return;
@@ -655,7 +654,7 @@ class MyBot extends tgLib
         $this->container->get('token_storage')->setToken($token);
     }
 
-    private function isGranted(string $role) : bool
+    public function isGranted(string $role) : bool
     {
         return $this->container->get('authorization_checker')->isGranted($role);
     }
@@ -757,7 +756,7 @@ class MyBot extends tgLib
         $user_state_service = $this->container->get('user_state_service');
         $user_service = $this->container->get('user_service');
 
-        if (! $role_service->hasHigherRole($user_id, 'admin')) {
+        if (! $this->isGranted('admin')) {
             $this->sendMessage($chat_id, $this->translate('no_permission_message'));
 
             return;

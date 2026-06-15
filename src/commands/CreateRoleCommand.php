@@ -53,7 +53,7 @@ class CreateRoleCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        if (! $this->getRoleService()->hasHigherRole($user_id, 'admin')) {
+        if (! $this->isGranted('admin')) {
             $this->bot->sendMessage($chat_id, $this->translate('no_permission_message'));
 
             return;
