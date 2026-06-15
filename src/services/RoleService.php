@@ -120,6 +120,17 @@ class RoleService
         return false;
     }
 
+    public function getUserRoleNames(int $user_id) : array
+    {
+        $rows = $this->db->fetchAllAssociative('
+            SELECT r.role_name FROM user_roles ur
+            JOIN roles r ON ur.role_id = r.id
+            WHERE ur.user_id = ?
+        ', [$user_id]);
+
+        return array_map(fn (array $row) : string => $row['role_name'], $rows);
+    }
+
     public function getUsersCountByRole(string $role_name) : int
     {
         return (int) $this->db->fetchOne('

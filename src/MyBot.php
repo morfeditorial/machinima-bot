@@ -22,8 +22,11 @@ declare(strict_types=1);
 namespace morfeditorial;
 
 use morfeditorial\commands\CommandInterface;
+use morfeditorial\security\BotUser;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 
 class MyBot extends tgLib
 {
@@ -77,6 +80,21 @@ class MyBot extends tgLib
             ->setAutowired(true)
             ->setPublic(true);
 
+        $container_builder->register('token_storage', \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage::class)
+            ->setPublic(true);
+        $container_builder->register('role_priority_voter', \morfeditorial\security\RolePriorityVoter::class)
+            ->setAutowired(true)
+            ->setPublic(true);
+        $container_builder->register('access_decision_manager', \Symfony\Component\Security\Core\Authorization\AccessDecisionManager::class)
+            ->setArgument('$voters', [new Reference('role_priority_voter')])
+            ->setPublic(true);
+        $container_builder->register('authorization_checker', \Symfony\Component\Security\Core\Authorization\AuthorizationChecker::class)
+            ->setArguments([
+                new Reference('token_storage'),
+                new Reference('access_decision_manager'),
+            ])
+            ->setPublic(true);
+
         $container_builder->register('visuals_links', \ArrayObject::class)
             ->setArguments([[
                 'https://i.ibb.co/mC7sv0W/01.png', // WELCOME_TO_MORF
@@ -125,6 +143,10 @@ class MyBot extends tgLib
     {
         $message_data = $this->extractMessageData($update);
         $message = $message_data['message'] ?? null;
+
+        if (null !== $message_data['user_id']) {
+            $this->setupUserToken($message_data['user_id']);
+        }
 
         $this->container->get('translator')->setUserLocale($message_data['language_code'] ?? 'en');
 
@@ -623,6 +645,19 @@ class MyBot extends tgLib
             'reply_author' => $data['message']['reply_to_message']['from']['id'] ?? null,
             'first_name' => $data['message']['from']['first_name'] ?? null,
         ];
+    }
+
+    private function setupUserToken(int $user_id) : void
+    {
+        $role_names = $this->container->get('role_service')->getUserRoleNames($user_id);
+        $bot_user = new BotUser($user_id, $role_names);
+        $token = new PreAuthenticatedToken($bot_user, 'main', $role_names);
+        $this->container->get('token_storage')->setToken($token);
+    }
+
+    private function isGranted(string $role) : bool
+    {
+        return $this->container->get('authorization_checker')->isGranted($role);
     }
 
     protected function createAvatar($author_name, $author_link, $author_image = 'path/to/author_image.jpg')
