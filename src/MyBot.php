@@ -395,6 +395,82 @@ class MyBot extends tgLib
 
             $this->sendMessage($chat_id, str_replace('{role}', $message, $this->translate('role_created_redirect_message')));
             $this->editMediaMessage($chat_id, $user_service->getCurrentPanel($user_id), $visuals_links[1], str_replace('{role}', $message, $this->translate('select_parent_message')), $keyboard);
+        } elseif ('awaiting_project_title' === $default_state) {
+            $this->deleteMessage($chat_id, $message_id);
+            $user_state_service->setState($user_id, ['title' => $message], 'awaiting_project_description');
+
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('project_type_short'), 'callback_data' => 'set_project_type:short'],
+                        ['text' => $this->translate('project_type_series'), 'callback_data' => 'set_project_type:series'],
+                    ],
+                    [
+                        ['text' => $this->translate('project_type_music_video'), 'callback_data' => 'set_project_type:music_video'],
+                    ],
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => 'manage_projects'],
+                    ],
+                ],
+            ];
+            $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('select_project_type_message'), $keyboard);
+        } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_project_description')) {
+            $this->deleteMessage($chat_id, $message_id);
+            $user_state_service->setState($user_id, array_merge($state_data, ['description' => $message]), 'awaiting_project_url');
+
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => 'manage_projects'],
+                    ],
+                ],
+            ];
+            $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('enter_project_url_message'), $keyboard);
+        } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_project_url')) {
+            $this->deleteMessage($chat_id, $message_id);
+            $user_state_service->setState($user_id, array_merge($state_data, ['url' => $message]), 'awaiting_project_cover');
+
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => 'manage_projects'],
+                    ],
+                ],
+            ];
+            $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('upload_project_cover_message'), $keyboard);
+        } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_project_cover')) {
+            $photo = $message_data['photo'] ?? null;
+            if ($photo) {
+                $file_id = end($photo)['file_id'];
+                $this->deleteMessage($chat_id, $message_id);
+
+                $content_service = $this->container->get('content_service');
+                $content_id = $content_service->createContent([
+                    'title' => $state_data['title'],
+                    'type' => $state_data['type'],
+                    'description' => $state_data['description'],
+                    'url' => $state_data['url'],
+                    'status' => 'draft',
+                    'cover_file_id' => $file_id,
+                    'created_by' => $user_id,
+                ]);
+
+                $user_state_service->clearState($user_id);
+                $this->sendMessage($chat_id, str_replace('{title}', htmlspecialchars($state_data['title']), $this->translate('project_created_message')));
+
+                // Return to manage projects
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('add_project'), 'callback_data' => 'add_project'],
+                        ],
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
+                        ],
+                    ],
+                ];
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('manage_projects'), $keyboard);
+            }
         } elseif ($state_data = $user_state_service->getState($user_id, 'awaiting_user_id_for_role')) {
             $target_user_id = (int) $message;
 
@@ -1007,6 +1083,57 @@ class MyBot extends tgLib
                 ];
 
                 $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('select_role_to_delete_message'), $keyboard);
+            } elseif ('manage_projects' === $payload) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $user_state_service->clearState($user_id);
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('add_project'), 'callback_data' => 'add_project'],
+                        ],
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
+                        ],
+                    ],
+                ];
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('manage_projects'), $keyboard);
+            } elseif ('add_project' === $payload) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $user_state_service->setState($user_id, 'awaiting_project_title');
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'manage_projects'],
+                        ],
+                    ],
+                ];
+                $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('enter_project_title_message'), $keyboard);
+            } elseif (preg_match("/^set_project_type:(.+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $state_data = $user_state_service->getState($user_id, 'awaiting_project_description');
+                if ($state_data) {
+                    $user_state_service->setState($user_id, array_merge($state_data, ['type' => $matches[1]]), 'awaiting_project_description');
+                    $keyboard = [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'manage_projects'],
+                            ],
+                        ],
+                    ];
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], $this->translate('enter_project_description_message'), $keyboard);
+                }
             }
         }
     }
@@ -1027,6 +1154,7 @@ class MyBot extends tgLib
             'reply_message_id' => $data['message']['reply_to_message']['message_id'] ?? null,
             'reply_author' => $data['message']['reply_to_message']['from']['id'] ?? null,
             'first_name' => $data['message']['from']['first_name'] ?? null,
+            'photo' => $data['message']['photo'] ?? null,
         ];
     }
 
