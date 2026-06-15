@@ -21,12 +21,17 @@ declare(strict_types=1);
 
 namespace morfeditorial\storage;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
+use morfeditorial\builders\DoctrineQueryBuilder;
 use morfeditorial\interfaces\DatabaseConfigInterface;
+use morfeditorial\interfaces\QueryBuilderInterface;
 use morfeditorial\interfaces\StorageInterface;
+use RuntimeException;
 
 class DatabaseStorage implements StorageInterface
 {
-    private ?PDO $connection = null;
+    private ?Connection $connection = null;
 
     public function __construct(private DatabaseConfigInterface $config) {}
 
@@ -34,48 +39,71 @@ class DatabaseStorage implements StorageInterface
     {
         if (! $this->connection) {
             try {
-                $this->connection = new PDO(
-                    $this->config->getDsn(),
-                    $this->config->getUsername(),
-                    $this->config->getPassword(),
-                    $this->config->getOptions()
-                );
-            } catch (PDOException $e) {
+                $connectionParams = [
+                    'url' => $this->config->getDsn(),
+                    'user' => $this->config->getUsername(),
+                    'password' => $this->config->getPassword(),
+                ];
+
+                // Add PDO options if needed
+                $connectionParams['driverOptions'] = $this->config->getOptions();
+
+                $this->connection = DriverManager::getConnection($connectionParams);
+            } catch (\Exception $e) {
                 throw new RuntimeException('Connection failed: ' . $e->getMessage());
             }
         }
     }
 
+    public function getQueryBuilder() : QueryBuilderInterface
+    {
+        $this->connect();
+
+        return new DoctrineQueryBuilder($this->connection->createQueryBuilder());
+    }
+
+    public function getConnection() : Connection
+    {
+        $this->connect();
+
+        return $this->connection;
+    }
+
     public function query(string $query, array $params = []) : array
     {
         $this->connect();
-        $stmt = $this->prepareStatement($query, $params);
-        $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        return $this->connection->fetchAllAssociative($query, $params);
     }
 
     public function execute(string $query, array $params = []) : void
     {
         $this->connect();
-        $stmt = $this->prepareStatement($query, $params);
-        $stmt->execute();
+        $this->connection->executeStatement($query, $params);
     }
 
-    private function prepareStatement(string $query, array $params) : PDOStatement
+    public function beginTransaction() : void
     {
-        $stmt = $this->connection->prepare($query);
-        foreach ($params as $key => $value) {
-            $type = match (gettype($value)) {
-                'integer' => PDO::PARAM_INT,
-                'boolean' => PDO::PARAM_BOOL,
-                'NULL' => PDO::PARAM_NULL,
-                default => PDO::PARAM_STR
-            };
-            $paramName = is_int($key) ? $key + 1 : ":{$key}";
-            $stmt->bindValue($paramName, $value, $type);
-        }
+        $this->connect();
+        $this->connection->beginTransaction();
+    }
 
-        return $stmt;
+    public function commit() : void
+    {
+        $this->connect();
+        $this->connection->commit();
+    }
+
+    public function rollBack() : void
+    {
+        $this->connect();
+        $this->connection->rollBack();
+    }
+
+    public function lastInsertId() : string|int
+    {
+        $this->connect();
+
+        return $this->connection->lastInsertId();
     }
 }

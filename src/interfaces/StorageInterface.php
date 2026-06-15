@@ -21,15 +21,21 @@ declare(strict_types=1);
 
 namespace morfeditorial\interfaces;
 
+use Doctrine\DBAL\Connection;
+
 interface StorageInterface
 {
     public function connect() : void;
 
     public function getQueryBuilder() : QueryBuilderInterface;
 
+    public function getConnection() : Connection;
+
     public function beginTransaction() : void;
 
     public function commit() : void;
 
     public function rollBack() : void;
+
+    public function lastInsertId() : string|int;
 }

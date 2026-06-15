@@ -37,7 +37,12 @@ class MyBot extends tgLib
 
         $translations = json_decode(file_get_contents(self::TRANSLATIONS_FILE), true);
         $this->container = new DependencyContainer($translations, 'en');
-        $this->container->set('db_manager', new DatabaseManager(self::DATABASE_FILE));
+
+        $dbConfig = new \morfeditorial\config\SQLiteConfig(self::DATABASE_FILE);
+        $storage = new \morfeditorial\storage\DatabaseStorage($dbConfig);
+
+        $this->container->set('db_manager', new DatabaseManager($storage->getConnection()));
+        $this->container->set('storage', $storage);
         $this->container->set('fuzzy_search', new FuzzySearch());
         $this->container->set('visuals_links', [
             'https://i.ibb.co/mC7sv0W/01.png', // WELCOME_TO_MORF

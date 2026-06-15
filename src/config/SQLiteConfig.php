@@ -29,7 +29,7 @@ class SQLiteConfig implements DatabaseConfigInterface
 
     public function getDsn() : string
     {
-        return "sqlite:{$this->filePath}";
+        return "sqlite:///{$this->filePath}";
     }
 
     public function getUsername() : string
