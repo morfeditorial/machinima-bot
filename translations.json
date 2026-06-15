@@ -281,6 +281,48 @@
         "be": "Праект «{title}» створаны як чарнавік! 📝",
         "uk": "Проєкт «{title}» створено як чернетку! 📝"
     },
+    "manage_staff": {
+        "en": "Manage Staff 👥",
+        "pl": "Zarządzaj zespołem 👥",
+        "be": "Кіраванне камандай 👥",
+        "uk": "Керувати командою 👥"
+    },
+    "add_staff_member": {
+        "en": "Add Staff Member",
+        "pl": "Dodaj członka zespołu",
+        "be": "Дадаць удзельніка каманды",
+        "uk": "Додати учасника"
+    },
+    "select_author_for_staff_message": {
+        "en": "Select an author to add to the project staff:",
+        "pl": "Wybierz autora, którego chcesz dodać до zespołu projektu:",
+        "be": "Абярыце аўтара, якога вы хочаце дадаць у каманду праекта:",
+        "uk": "Оберіть автора, якого хочете додати до команди проєкту:"
+    },
+    "enter_staff_role_message": {
+        "en": "Enter the role for this staff member (e.g., Director, Actor):",
+        "pl": "Wprowadź rolę dla tego członka zespołu (np. Reżyser, Aktor):",
+        "be": "Увядзіце ролю для гэтага ўдзельніка каманды (напрыклад: Рэжысёр, Акцёр):",
+        "uk": "Введи роль для цього учасника (наприклад: Режисер, Актор):"
+    },
+    "staff_member_added_message": {
+        "en": "Staff member {author} added as {role}!",
+        "pl": "Członek zespołu {author} dodany jako {role}!",
+        "be": "Удзельнік каманды {author} дададзены як {role}!",
+        "uk": "Учасника {author} додано як {role}!"
+    },
+    "staff_list_message": {
+        "en": "Project Staff:",
+        "pl": "Zespół projektu:",
+        "be": "Каманда праекта:",
+        "uk": "Команда проєкту:"
+    },
+    "remove_staff_member": {
+        "en": "Remove member",
+        "pl": "Usuń członka",
+        "be": "Выдаліць удзельніка",
+        "uk": "Видалити учасника"
+    },
     "author_not_found_message": {
         "en": "I couldn`t find the machinimator you selected. Perhaps it was removed due to a violation… 🙁",
         "pl": "Nie mogłem odnaleźć wybranego przez ciebie machinimatora. Być może został usunięty z powodu naruszenia… 🙁",
