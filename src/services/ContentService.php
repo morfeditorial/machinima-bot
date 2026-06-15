@@ -102,6 +102,11 @@ class ContentService
         return $result ?: null;
     }
 
+    public function getAllContent() : array
+    {
+        return $this->db->fetchAllAssociative('SELECT * FROM content ORDER BY created_at DESC');
+    }
+
     public function deleteContent(int $id) : bool
     {
         return (bool) $this->db->executeStatement('DELETE FROM content WHERE id = ?', [$id]);

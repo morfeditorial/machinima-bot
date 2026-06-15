@@ -1102,7 +1102,7 @@ class MyBot extends tgLib
 
                 $content_service = $this->container->get('content_service');
                 // We'll need a way to get projects with pagination. For now, let's fetch all and paginate manually
-                $all_projects = $content_service->db->fetchAllAssociative('SELECT * FROM content ORDER BY created_at DESC');
+                $all_projects = $content_service->getAllContent();
 
                 $projects_per_page = 5;
                 $total_pages = ceil(count($all_projects) / $projects_per_page);
