@@ -1194,6 +1194,9 @@ class MyBot extends tgLib
                                 ['text' => $this->translate('select_categories_for_project'), 'callback_data' => 'select_project_categories:' . $project_id],
                             ],
                             [
+                                ['text' => $this->translate('delete_this_project'), 'callback_data' => 'confirm_delete_project:' . $project_id],
+                            ],
+                            [
                                 ['text' => $this->translate('go_back'), 'callback_data' => $user_service->getCurrentPage($user_id) ?? 'manage_projects'],
                             ],
                         ],
@@ -1290,6 +1293,44 @@ class MyBot extends tgLib
 
                 // Refresh project view
                 $this->handlePanels(array_merge($message_data, ['payload' => 'view_project:' . $project_id]));
+            } elseif (preg_match("/^confirm_delete_project:(\d+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $content_service = $this->container->get('content_service');
+                $project = $content_service->getContentById($project_id);
+
+                if ($project) {
+                    $keyboard = [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => $this->translate('confirm_yes'), 'callback_data' => 'delete_project:' . $project_id],
+                            ],
+                            [
+                                ['text' => $this->translate('confirm_no'), 'callback_data' => 'view_project:' . $project_id],
+                            ],
+                        ],
+                    ];
+                    $this->editMediaMessage($chat_id, $current_panel, $visuals_links[1], str_replace('{title}', htmlspecialchars($project['title']), $this->translate('confirm_delete_project_message')), $keyboard);
+                }
+            } elseif (preg_match("/^delete_project:(\d+)$/", $payload, $matches)) {
+                if (! $this->isGranted('moderator')) {
+                    $this->sendMessage($chat_id, $this->translate('no_permission_message'));
+
+                    return;
+                }
+                $project_id = (int) $matches[1];
+                $content_service = $this->container->get('content_service');
+
+                if ($content_service->deleteContent($project_id)) {
+                    $this->callbackAnswer($callback_query_id, $this->translate('project_deleted_message'));
+                }
+
+                // Return to manage projects list
+                $this->handlePanels(array_merge($message_data, ['payload' => 'manage_projects']));
             } elseif (preg_match("/^manage_staff:(\d+)$/", $payload, $matches)) {
                 if (! $this->isGranted('moderator')) {
                     $this->sendMessage($chat_id, $this->translate('no_permission_message'));

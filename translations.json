@@ -413,6 +413,24 @@
         "be": "Не ўдалося змяніць статус. Няправільны пераход.",
         "uk": "Не вдалося змінити статус. Недопустимий перехід."
     },
+    "delete_this_project": {
+        "en": "Delete Project",
+        "pl": "Usuń projekt",
+        "be": "Выдаліць праект",
+        "uk": "Видалити проєкт"
+    },
+    "confirm_delete_project_message": {
+        "en": "Are you sure you want to delete project «{title}»?",
+        "pl": "Czy na pewno chcesz usunąć projekt «{title}»?",
+        "be": "Вы ўпэўнены, што хочаце выдаліць праект «{title}»?",
+        "uk": "Ти впевнений, що хочеш видалити проєкт «{title}»?"
+    },
+    "project_deleted_message": {
+        "en": "Project deleted!",
+        "pl": "Projekt usunięty!",
+        "be": "Праект выдалены!",
+        "uk": "Проєкт видалено!"
+    },
     "author_not_found_message": {
         "en": "I couldn`t find the machinimator you selected. Perhaps it was removed due to a violation… 🙁",
         "pl": "Nie mogłem odnaleźć wybranego przez ciebie machinimatora. Być może został usunięty z powodu naruszenia… 🙁",
