@@ -385,10 +385,10 @@
     },
 
     "create_role_usage_message": {
-        "en": "Incorrect command format. Use: \/create_role roleName",
-        "pl": "Niepoprawny format polecenia. Użyj: \/create_role roleName",
-        "be": "Няправільны фармат каманды. Выкарыстоўвайце: \/create_role roleName",
-        "uk": "Неправильний формат команди. Використовуйте: \/create_role roleName"
+        "en": "Usage: \/create_role &lt;roleName&gt;",
+        "pl": "Użycie: \/create_role &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/create_role &lt;назва_ролі&gt;",
+        "uk": "Використання: \/create_role &lt;назва_ролі&gt;"
     },
     "delete_role": {
         "en": "Delete role",
