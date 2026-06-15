@@ -7,10 +7,10 @@
 
 ## Features
 
-- Real-time interaction with users on Telegram.
-- Easy configuration using environment variables.
-- Can work in Webhook mode or in a loop to get updates continuously.
-- Various commands for managing machinimators.
+- **Real-Time Telegram Interaction**: Responds to user messages and commands in real time.
+- **Environment-Based Configuration**: Easy setup using environment variables and a `.env` file.
+- **Flexible Update Handling**: Supports both Webhook mode and continuous polling for updates.
+- **Machinimator Management Commands**: Provides commands and tools for managing machinimators.
 
 ## Requirements
 
