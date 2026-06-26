@@ -39,7 +39,7 @@ class AuthorDeleteScreen extends AbstractScreen
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
         $keyboard = \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
-            $this->translator,
+            $this->bot->getContainer()->get('translator'),
             $this->bot->getContainer()->get('author_service'),
             $page,
             3,
