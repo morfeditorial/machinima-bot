@@ -189,6 +189,16 @@ class MyBot extends tgLib
         return $this->container;
     }
 
+    public function getUserService() : \morfeditorial\services\UserService
+    {
+        return $this->container->get('user_service');
+    }
+
+    public function getUserStateService() : \morfeditorial\services\UserStateService
+    {
+        return $this->container->get('user_state_service');
+    }
+
     private function processMessage(array $message_data, ?string $message) : void
     {
         $command_data = null !== $message ? $this->parseCommand($message) : null;
