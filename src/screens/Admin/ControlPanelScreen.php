@@ -89,6 +89,6 @@ class ControlPanelScreen extends AbstractScreen
     public function handleMessage(string $text) : void
     {
         // Панель не чекає на текст
-        $this->bot->deleteMessage($this->chatId, $this->bot->getLastMessageId());
+        $this->bot->deleteMessage($this->chatId, $this->data['message_id'] ?? 0);
     }
 }
