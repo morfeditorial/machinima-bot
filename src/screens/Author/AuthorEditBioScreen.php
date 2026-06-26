@@ -85,7 +85,7 @@ class AuthorEditBioScreen extends AbstractScreen
         $authorStatus = $authorService->isPrivate($authorId);
 
         $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
-        $backCallback = $currentPage ? 'author:page:' . str_replace('page_', '', $currentPage) : 'admin:panel';
+        $backCallback = $currentPage ? $currentPage : 'admin:panel';
 
         $keyboard = [
             'inline_keyboard' => [

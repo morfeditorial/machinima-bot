@@ -36,6 +36,7 @@ class KeyboardHelper
         string $page_prefix = 'author:list:',
         ?array $authors = null
     ) : array {
+        $is_from_database = is_null($authors);
         $authors = $authors ?? $authorService->getAllAuthors();
         $total_buttons = count($authors);
         $total_pages = (int) ceil($total_buttons / $buttons_per_page);
@@ -67,7 +68,7 @@ class KeyboardHelper
             $keyboard['inline_keyboard'][] = $pagination;
         }
 
-        if (is_null($authors)) {
+        if ($is_from_database) {
             $keyboard['inline_keyboard'][] = [['text' => $translator->translate('go_back'), 'callback_data' => 'admin:panel']];
         }
 

@@ -57,7 +57,7 @@ class AuthorProfileScreen extends AbstractScreen
                         ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:delete_confirm:' . $authorId],
                     ],
                     [
-                        ['text' => $this->translate('go_back'), 'callback_data' => $currentPage ? 'author:page:' . str_replace('page_', '', $currentPage) : 'admin:panel'],
+                        ['text' => $this->translate('go_back'), 'callback_data' => $currentPage ? $currentPage : 'admin:panel'],
                     ],
                 ],
             ];
