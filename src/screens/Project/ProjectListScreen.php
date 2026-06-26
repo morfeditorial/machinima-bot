@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace morfeditorial\screens\Project;
@@ -7,7 +8,7 @@ use morfeditorial\screens\AbstractScreen;
 
 class ProjectListScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (!$this->isGranted('creator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));

@@ -1,15 +1,14 @@
 <?php
+
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\screens\AbstractScreen;
 
 class RoleRemoveScreen extends AbstractScreen
 {
-    public function render(): void
-    {
-    }
+    public function render() : void {}
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
         if (! $this->isGranted('admin')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -21,7 +20,7 @@ class RoleRemoveScreen extends AbstractScreen
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
         $current_panel = $user_service->getCurrentPanel($this->userId);
 
-        if ($action === 'select_child') {
+        if ('select_child' === $action) {
             $role_name = $params[0] ?? '';
             $children = $role_service->getChildren($role_name);
 
@@ -49,7 +48,7 @@ class RoleRemoveScreen extends AbstractScreen
 
                 $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('select_child_to_remove_message')), $keyboard);
             }
-        } elseif ($action === 'confirm_remove_child') {
+        } elseif ('confirm_remove_child' === $action) {
             $parent_name = $params[0] ?? '';
             $child_name = $params[1] ?? '';
 
@@ -90,7 +89,5 @@ class RoleRemoveScreen extends AbstractScreen
         }
     }
 
-    public function handleMessage(string $text): void
-    {
-    }
+    public function handleMessage(string $text) : void {}
 }

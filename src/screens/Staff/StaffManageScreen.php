@@ -1,4 +1,5 @@
 <?php
+
 namespace morfeditorial\screens\Staff;
 
 use morfeditorial\screens\AbstractScreen;
@@ -7,19 +8,19 @@ class StaffManageScreen extends AbstractScreen
 {
     private int $projectId;
 
-    public function setProjectId(int $projectId): self
+    public function setProjectId(int $projectId) : self
     {
         $this->projectId = $projectId;
         return $this;
     }
 
-    public function render(): void
+    public function render() : void
     {
         if (! $this->isGranted('creator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
             return;
         }
-        
+
         $content_service = $this->bot->getContainer()->get('content_service');
         $staff = $content_service->getStaffByContentId($this->projectId);
 
@@ -44,15 +45,15 @@ class StaffManageScreen extends AbstractScreen
         $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('manage_staff'), $keyboard);
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
-        if ($action === 'manage') {
+        if ('manage' === $action) {
             $this->projectId = isset($params[0]) ? (int) $params[0] : 0;
             $this->render();
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         // Not used
     }

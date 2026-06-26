@@ -1,11 +1,12 @@
 <?php
+
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\screens\AbstractScreen;
 
 class RoleCreateScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (! $this->isGranted('admin')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -28,7 +29,7 @@ class RoleCreateScreen extends AbstractScreen
         $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('enter_role_name_message'), $keyboard);
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
         if (! $this->isGranted('admin')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -40,7 +41,7 @@ class RoleCreateScreen extends AbstractScreen
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
         $current_panel = $user_service->getCurrentPanel($this->userId);
 
-        if ($action === 'confirm_parent') {
+        if ('confirm_parent' === $action) {
             $parent_name = $params[0] ?? '';
             $child_name = $params[1] ?? '';
 
@@ -81,7 +82,7 @@ class RoleCreateScreen extends AbstractScreen
             ];
 
             $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $message_text, $keyboard);
-        } elseif ($action === 'add_parent') {
+        } elseif ('add_parent' === $action) {
             $role_name = $params[0] ?? '';
             $all_roles = $role_service->getAllRolesSorted();
             $existing_parents = $role_service->getParents($role_name);
@@ -119,7 +120,7 @@ class RoleCreateScreen extends AbstractScreen
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         $user_state_service = $this->bot->getContainer()->get('user_state_service');
         $default_state = $user_state_service->getState($this->userId);
@@ -154,7 +155,7 @@ class RoleCreateScreen extends AbstractScreen
             ];
 
             $this->bot->sendMessage($this->chatId, str_replace('{role}', $text, $this->translate('role_created_redirect_message')));
-            
+
             $current_panel = $user_service->getCurrentPanel($this->userId);
             $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $text, $this->translate('select_parent_message')), $keyboard);
         }

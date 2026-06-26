@@ -1,15 +1,16 @@
 <?php
+
 namespace morfeditorial\screens\Main;
 
 use morfeditorial\screens\AbstractScreen;
 
 class MainMenuScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         $text = "🏠 <b>" . $this->translate('main_menu_title') . "</b>\n\n" .
                 $this->translate('main_menu_description');
-        
+
         $keyboard = [
             'inline_keyboard' => [
                 [
@@ -27,16 +28,16 @@ class MainMenuScreen extends AbstractScreen
         // $this->bot->editMediaMessage($this->chatId, ..., $text, $keyboard);
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
         // Якщо цей екран викликали напряму як 'main:menu'
         // То дія 'menu' просто має відмалювати його
-        if ($action === 'menu') {
+        if ('menu' === $action) {
             $this->render();
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         // Якщо користувач щось написав в головному меню, можемо або
         // показати меню ще раз, або просто ігнорувати

@@ -1,11 +1,12 @@
 <?php
+
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\screens\AbstractScreen;
 
 class RoleDeleteScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (! $this->isGranted('admin')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -16,7 +17,7 @@ class RoleDeleteScreen extends AbstractScreen
         $user_service = $this->bot->getContainer()->get('user_service');
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
         $current_panel = $user_service->getCurrentPanel($this->userId);
-        
+
         $all_roles = $role_service->getAllRolesSorted();
 
         $keyboard = ['inline_keyboard' => []];
@@ -34,7 +35,7 @@ class RoleDeleteScreen extends AbstractScreen
         $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('select_role_to_delete_message'), $keyboard);
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
         if (! $this->isGranted('admin')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -45,7 +46,7 @@ class RoleDeleteScreen extends AbstractScreen
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
         $current_panel = $user_service->getCurrentPanel($this->userId);
 
-        if ($action === 'confirm') {
+        if ('confirm' === $action) {
             $role_name = $params[0] ?? '';
 
             $keyboard = [
@@ -58,7 +59,7 @@ class RoleDeleteScreen extends AbstractScreen
             ];
 
             $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('confirm_delete_role_message')), $keyboard);
-        } elseif ($action === 'do_delete') {
+        } elseif ('do_delete' === $action) {
             $role_service = $this->bot->getContainer()->get('role_service');
             $role_name = $params[0] ?? '';
 
@@ -94,7 +95,5 @@ class RoleDeleteScreen extends AbstractScreen
         }
     }
 
-    public function handleMessage(string $text): void
-    {
-    }
+    public function handleMessage(string $text) : void {}
 }

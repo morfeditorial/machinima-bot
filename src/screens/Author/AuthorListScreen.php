@@ -1,11 +1,12 @@
 <?php
+
 namespace morfeditorial\screens\Author;
 
 use morfeditorial\screens\AbstractScreen;
 
 class AuthorListScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (!$this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -23,23 +24,23 @@ class AuthorListScreen extends AbstractScreen
         $keyboard = $this->bot->generateAuthorsKeyboard($page);
 
         $this->bot->editMediaMessage(
-            $this->chatId, 
-            $currentPanel, 
-            $visualsLinks[9], 
-            $this->translate('list_of_authors_message'), 
+            $this->chatId,
+            $currentPanel,
+            $visualsLinks[9],
+            $this->translate('list_of_authors_message'),
             $keyboard
         );
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
-        if ($action === 'list') {
+        if ('list' === $action) {
             $this->data['page'] = (int)($params[0] ?? 1);
             $this->render();
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         // Не чекаємо на текст
     }

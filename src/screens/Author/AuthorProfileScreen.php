@@ -1,11 +1,12 @@
 <?php
+
 namespace morfeditorial\screens\Author;
 
 use morfeditorial\screens\AbstractScreen;
 
 class AuthorProfileScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (!$this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -19,7 +20,7 @@ class AuthorProfileScreen extends AbstractScreen
         $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
-        if ($author !== false) {
+        if (false !== $author) {
             $authorStatus = $authorService->isPrivate($authorId);
             $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
 
@@ -72,15 +73,15 @@ class AuthorProfileScreen extends AbstractScreen
         $this->bot->editMediaMessage($this->chatId, $currentPanel, $visualsLinks[1], $this->translate('author_not_found_message'), $keyboard);
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
-        if ($action === 'profile') {
+        if ('profile' === $action) {
             $this->data['author_id'] = $params[0] ?? 0;
             $this->render();
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         // Не чекаємо тексту
     }

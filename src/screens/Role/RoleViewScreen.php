@@ -1,11 +1,12 @@
 <?php
+
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\screens\AbstractScreen;
 
 class RoleViewScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (! $this->isGranted('admin')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -16,7 +17,7 @@ class RoleViewScreen extends AbstractScreen
         $user_service = $this->bot->getContainer()->get('user_service');
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
         $current_panel = $user_service->getCurrentPanel($this->userId);
-        
+
         $all_roles = $role_service->getAllRolesSorted();
         $hierarchy = $role_service->getRoleHierarchy();
 
@@ -46,14 +47,14 @@ class RoleViewScreen extends AbstractScreen
         $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('role_hierarchy_message'), $keyboard);
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
         if (! $this->isGranted('admin')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        if ($action === 'show') {
+        if ('show' === $action) {
             $role_service = $this->bot->getContainer()->get('role_service');
             $user_service = $this->bot->getContainer()->get('user_service');
             $visuals_links = $this->bot->getContainer()->get('visuals_links');
@@ -102,7 +103,5 @@ class RoleViewScreen extends AbstractScreen
         }
     }
 
-    public function handleMessage(string $text): void
-    {
-    }
+    public function handleMessage(string $text) : void {}
 }

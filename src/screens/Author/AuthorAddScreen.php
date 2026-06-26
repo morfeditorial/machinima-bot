@@ -1,11 +1,12 @@
 <?php
+
 namespace morfeditorial\screens\Author;
 
 use morfeditorial\screens\AbstractScreen;
 
 class AuthorAddScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (!$this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -25,22 +26,22 @@ class AuthorAddScreen extends AbstractScreen
         ];
 
         $this->bot->editMediaMessage(
-            $this->chatId, 
-            $currentPanel, 
-            $visualsLinks[10], 
-            $this->translate('add_author_message'), 
+            $this->chatId,
+            $currentPanel,
+            $visualsLinks[10],
+            $this->translate('add_author_message'),
             $keyboard
         );
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
-        if ($action === 'add') {
+        if ('add' === $action) {
             $this->render();
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         if (!$this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -49,14 +50,14 @@ class AuthorAddScreen extends AbstractScreen
 
         $messageId = $this->data['message_id'];
         $this->bot->deleteMessage($this->chatId, $messageId);
-        
+
         $userStateService = $this->bot->getUserStateService();
         $userStateService->clearState($this->userId, 'default');
-        
+
         $authorService = $this->bot->getContainer()->get('author_service');
         $authorId = $authorService->createAuthor($text);
         $authorStatus = $authorService->isPrivate($authorId);
-        
+
         $keyboard = [
             'inline_keyboard' => [
                 [
@@ -80,10 +81,10 @@ class AuthorAddScreen extends AbstractScreen
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
         $this->bot->editMediaMessage(
-            $this->chatId, 
-            $currentPanel, 
-            $visualsLinks[2], 
-            str_replace('{author}', htmlspecialchars($text), $this->translate('author_added_message')), 
+            $this->chatId,
+            $currentPanel,
+            $visualsLinks[2],
+            str_replace('{author}', htmlspecialchars($text), $this->translate('author_added_message')),
             $keyboard
         );
     }

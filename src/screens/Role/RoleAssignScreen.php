@@ -1,15 +1,14 @@
 <?php
+
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\screens\AbstractScreen;
 
 class RoleAssignScreen extends AbstractScreen
 {
-    public function render(): void
-    {
-    }
+    public function render() : void {}
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
         if (! $this->isGranted('admin')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -21,7 +20,7 @@ class RoleAssignScreen extends AbstractScreen
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
         $current_panel = $user_service->getCurrentPanel($this->userId);
 
-        if ($action === 'ask_user') {
+        if ('ask_user' === $action) {
             $role_name = $params[0] ?? '';
             $user_state_service->setState($this->userId, ['role_name' => $role_name], 'awaiting_user_id_for_role');
 
@@ -37,7 +36,7 @@ class RoleAssignScreen extends AbstractScreen
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         $user_state_service = $this->bot->getContainer()->get('user_state_service');
         $state_data = $user_state_service->getState($this->userId, 'awaiting_user_id_for_role');

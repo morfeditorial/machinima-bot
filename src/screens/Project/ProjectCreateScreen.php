@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace morfeditorial\screens\Project;
@@ -7,7 +8,7 @@ use morfeditorial\screens\AbstractScreen;
 
 class ProjectCreateScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (!$this->isGranted('creator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -17,7 +18,7 @@ class ProjectCreateScreen extends AbstractScreen
         $user_state_service = $this->bot->getContainer()->get('user_state_service');
         $user_service = $this->bot->getContainer()->get('user_service');
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        
+
         $payload = $this->data['payload'] ?? null;
         $message = $this->data['message'] ?? null;
         $message_id = $this->data['message_id'] ?? null;
@@ -38,7 +39,7 @@ class ProjectCreateScreen extends AbstractScreen
 
         $default_state = $user_state_service->getState($this->userId);
 
-        if ($default_state === 'awaiting_project_title') {
+        if ('awaiting_project_title' === $default_state) {
             $this->bot->deleteMessage($this->chatId, $message_id);
             $user_state_service->clearState($this->userId, 'default');
             $user_state_service->setState($this->userId, ['title' => $message], 'awaiting_project_description');

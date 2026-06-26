@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace morfeditorial\screens\Project;
@@ -7,7 +8,7 @@ use morfeditorial\screens\AbstractScreen;
 
 class ProjectDeleteScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (!$this->isGranted('creator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -29,7 +30,7 @@ class ProjectDeleteScreen extends AbstractScreen
             return;
         }
 
-        if ($action === 'prompt') {
+        if ('prompt' === $action) {
             $project = $content_service->getContentById($project_id);
             if ($project) {
                 $keyboard = [
@@ -44,7 +45,7 @@ class ProjectDeleteScreen extends AbstractScreen
                 ];
                 $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{title}', htmlspecialchars($project['title']), $this->translate('confirm_delete_project_message')), $keyboard);
             }
-        } elseif ($action === 'confirm') {
+        } elseif ('confirm' === $action) {
             if ($content_service->deleteContent($project_id)) {
                 $this->bot->callbackAnswer($this->data['callback_query_id'] ?? '', $this->translate('project_deleted_message'));
             }

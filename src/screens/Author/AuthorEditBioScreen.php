@@ -1,11 +1,12 @@
 <?php
+
 namespace morfeditorial\screens\Author;
 
 use morfeditorial\screens\AbstractScreen;
 
 class AuthorEditBioScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (!$this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -15,7 +16,7 @@ class AuthorEditBioScreen extends AbstractScreen
         $authorId = (int)$this->data['author_id'];
         $authorService = $this->bot->getContainer()->get('author_service');
         $author = $authorService->getAuthorById($authorId);
-        
+
         $this->bot->getUserStateService()->setState($this->userId, ['author_id' => $authorId], 'set_author_about');
 
         $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
@@ -35,15 +36,15 @@ class AuthorEditBioScreen extends AbstractScreen
         $this->bot->editMediaMessage($this->chatId, $currentPanel, $visual, $text, $keyboard);
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
-        if ($action === 'edit_bio' || $action === 'set_about') {
+        if ('edit_bio' === $action || 'set_about' === $action) {
             $this->data['author_id'] = $params[0];
             $this->render();
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         if (!$this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -52,21 +53,21 @@ class AuthorEditBioScreen extends AbstractScreen
 
         $messageId = $this->data['message_id'];
         $this->bot->deleteMessage($this->chatId, $messageId);
-        
+
         $userStateService = $this->bot->getUserStateService();
         $state = $userStateService->getState($this->userId, 'set_author_about');
         $userStateService->clearState($this->userId, 'set_author_about');
-        
+
         $authorId = $state['author_id'];
         $authorService = $this->bot->getContainer()->get('author_service');
         $author = $authorService->getAuthorById($authorId);
-        
+
         $authorService->setBiography($authorId, $text);
         $authorStatus = $authorService->isPrivate($authorId);
-        
+
         $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
         $backCallback = $currentPage ? 'author:page:' . str_replace('page_', '', $currentPage) : 'admin:panel';
-        
+
         $keyboard = [
             'inline_keyboard' => [
                 [
@@ -90,12 +91,12 @@ class AuthorEditBioScreen extends AbstractScreen
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
         $successText = str_replace(
-            ['{author}', '{biography}', '{link}'], 
+            ['{author}', '{biography}', '{link}'],
             [
-                htmlspecialchars($author['name']), 
-                htmlspecialchars($text), 
+                htmlspecialchars($author['name']),
+                htmlspecialchars($text),
                 ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))
-            ], 
+            ],
             ($author['biography'] ? $this->translate('bio_changed_message') : $this->translate('bio_added_message'))
         );
 

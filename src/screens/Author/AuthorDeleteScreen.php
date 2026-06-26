@@ -1,11 +1,12 @@
 <?php
+
 namespace morfeditorial\screens\Author;
 
 use morfeditorial\screens\AbstractScreen;
 
 class AuthorDeleteScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (!$this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -23,40 +24,40 @@ class AuthorDeleteScreen extends AbstractScreen
         $this->bot->editMediaMessage($this->chatId, $currentPanel, $visualsLinks[1], $this->translate('delete_author_message'), $keyboard);
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
-        if ($action === 'delete') {
+        if ('delete' === $action) {
             $this->data['page'] = 1;
             $this->render();
-        } elseif ($action === 'delete_page') {
+        } elseif ('delete_page' === $action) {
             $this->data['page'] = (int)$params[0];
             $this->render();
-        } elseif ($action === 'to_delete') {
+        } elseif ('to_delete' === $action) {
             $this->confirmDelete((int)$params[0]);
-        } elseif ($action === 'delete_confirm' || $action === 'delete_confirmation') {
+        } elseif ('delete_confirm' === $action || 'delete_confirmation' === $action) {
             $this->doDelete((int)$params[0]);
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         // Не чекаємо тексту
     }
 
-    private function confirmDelete(int $authorId): void
+    private function confirmDelete(int $authorId) : void
     {
         if (!$this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
             return;
         }
-        
+
         $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
         $prefix = preg_match("/^delete_page_(\d+)$/", $currentPage ?? 'delete_page_1', $matches) ? 'author:delete_page:' . $matches[1] : 'author:profile:' . $authorId;
-        
+
         $authorService = $this->bot->getContainer()->get('author_service');
         $author = $authorService->getAuthorById($authorId);
 
-        if ($author === false) {
+        if (false === $author) {
             $this->bot->sendMessage($this->chatId, $this->translate('author_not_found_message'));
             return;
         }
@@ -76,15 +77,15 @@ class AuthorDeleteScreen extends AbstractScreen
         ];
 
         $this->bot->editMediaMessage(
-            $this->chatId, 
-            $currentPanel, 
-            $visualsLinks[1], 
-            str_replace('{author}', htmlspecialchars($author['name']), $this->translate('confirm_delete_message')), 
+            $this->chatId,
+            $currentPanel,
+            $visualsLinks[1],
+            str_replace('{author}', htmlspecialchars($author['name']), $this->translate('confirm_delete_message')),
             $keyboard
         );
     }
 
-    private function doDelete(int $authorId): void
+    private function doDelete(int $authorId) : void
     {
         if (!$this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -93,8 +94,8 @@ class AuthorDeleteScreen extends AbstractScreen
 
         $authorService = $this->bot->getContainer()->get('author_service');
         $author = $authorService->getAuthorById($authorId);
-        
-        if ($author === false) {
+
+        if (false === $author) {
             $this->bot->sendMessage($this->chatId, $this->translate('author_not_found_message'));
             return;
         }
@@ -116,10 +117,10 @@ class AuthorDeleteScreen extends AbstractScreen
         ];
 
         $this->bot->editMediaMessage(
-            $this->chatId, 
-            $currentPanel, 
-            $visualsLinks[1], 
-            str_replace('{author}', htmlspecialchars($author['name']), $this->translate('author_deleted_message')), 
+            $this->chatId,
+            $currentPanel,
+            $visualsLinks[1],
+            str_replace('{author}', htmlspecialchars($author['name']), $this->translate('author_deleted_message')),
             $keyboard
         );
     }

@@ -1,11 +1,12 @@
 <?php
+
 namespace morfeditorial\screens\Author;
 
 use morfeditorial\screens\AbstractScreen;
 
 class AuthorEditNameScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (!$this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -27,23 +28,23 @@ class AuthorEditNameScreen extends AbstractScreen
         ];
 
         $this->bot->editMediaMessage(
-            $this->chatId, 
-            $currentPanel, 
-            $visualsLinks[3], 
-            $this->translate('pending_name_change'), 
+            $this->chatId,
+            $currentPanel,
+            $visualsLinks[3],
+            $this->translate('pending_name_change'),
             $keyboard
         );
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
-        if ($action === 'change_name') {
+        if ('change_name' === $action) {
             $this->data['author_id'] = $params[0];
             $this->render();
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         if (!$this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -52,20 +53,20 @@ class AuthorEditNameScreen extends AbstractScreen
 
         $messageId = $this->data['message_id'];
         $this->bot->deleteMessage($this->chatId, $messageId);
-        
+
         $userStateService = $this->bot->getUserStateService();
         $state = $userStateService->getState($this->userId, 'change_name');
         $userStateService->clearState($this->userId, 'change_name');
-        
+
         $authorId = $state['author_id'];
         $authorService = $this->bot->getContainer()->get('author_service');
         $author = $authorService->getAuthorById($authorId);
-        
+
         $authorService->updateAuthorName($authorId, $text);
         $authorStatus = $authorService->isPrivate($authorId);
-        
+
         $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
-        
+
         $keyboard = [
             'inline_keyboard' => [
                 [
@@ -89,13 +90,13 @@ class AuthorEditNameScreen extends AbstractScreen
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
         $successText = str_replace(
-            ['{author}', '{oldName}', '{biography}', '{link}'], 
+            ['{author}', '{oldName}', '{biography}', '{link}'],
             [
-                htmlspecialchars($text), 
-                htmlspecialchars($author['name']), 
-                ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')), 
+                htmlspecialchars($text),
+                htmlspecialchars($author['name']),
+                ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')),
                 ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))
-            ], 
+            ],
             $this->translate('name_changed_message')
         );
 

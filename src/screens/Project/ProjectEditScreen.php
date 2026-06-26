@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace morfeditorial\screens\Project;
@@ -7,7 +8,7 @@ use morfeditorial\screens\AbstractScreen;
 
 class ProjectEditScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (!$this->isGranted('creator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -24,12 +25,12 @@ class ProjectEditScreen extends AbstractScreen
         $message_id = $this->data['message_id'] ?? null;
         $current_panel = $user_service->getCurrentPanel($this->userId);
 
-        if ($payload !== null && strpos($payload, 'project:edit') === 0) {
+        if (null !== $payload && 0 === strpos($payload, 'project:edit')) {
             $parsed = $this->parsePayload($payload);
             $project_id = isset($parsed['params'][0]) ? (int)$parsed['params'][0] : 0;
             $sub_action = isset($parsed['params'][1]) ? $parsed['params'][1] : null;
 
-            if ($sub_action === null) {
+            if (null === $sub_action) {
                 // Main edit menu
                 $project = $content_service->getContentById($project_id);
                 if ($project) {
@@ -54,7 +55,7 @@ class ProjectEditScreen extends AbstractScreen
                     $this->bot->editMediaMessage($this->chatId, $current_panel, $project['cover_file_id'] ?? $visuals_links[1], $this->translate('edit_project'), $keyboard);
                 }
                 return;
-            } elseif ($sub_action === 'field') {
+            } elseif ('field' === $sub_action) {
                 $field = $parsed['params'][2] ?? '';
                 if ('type' === $field) {
                     $keyboard = [
@@ -85,7 +86,7 @@ class ProjectEditScreen extends AbstractScreen
                     $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate($msg_key), $keyboard);
                 }
                 return;
-            } elseif ($sub_action === 'set_type') {
+            } elseif ('set_type' === $sub_action) {
                 $type = $parsed['params'][2] ?? '';
                 $content_service->updateContent($project_id, ['type' => $type]);
                 $this->bot->callbackAnswer($this->data['callback_query_id'] ?? '', $this->translate('project_updated_message'));
@@ -99,7 +100,7 @@ class ProjectEditScreen extends AbstractScreen
         if ($state_data = $user_state_service->getState($this->userId, 'editing_project_field')) {
             $this->bot->deleteMessage($this->chatId, $message_id);
             $user_state_service->clearState($this->userId, 'editing_project_field');
-            
+
             $project_id = $state_data['project_id'];
             $field = $state_data['field'];
             $value = $message;

@@ -1,11 +1,12 @@
 <?php
+
 namespace morfeditorial\screens\Admin;
 
 use morfeditorial\screens\AbstractScreen;
 
 class ControlPanelScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (!$this->isGranted('creator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -13,7 +14,7 @@ class ControlPanelScreen extends AbstractScreen
         }
 
         $this->bot->getUserStateService()->clearState($this->userId);
-        
+
         $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
         if (!is_null($currentPage)) {
             $this->bot->getUserService()->resetCurrentPage($this->userId);
@@ -51,22 +52,22 @@ class ControlPanelScreen extends AbstractScreen
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
         $this->bot->editMediaMessage(
-            $this->chatId, 
-            $currentPanel, 
-            $visualsLinks[1], 
-            $this->translate('admin_panel_message'), 
+            $this->chatId,
+            $currentPanel,
+            $visualsLinks[1],
+            $this->translate('admin_panel_message'),
             $keyboard
         );
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
-        if ($action === 'panel') {
+        if ('panel' === $action) {
             $this->render();
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         // Панель не чекає на текст
         $this->bot->deleteMessage($this->chatId, $this->bot->getLastMessageId());

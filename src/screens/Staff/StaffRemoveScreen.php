@@ -1,4 +1,5 @@
 <?php
+
 namespace morfeditorial\screens\Staff;
 
 use morfeditorial\screens\AbstractScreen;
@@ -10,31 +11,31 @@ class StaffRemoveScreen extends AbstractScreen
     private string $role;
     private bool $isConfirm = false;
 
-    public function setProjectId(int $projectId): self
+    public function setProjectId(int $projectId) : self
     {
         $this->projectId = $projectId;
         return $this;
     }
 
-    public function setAuthorId(int $authorId): self
+    public function setAuthorId(int $authorId) : self
     {
         $this->authorId = $authorId;
         return $this;
     }
 
-    public function setRole(string $role): self
+    public function setRole(string $role) : self
     {
         $this->role = $role;
         return $this;
     }
 
-    public function setConfirm(bool $isConfirm): self
+    public function setConfirm(bool $isConfirm) : self
     {
         $this->isConfirm = $isConfirm;
         return $this;
     }
 
-    public function render(): void
+    public function render() : void
     {
         if (! $this->isGranted('creator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -68,25 +69,25 @@ class StaffRemoveScreen extends AbstractScreen
         }
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
-        if ($action === 'remove') {
+        if ('remove' === $action) {
             $subAction = $params[0] ?? '';
             $this->projectId = isset($params[1]) ? (int) $params[1] : 0;
             $this->authorId = isset($params[2]) ? (int) $params[2] : 0;
             $this->role = isset($params[3]) ? base64_decode($params[3]) : '';
-            
-            if ($subAction === 'confirm') {
+
+            if ('confirm' === $subAction) {
                 $this->isConfirm = false; // Show confirm screen
                 $this->render();
-            } elseif ($subAction === 'execute') {
+            } elseif ('execute' === $subAction) {
                 $this->isConfirm = true; // Proceed to execute
                 $this->render();
             }
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         // Not used
     }

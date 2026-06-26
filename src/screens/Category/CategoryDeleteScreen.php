@@ -1,4 +1,5 @@
 <?php
+
 namespace morfeditorial\screens\Category;
 
 use morfeditorial\screens\AbstractScreen;
@@ -8,19 +9,19 @@ class CategoryDeleteScreen extends AbstractScreen
     private int $categoryId;
     private bool $isConfirm = false;
 
-    public function setCategoryId(int $categoryId): self
+    public function setCategoryId(int $categoryId) : self
     {
         $this->categoryId = $categoryId;
         return $this;
     }
 
-    public function setConfirm(bool $isConfirm): self
+    public function setConfirm(bool $isConfirm) : self
     {
         $this->isConfirm = $isConfirm;
         return $this;
     }
 
-    public function render(): void
+    public function render() : void
     {
         if (! $this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -58,25 +59,25 @@ class CategoryDeleteScreen extends AbstractScreen
         }
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
-        if ($action === 'delete') {
+        if ('delete' === $action) {
             $subAction = $params[0] ?? '';
             $categoryId = isset($params[1]) ? (int) $params[1] : 0;
-            
+
             $this->categoryId = $categoryId;
 
-            if ($subAction === 'confirm') {
+            if ('confirm' === $subAction) {
                 $this->isConfirm = true;
                 $this->render();
-            } elseif ($subAction === 'execute') {
+            } elseif ('execute' === $subAction) {
                 $this->isConfirm = false;
                 $this->render();
             }
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         // Not used
     }

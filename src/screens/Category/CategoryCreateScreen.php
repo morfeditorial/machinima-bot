@@ -1,4 +1,5 @@
 <?php
+
 namespace morfeditorial\screens\Category;
 
 use morfeditorial\screens\AbstractScreen;
@@ -7,13 +8,13 @@ class CategoryCreateScreen extends AbstractScreen
 {
     private ?int $parentId = null;
 
-    public function setParentId(?int $parentId): self
+    public function setParentId(?int $parentId) : self
     {
         $this->parentId = $parentId;
         return $this;
     }
 
-    public function render(): void
+    public function render() : void
     {
         if (! $this->isGranted('moderator')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -24,7 +25,7 @@ class CategoryCreateScreen extends AbstractScreen
         $user_state_service->setState($this->userId, ['parent_id' => $this->parentId], 'awaiting_category_name');
 
         $back_callback = $this->parentId ? $this->makePayload('category', 'manage', $this->parentId) : $this->makePayload('category', 'manage');
-        
+
         $keyboard = [
             'inline_keyboard' => [
                 [
@@ -40,20 +41,20 @@ class CategoryCreateScreen extends AbstractScreen
         $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('enter_category_name_message'), $keyboard);
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
-        if ($action === 'create') {
+        if ('create' === $action) {
             $subAction = $params[0] ?? '';
             $this->parentId = isset($params[1]) ? (int) $params[1] : null;
             $this->render();
         }
     }
 
-    public function handleMessage(string $text): void
+    public function handleMessage(string $text) : void
     {
         $user_state_service = $this->bot->getContainer()->get('user_state_service');
         $state_data = $user_state_service->getState($this->userId, 'awaiting_category_name');
-        
+
         if ($state_data) {
             $message_id = $this->data['message']['message_id'] ?? null;
             if ($message_id) {

@@ -1,11 +1,12 @@
 <?php
+
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\screens\AbstractScreen;
 
 class RoleControlScreen extends AbstractScreen
 {
-    public function render(): void
+    public function render() : void
     {
         if (! $this->isGranted('admin')) {
             $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
@@ -41,12 +42,10 @@ class RoleControlScreen extends AbstractScreen
         $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('access_control_panel_message'), $keyboard);
     }
 
-    public function handleCallback(string $action, array $params): void
+    public function handleCallback(string $action, array $params) : void
     {
         $this->render();
     }
 
-    public function handleMessage(string $text): void
-    {
-    }
+    public function handleMessage(string $text) : void {}
 }
