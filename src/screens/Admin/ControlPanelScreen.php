@@ -16,6 +16,7 @@
  *
  *
  */
+
 namespace morfeditorial\screens\Admin;
 
 use morfeditorial\screens\AbstractScreen;

@@ -16,6 +16,7 @@
  *
  *
  */
+
 namespace morfeditorial\screens;
 
 interface ScreenInterface
