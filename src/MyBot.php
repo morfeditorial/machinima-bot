@@ -341,8 +341,8 @@ class MyBot extends tgLib
         int $page_number = 1,
         int $buttons_per_page = 3,
         int $authors_per_row = 1,
-        string $prefix = 'author_',
-        string $page_prefix = 'page_',
+        string $prefix = 'author:profile:',
+        string $page_prefix = 'author:list:',
         ?array $authors = null
     ) : array {
         $is_from_database = is_null($authors);

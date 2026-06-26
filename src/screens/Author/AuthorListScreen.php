@@ -34,13 +34,13 @@ class AuthorListScreen extends AbstractScreen
 
         // Параметр сторінки приходить в $this->data['page'] (встановлюється в Диспетчері)
         $page = $this->data['page'] ?? 1;
-        $this->bot->getUserService()->setCurrentPage($this->userId, 'page_' . $page);
+        $this->bot->getUserService()->setCurrentPage($this->userId, 'author:list:' . $page);
 
         $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
         // Ми продовжуємо використовувати generateAuthorsKeyboard, але згодом його теж можна перенести
-        $keyboard = $this->bot->generateAuthorsKeyboard($page);
+        $keyboard = $this->bot->generateAuthorsKeyboard($page, 3, 1, 'author:profile:', 'author:list:');
 
         $this->bot->editMediaMessage(
             $this->chatId,
