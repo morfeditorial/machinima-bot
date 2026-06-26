@@ -1,5 +1,21 @@
 <?php
 
+/*
+ *
+ *    _______   _______    _______   _______
+ *   /       \/       \//       \//       \
+ *  /        //        ///        //      __/
+ * /         /         /        _/        _/
+ * \__/__/__/\________/\____/___/\_______/
+ *
+ * This program is licensed under the CSSM Unlimited License v2.0.
+ * Copyright (c) 2024 Serhii Cherneha
+ *
+ * @author CSSM Group
+ * @link https://cssm.pp.ua/
+ *
+ *
+ */
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\screens\AbstractScreen;
