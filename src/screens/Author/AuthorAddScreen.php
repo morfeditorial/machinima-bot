@@ -88,7 +88,7 @@ class AuthorAddScreen extends AbstractScreen
                     ['text' => $this->translate('add_link'), 'callback_data' => 'author:add_link:' . $authorId],
                 ],
                 [
-                    ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:delete_confirm:' . $authorId],
+                    ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
                 ],
                 [
                     ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
