@@ -368,7 +368,7 @@ class MyBot extends tgLib
         }
 
         if ($is_from_database) {
-            $keyboard['inline_keyboard'][] = [['text' => $this->translate('go_back'), 'callback_data' => 'control_panel']];
+            $keyboard['inline_keyboard'][] = [['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel']];
         }
 
         return $keyboard;

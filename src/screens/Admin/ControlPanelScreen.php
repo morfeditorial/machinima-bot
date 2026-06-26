@@ -63,7 +63,7 @@ class ControlPanelScreen extends AbstractScreen
 
         if ($this->isGranted('admin')) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('access_control'), 'callback_data' => 'access:control'],
+                ['text' => $this->translate('access_control'), 'callback_data' => 'role:control'],
             ];
         }
 

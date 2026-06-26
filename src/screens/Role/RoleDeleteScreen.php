@@ -99,7 +99,7 @@ class RoleDeleteScreen extends AbstractScreen
                             ['text' => $this->translate('view_roles'), 'callback_data' => $this->makePayload('role', 'view')],
                         ],
                         [
-                            ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
+                            ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
                         ],
                     ],
                 ];

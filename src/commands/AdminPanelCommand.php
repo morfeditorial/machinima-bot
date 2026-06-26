@@ -74,27 +74,27 @@ class AdminPanelCommand extends AbstractCommand
 
         if ($this->isGranted('moderator')) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('add_author'), 'callback_data' => 'add_author'],
-                ['text' => $this->translate('delete_author'), 'callback_data' => 'delete_author'],
+                ['text' => $this->translate('add_author'), 'callback_data' => 'author:add'],
+                ['text' => $this->translate('delete_author'), 'callback_data' => 'author:delete'],
             ];
         }
 
         $project_row = [];
-        $project_row[] = ['text' => $this->translate('manage_projects'), 'callback_data' => 'manage_projects'];
+        $project_row[] = ['text' => $this->translate('manage_projects'), 'callback_data' => 'project:manage'];
         if ($this->isGranted('moderator')) {
-            $project_row[] = ['text' => $this->translate('manage_categories'), 'callback_data' => 'manage_categories'];
+            $project_row[] = ['text' => $this->translate('manage_categories'), 'callback_data' => 'category:manage'];
         }
         $keyboard['inline_keyboard'][] = $project_row;
 
         if ($this->isGranted('moderator')) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('list_of_authors'), 'callback_data' => 'list_of_authors'],
+                ['text' => $this->translate('list_of_authors'), 'callback_data' => 'author:list:1'],
             ];
         }
 
         if ($this->isGranted('admin')) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('access_control'), 'callback_data' => 'access_control'],
+                ['text' => $this->translate('access_control'), 'callback_data' => 'role:control'],
             ];
         }
 

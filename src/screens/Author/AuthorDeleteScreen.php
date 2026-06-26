@@ -121,7 +121,7 @@ class AuthorDeleteScreen extends AbstractScreen
 
         $this->bot->deleteAuthor($authorId);
 
-        $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId) ?? 'control_panel';
+        $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId) ?? 'admin:panel';
         $backCallback = preg_match("/^delete_page_(\d+)$/", $currentPage, $matches) ? 'author:delete_page:' . $matches[1] : 'admin:panel';
 
         $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);

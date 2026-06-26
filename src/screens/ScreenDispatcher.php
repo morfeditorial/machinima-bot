@@ -42,6 +42,9 @@ class ScreenDispatcher
         'author:change_name' => \morfeditorial\screens\Author\AuthorEditNameScreen::class,
         'author:set_about' => \morfeditorial\screens\Author\AuthorEditBioScreen::class,
         'author:add_link' => \morfeditorial\screens\Author\AuthorEditLinkScreen::class,
+        'author:delete' => \morfeditorial\screens\Author\AuthorDeleteScreen::class,
+        'author:delete_page' => \morfeditorial\screens\Author\AuthorDeleteScreen::class,
+        'author:to_delete' => \morfeditorial\screens\Author\AuthorDeleteScreen::class,
         'author:delete_confirm' => \morfeditorial\screens\Author\AuthorDeleteScreen::class,
         'author:set_private' => \morfeditorial\screens\Author\AuthorProfileScreen::class,
 

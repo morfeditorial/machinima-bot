@@ -77,7 +77,7 @@ class ProjectListScreen extends AbstractScreen
             ['text' => $this->translate('add_project'), 'callback_data' => $this->makePayload('project', 'create')],
         ];
         $keyboard['inline_keyboard'][] = [
-            ['text' => $this->translate('go_back'), 'callback_data' => 'control_panel'],
+            ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
         ];
 
         $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('manage_projects'), $keyboard);

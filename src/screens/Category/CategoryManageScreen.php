@@ -62,7 +62,7 @@ class CategoryManageScreen extends AbstractScreen
         } else {
             $add_callback = $this->makePayload('category', 'create', 'main');
             $add_text = 'add_category';
-            $back_callback = 'control_panel';
+            $back_callback = 'admin:panel';
         }
 
         $keyboard['inline_keyboard'][] = [
