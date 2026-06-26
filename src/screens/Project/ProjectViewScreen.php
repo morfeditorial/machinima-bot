@@ -97,4 +97,17 @@ class ProjectViewScreen extends AbstractScreen
             }
         }
     }
+
+    public function handleCallback(string $action, array $params) : void
+    {
+        if ('view' === $action) {
+            $this->data['payload'] = $this->makePayload('project', 'view', $params[0] ?? '0');
+            $this->render();
+        }
+    }
+
+    public function handleMessage(string $text) : void
+    {
+        // Не чекаємо тексту
+    }
 }

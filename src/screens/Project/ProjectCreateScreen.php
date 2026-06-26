@@ -36,23 +36,39 @@ class ProjectCreateScreen extends AbstractScreen
         $user_service = $this->bot->getContainer()->get('user_service');
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
 
-        $payload = $this->data['payload'] ?? null;
+        $current_panel = $user_service->getCurrentPanel($this->userId);
+
+        $user_state_service->setState($this->userId, 'awaiting_project_title');
+        $keyboard = [
+            'inline_keyboard' => [
+                [
+                    ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('project', 'list')],
+                ],
+            ],
+        ];
+        $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('enter_project_title_message'), $keyboard);
+    }
+
+    public function handleCallback(string $action, array $params) : void
+    {
+        if ('create' === $action) {
+            $this->render();
+        }
+    }
+
+    public function handleMessage(string $text) : void
+    {
+        if (!$this->isGranted('creator')) {
+            return;
+        }
+
+        $user_state_service = $this->bot->getContainer()->get('user_state_service');
+        $user_service = $this->bot->getContainer()->get('user_service');
+        $visuals_links = $this->bot->getContainer()->get('visuals_links');
+
         $message = $this->data['message'] ?? null;
         $message_id = $this->data['message_id'] ?? null;
         $current_panel = $user_service->getCurrentPanel($this->userId);
-
-        if ($payload === $this->makePayload('project', 'create')) {
-            $user_state_service->setState($this->userId, 'awaiting_project_title');
-            $keyboard = [
-                'inline_keyboard' => [
-                    [
-                        ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('project', 'list')],
-                    ],
-                ],
-            ];
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('enter_project_title_message'), $keyboard);
-            return;
-        }
 
         $default_state = $user_state_service->getState($this->userId);
 

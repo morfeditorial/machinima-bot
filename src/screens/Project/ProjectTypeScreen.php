@@ -55,4 +55,17 @@ class ProjectTypeScreen extends AbstractScreen
             $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('enter_project_description_message'), $keyboard);
         }
     }
+
+    public function handleCallback(string $action, array $params) : void
+    {
+        if ('set_type' === $action) {
+            $this->data['payload'] = $this->makePayload('project', 'set_type', $params[0] ?? '');
+            $this->render();
+        }
+    }
+
+    public function handleMessage(string $text) : void
+    {
+        // Не чекаємо тексту
+    }
 }

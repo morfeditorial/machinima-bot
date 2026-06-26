@@ -82,4 +82,17 @@ class ProjectListScreen extends AbstractScreen
 
         $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('manage_projects'), $keyboard);
     }
+
+    public function handleCallback(string $action, array $params) : void
+    {
+        if ('list' === $action) {
+            $this->data['payload'] = $this->makePayload('project', 'list', $params[0] ?? '1');
+            $this->render();
+        }
+    }
+
+    public function handleMessage(string $text) : void
+    {
+        // Не чекаємо тексту
+    }
 }

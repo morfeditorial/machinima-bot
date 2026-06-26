@@ -33,47 +33,58 @@ class ProjectEditScreen extends AbstractScreen
         }
 
         $user_service = $this->bot->getContainer()->get('user_service');
+        $content_service = $this->bot->getContainer()->get('content_service');
+        $visuals_links = $this->bot->getContainer()->get('visuals_links');
+        
+        $current_panel = $user_service->getCurrentPanel($this->userId);
+        $project_id = $this->data['project_id'] ?? 0;
+
+        $project = $content_service->getContentById($project_id);
+        if ($project) {
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('edit_title'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'title')],
+                        ['text' => $this->translate('edit_type'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'type')],
+                    ],
+                    [
+                        ['text' => $this->translate('edit_description'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'description')],
+                        ['text' => $this->translate('edit_url'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'url')],
+                    ],
+                    [
+                        ['text' => $this->translate('edit_cover'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'cover')],
+                    ],
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('project', 'view', (string)$project_id)],
+                    ],
+                ],
+            ];
+            $this->bot->editMediaMessage($this->chatId, $current_panel, $project['cover_file_id'] ?? $visuals_links[1], $this->translate('edit_project'), $keyboard);
+        }
+    }
+
+    public function handleCallback(string $action, array $params) : void
+    {
+        if (!$this->isGranted('creator')) {
+            return;
+        }
+
+        $user_service = $this->bot->getContainer()->get('user_service');
         $user_state_service = $this->bot->getContainer()->get('user_state_service');
         $content_service = $this->bot->getContainer()->get('content_service');
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
-
-        $payload = $this->data['payload'] ?? null;
-        $message = $this->data['message'] ?? null;
-        $message_id = $this->data['message_id'] ?? null;
+        
         $current_panel = $user_service->getCurrentPanel($this->userId);
-
-        if (null !== $payload && 0 === strpos($payload, 'project:edit')) {
-            $parsed = $this->parsePayload($payload);
-            $project_id = isset($parsed['params'][0]) ? (int)$parsed['params'][0] : 0;
-            $sub_action = isset($parsed['params'][1]) ? $parsed['params'][1] : null;
+        
+        if ('edit' === $action) {
+            $project_id = isset($params[0]) ? (int)$params[0] : 0;
+            $sub_action = isset($params[1]) ? $params[1] : null;
 
             if (null === $sub_action) {
-                // Main edit menu
-                $project = $content_service->getContentById($project_id);
-                if ($project) {
-                    $keyboard = [
-                        'inline_keyboard' => [
-                            [
-                                ['text' => $this->translate('edit_title'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'title')],
-                                ['text' => $this->translate('edit_type'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'type')],
-                            ],
-                            [
-                                ['text' => $this->translate('edit_description'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'description')],
-                                ['text' => $this->translate('edit_url'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'url')],
-                            ],
-                            [
-                                ['text' => $this->translate('edit_cover'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'cover')],
-                            ],
-                            [
-                                ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('project', 'view', (string)$project_id)],
-                            ],
-                        ],
-                    ];
-                    $this->bot->editMediaMessage($this->chatId, $current_panel, $project['cover_file_id'] ?? $visuals_links[1], $this->translate('edit_project'), $keyboard);
-                }
-                return;
+                $this->data['project_id'] = $project_id;
+                $this->render();
             } elseif ('field' === $sub_action) {
-                $field = $parsed['params'][2] ?? '';
+                $field = $params[2] ?? '';
                 if ('type' === $field) {
                     $keyboard = [
                         'inline_keyboard' => [
@@ -102,25 +113,35 @@ class ProjectEditScreen extends AbstractScreen
                     ];
                     $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate($msg_key), $keyboard);
                 }
-                return;
             } elseif ('set_type' === $sub_action) {
-                $type = $parsed['params'][2] ?? '';
+                $type = $params[2] ?? '';
                 $content_service->updateContent($project_id, ['type' => $type]);
                 $this->bot->callbackAnswer($this->data['callback_query_id'] ?? '', $this->translate('project_updated_message'));
-                $this->data['payload'] = $this->makePayload('project', 'edit', (string)$project_id);
-                $this->render(); // recursive call
-                return;
+                
+                $this->data['project_id'] = $project_id;
+                $this->render();
             }
         }
+    }
 
-        // Handle state
+    public function handleMessage(string $text) : void
+    {
+        if (!$this->isGranted('creator')) {
+            return;
+        }
+
+        $user_state_service = $this->bot->getContainer()->get('user_state_service');
+        $content_service = $this->bot->getContainer()->get('content_service');
+        
+        $message_id = $this->data['message_id'] ?? null;
+        
         if ($state_data = $user_state_service->getState($this->userId, 'editing_project_field')) {
             $this->bot->deleteMessage($this->chatId, $message_id);
             $user_state_service->clearState($this->userId, 'editing_project_field');
 
             $project_id = $state_data['project_id'];
             $field = $state_data['field'];
-            $value = $message;
+            $value = $text;
 
             if ('cover' === $field) {
                 $photo = $this->data['photo'] ?? null;
@@ -134,8 +155,8 @@ class ProjectEditScreen extends AbstractScreen
             $content_service->updateContent($project_id, [$field => $value]);
             $this->bot->sendMessage($this->chatId, $this->translate('project_updated_message'));
 
-            $this->data['payload'] = $this->makePayload('project', 'edit', (string)$project_id);
-            $this->render(); // recursive call
+            $this->data['project_id'] = $project_id;
+            $this->render();
         }
     }
 }

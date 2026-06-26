@@ -83,4 +83,9 @@ class ProjectDeleteScreen extends AbstractScreen
             $screen->render();
         }
     }
+
+    public function handleMessage(string $text) : void
+    {
+        // Не чекаємо тексту
+    }
 }
