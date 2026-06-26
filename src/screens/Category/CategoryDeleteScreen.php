@@ -64,9 +64,6 @@ class CategoryDeleteScreen extends AbstractScreen
             ];
             $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{name}', 'ID ' . $this->categoryId, $this->translate('confirm_delete_category_message')), $keyboard);
         } else {
-            // Execute deletion
-            $this->bot->getContainer()->get('content_service')->db->executeStatement('DELETE FROM categories WHERE id = ?', [$this->categoryId]);
-
             $keyboard = [
                 'inline_keyboard' => [
                     [
@@ -90,6 +87,11 @@ class CategoryDeleteScreen extends AbstractScreen
                 $this->isConfirm = true;
                 $this->render();
             } elseif ('execute' === $subAction) {
+                // Execute deletion here in the controller
+                if ($this->isGranted('moderator')) {
+                    $this->bot->getContainer()->get('content_service')->db->executeStatement('DELETE FROM categories WHERE id = ?', [$this->categoryId]);
+                }
+
                 $this->isConfirm = false;
                 $this->render();
             }
