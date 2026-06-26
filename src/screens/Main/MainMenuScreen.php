@@ -17,6 +17,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace morfeditorial\screens\Main;
 
 use morfeditorial\screens\AbstractScreen;
