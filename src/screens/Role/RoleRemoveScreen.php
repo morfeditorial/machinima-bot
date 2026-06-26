@@ -101,35 +101,39 @@ class RoleRemoveScreen extends AbstractScreen
 
         $role_service = $this->bot->getContainer()->get('role_service');
 
-        if ('select_child' === $action) {
-            $role_name = $params[0] ?? '';
-            $children = $role_service->getChildren($role_name);
+        if ('remove' === $action) {
+            $subAction = $params[0] ?? '';
 
-            $callback_query_id = $this->data['callback_query_id'] ?? null;
+            if ('select_child' === $subAction) {
+                $role_name = $params[1] ?? '';
+                $children = $role_service->getChildren($role_name);
 
-            if (empty($children)) {
-                if ($callback_query_id) {
-                    $this->bot->callbackAnswer($callback_query_id, $this->translate('no_children_message'));
+                $callback_query_id = $this->data['callback_query_id'] ?? null;
+
+                if (empty($children)) {
+                    if ($callback_query_id) {
+                        $this->bot->callbackAnswer($callback_query_id, $this->translate('no_children_message'));
+                    }
+                } else {
+                    $this->data['render_type'] = 'select_child';
+                    $this->data['role_name'] = $role_name;
+                    $this->data['children'] = $children;
+                    $this->render();
                 }
-            } else {
-                $this->data['render_type'] = 'select_child';
-                $this->data['role_name'] = $role_name;
-                $this->data['children'] = $children;
+            } elseif ('confirm_remove_child' === $subAction) {
+                $parent_name = $params[1] ?? '';
+                $child_name = $params[2] ?? '';
+
+                $role_service->removeParentChild($parent_name, $child_name);
+                $callback_query_id = $this->data['callback_query_id'] ?? null;
+                if ($callback_query_id) {
+                    $this->bot->callbackAnswer($callback_query_id, str_replace(['{parent}', '{child}'], [$parent_name, $child_name], $this->translate('child_removed_message')));
+                }
+
+                $this->data['render_type'] = 'confirm_remove_child';
+                $this->data['parent_name'] = $parent_name;
                 $this->render();
             }
-        } elseif ('confirm_remove_child' === $action) {
-            $parent_name = $params[0] ?? '';
-            $child_name = $params[1] ?? '';
-
-            $role_service->removeParentChild($parent_name, $child_name);
-            $callback_query_id = $this->data['callback_query_id'] ?? null;
-            if ($callback_query_id) {
-                $this->bot->callbackAnswer($callback_query_id, str_replace(['{parent}', '{child}'], [$parent_name, $child_name], $this->translate('child_removed_message')));
-            }
-
-            $this->data['render_type'] = 'confirm_remove_child';
-            $this->data['parent_name'] = $parent_name;
-            $this->render();
         }
     }
 

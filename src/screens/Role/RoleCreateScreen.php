@@ -60,82 +60,86 @@ class RoleCreateScreen extends AbstractScreen
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
         $current_panel = $user_service->getCurrentPanel($this->userId);
 
-        if ('confirm_parent' === $action) {
-            $parent_name = $params[0] ?? '';
-            $child_name = $params[1] ?? '';
+        if ('create' === $action) {
+            $subAction = $params[0] ?? '';
 
-            $role_service->addParentChild($parent_name, $child_name);
-            $callback_query_id = $this->data['callback_query_id'] ?? null;
-            if ($callback_query_id) {
-                $this->bot->callbackAnswer($callback_query_id, str_replace(['{parent}', '{child}'], [$parent_name, $child_name], $this->translate('parent_added_message')));
-            }
+            if ('confirm_parent' === $subAction) {
+                $parent_name = $params[1] ?? '';
+                $child_name = $params[2] ?? '';
 
-            // Refresh to role detail panel
-            $parents = $role_service->getParents($child_name);
-            $children = $role_service->getChildren($child_name);
-            $parents_text = ! empty($parents) ? implode(', ', array_column($parents, 'role_name')) : "\u{2014}";
-            $children_text = ! empty($children) ? implode(', ', array_column($children, 'role_name')) : "\u{2014}";
-
-            $message_text = str_replace(
-                ['{role}', '{parents}', '{children}'],
-                [$child_name, $parents_text, $children_text],
-                $this->translate('role_detail_message')
-            );
-
-            $keyboard = [
-                'inline_keyboard' => [
-                    [
-                        ['text' => $this->translate('add_parent'), 'callback_data' => $this->makePayload('role', 'create', 'add_parent', $child_name)],
-                        ['text' => $this->translate('remove_child'), 'callback_data' => $this->makePayload('role', 'remove', 'select_child', $child_name)],
-                    ],
-                    [
-                        ['text' => $this->translate('assign_role_to_user'), 'callback_data' => $this->makePayload('role', 'assign', 'ask_user', $child_name)],
-                    ],
-                    [
-                        ['text' => $this->translate('delete_this_role'), 'callback_data' => $this->makePayload('role', 'delete', 'confirm', $child_name)],
-                    ],
-                    [
-                        ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'view')],
-                    ],
-                ],
-            ];
-
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $message_text, $keyboard);
-        } elseif ('add_parent' === $action) {
-            $role_name = $params[0] ?? '';
-            $all_roles = $role_service->getAllRolesSorted();
-            $existing_parents = $role_service->getParents($role_name);
-            $existing_parent_names = array_column($existing_parents, 'role_name');
-
-            $keyboard = ['inline_keyboard' => []];
-
-            foreach ($all_roles as $role) {
-                if ($role['role_name'] === $role_name || in_array($role['role_name'], $existing_parent_names, true)) {
-                    continue;
+                $role_service->addParentChild($parent_name, $child_name);
+                $callback_query_id = $this->data['callback_query_id'] ?? null;
+                if ($callback_query_id) {
+                    $this->bot->callbackAnswer($callback_query_id, str_replace(['{parent}', '{child}'], [$parent_name, $child_name], $this->translate('parent_added_message')));
                 }
 
-                $children = $role_service->getChildren($role['role_name']);
+                // Refresh to role detail panel
+                $parents = $role_service->getParents($child_name);
+                $children = $role_service->getChildren($child_name);
+                $parents_text = ! empty($parents) ? implode(', ', array_column($parents, 'role_name')) : "\u{2014}";
                 $children_text = ! empty($children) ? implode(', ', array_column($children, 'role_name')) : "\u{2014}";
 
-                $keyboard['inline_keyboard'][] = [
-                    [
-                        'text' => $role['role_name'],
-                        'callback_data' => $this->makePayload('role', 'create', 'confirm_parent', $role['role_name'], $role_name),
-                    ],
-                    [
-                        'text' => $children_text,
-                        'callback_data' => $this->makePayload('role', 'create', 'confirm_parent', $role['role_name'], $role_name),
+                $message_text = str_replace(
+                    ['{role}', '{parents}', '{children}'],
+                    [$child_name, $parents_text, $children_text],
+                    $this->translate('role_detail_message')
+                );
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('add_parent'), 'callback_data' => $this->makePayload('role', 'create', 'add_parent', $child_name)],
+                            ['text' => $this->translate('remove_child'), 'callback_data' => $this->makePayload('role', 'remove', 'select_child', $child_name)],
+                        ],
+                        [
+                            ['text' => $this->translate('assign_role_to_user'), 'callback_data' => $this->makePayload('role', 'assign', 'ask_user', $child_name)],
+                        ],
+                        [
+                            ['text' => $this->translate('delete_this_role'), 'callback_data' => $this->makePayload('role', 'delete', 'confirm', $child_name)],
+                        ],
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'view')],
+                        ],
                     ],
                 ];
+
+                $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $message_text, $keyboard);
+            } elseif ('add_parent' === $subAction) {
+                $role_name = $params[1] ?? '';
+                $all_roles = $role_service->getAllRolesSorted();
+                $existing_parents = $role_service->getParents($role_name);
+                $existing_parent_names = array_column($existing_parents, 'role_name');
+
+                $keyboard = ['inline_keyboard' => []];
+
+                foreach ($all_roles as $role) {
+                    if ($role['role_name'] === $role_name || in_array($role['role_name'], $existing_parent_names, true)) {
+                        continue;
+                    }
+
+                    $children = $role_service->getChildren($role['role_name']);
+                    $children_text = ! empty($children) ? implode(', ', array_column($children, 'role_name')) : "\u{2014}";
+
+                    $keyboard['inline_keyboard'][] = [
+                        [
+                            'text' => $role['role_name'],
+                            'callback_data' => $this->makePayload('role', 'create', 'confirm_parent', $role['role_name'], $role_name),
+                        ],
+                        [
+                            'text' => $children_text,
+                            'callback_data' => $this->makePayload('role', 'create', 'confirm_parent', $role['role_name'], $role_name),
+                        ],
+                    ];
+                }
+
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'view', 'show', $role_name)],
+                ];
+
+                $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('select_parent_message')), $keyboard);
+            } else {
+                $this->render();
             }
-
-            $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'view', 'show', $role_name)],
-            ];
-
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('select_parent_message')), $keyboard);
-        } else {
-            $this->render();
         }
     }
 

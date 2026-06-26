@@ -56,12 +56,15 @@ class RoleAssignScreen extends AbstractScreen
 
         $user_state_service = $this->bot->getContainer()->get('user_state_service');
 
-        if ('ask_user' === $action) {
-            $role_name = $params[0] ?? '';
-            $user_state_service->setState($this->userId, ['role_name' => $role_name], 'awaiting_user_id_for_role');
+        if ('assign' === $action) {
+            $subAction = $params[0] ?? '';
+            if ('ask_user' === $subAction) {
+                $role_name = $params[1] ?? '';
+                $user_state_service->setState($this->userId, ['role_name' => $role_name], 'awaiting_user_id_for_role');
 
-            $this->data['role_name'] = $role_name;
-            $this->render();
+                $this->data['role_name'] = $role_name;
+                $this->render();
+            }
         }
     }
 

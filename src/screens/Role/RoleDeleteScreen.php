@@ -65,52 +65,56 @@ class RoleDeleteScreen extends AbstractScreen
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
         $current_panel = $user_service->getCurrentPanel($this->userId);
 
-        if ('confirm' === $action) {
-            $role_name = $params[0] ?? '';
+        if ('delete' === $action) {
+            $subAction = $params[0] ?? '';
 
-            $keyboard = [
-                'inline_keyboard' => [
-                    [
-                        ['text' => $this->translate('confirm_yes'), 'callback_data' => $this->makePayload('role', 'delete', 'do_delete', $role_name)],
-                        ['text' => $this->translate('confirm_no'), 'callback_data' => $this->makePayload('role', 'view')],
-                    ],
-                ],
-            ];
+            if ('confirm' === $subAction) {
+                $role_name = $params[1] ?? '';
 
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('confirm_delete_role_message')), $keyboard);
-        } elseif ('do_delete' === $action) {
-            $role_service = $this->bot->getContainer()->get('role_service');
-            $role_name = $params[0] ?? '';
-
-            $callback_query_id = $this->data['callback_query_id'] ?? null;
-            if ($role_service->deleteRole($role_name)) {
-                if ($callback_query_id) {
-                    $this->bot->callbackAnswer($callback_query_id, str_replace('{role}', $role_name, $this->translate('role_deleted_message')));
-                }
-
-                // Refresh to access control panel
                 $keyboard = [
                     'inline_keyboard' => [
                         [
-                            ['text' => $this->translate('create_role'), 'callback_data' => $this->makePayload('role', 'create')],
-                            ['text' => $this->translate('delete_role'), 'callback_data' => $this->makePayload('role', 'delete')],
-                        ],
-                        [
-                            ['text' => $this->translate('view_roles'), 'callback_data' => $this->makePayload('role', 'view')],
-                        ],
-                        [
-                            ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
+                            ['text' => $this->translate('confirm_yes'), 'callback_data' => $this->makePayload('role', 'delete', 'do_delete', $role_name)],
+                            ['text' => $this->translate('confirm_no'), 'callback_data' => $this->makePayload('role', 'view')],
                         ],
                     ],
                 ];
-                $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('access_control_panel_message'), $keyboard);
-            } else {
-                if ($callback_query_id) {
-                    $this->bot->callbackAnswer($callback_query_id, $this->translate('delete_role_failure_message'));
+
+                $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('confirm_delete_role_message')), $keyboard);
+            } elseif ('do_delete' === $subAction) {
+                $role_service = $this->bot->getContainer()->get('role_service');
+                $role_name = $params[1] ?? '';
+
+                $callback_query_id = $this->data['callback_query_id'] ?? null;
+                if ($role_service->deleteRole($role_name)) {
+                    if ($callback_query_id) {
+                        $this->bot->callbackAnswer($callback_query_id, str_replace('{role}', $role_name, $this->translate('role_deleted_message')));
+                    }
+
+                    // Refresh to access control panel
+                    $keyboard = [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => $this->translate('create_role'), 'callback_data' => $this->makePayload('role', 'create')],
+                                ['text' => $this->translate('delete_role'), 'callback_data' => $this->makePayload('role', 'delete')],
+                            ],
+                            [
+                                ['text' => $this->translate('view_roles'), 'callback_data' => $this->makePayload('role', 'view')],
+                            ],
+                            [
+                                ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
+                            ],
+                        ],
+                    ];
+                    $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('access_control_panel_message'), $keyboard);
+                } else {
+                    if ($callback_query_id) {
+                        $this->bot->callbackAnswer($callback_query_id, $this->translate('delete_role_failure_message'));
+                    }
                 }
+            } else {
+                $this->render();
             }
-        } else {
-            $this->render();
         }
     }
 
