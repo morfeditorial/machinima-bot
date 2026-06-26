@@ -1,0 +1,126 @@
+<?php
+namespace morfeditorial\screens\Author;
+
+use morfeditorial\screens\AbstractScreen;
+
+class AuthorDeleteScreen extends AbstractScreen
+{
+    public function render(): void
+    {
+        if (!$this->isGranted('moderator')) {
+            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            return;
+        }
+
+        $page = (int)($this->data['page'] ?? 1);
+        $this->bot->getUserService()->setCurrentPage($this->userId, 'delete_page_' . $page);
+
+        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
+        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+
+        $keyboard = $this->bot->generateAuthorsKeyboard($page, 3, 1, 'author:to_delete:', 'author:delete_page:');
+
+        $this->bot->editMediaMessage($this->chatId, $currentPanel, $visualsLinks[1], $this->translate('delete_author_message'), $keyboard);
+    }
+
+    public function handleCallback(string $action, array $params): void
+    {
+        if ($action === 'delete') {
+            $this->data['page'] = 1;
+            $this->render();
+        } elseif ($action === 'delete_page') {
+            $this->data['page'] = (int)$params[0];
+            $this->render();
+        } elseif ($action === 'to_delete') {
+            $this->confirmDelete((int)$params[0]);
+        } elseif ($action === 'delete_confirm' || $action === 'delete_confirmation') {
+            $this->doDelete((int)$params[0]);
+        }
+    }
+
+    public function handleMessage(string $text): void
+    {
+        // Не чекаємо тексту
+    }
+
+    private function confirmDelete(int $authorId): void
+    {
+        if (!$this->isGranted('moderator')) {
+            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            return;
+        }
+        
+        $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
+        $prefix = preg_match("/^delete_page_(\d+)$/", $currentPage ?? 'delete_page_1', $matches) ? 'author:delete_page:' . $matches[1] : 'author:profile:' . $authorId;
+        
+        $authorService = $this->bot->getContainer()->get('author_service');
+        $author = $authorService->getAuthorById($authorId);
+
+        if ($author === false) {
+            $this->bot->sendMessage($this->chatId, $this->translate('author_not_found_message'));
+            return;
+        }
+
+        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
+        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+
+        $keyboard = [
+            'inline_keyboard' => [
+                [
+                    ['text' => $this->translate('confirm_delete'), 'callback_data' => 'author:delete_confirm:' . $authorId],
+                ],
+                [
+                    ['text' => $this->translate('go_back'), 'callback_data' => $prefix],
+                ],
+            ],
+        ];
+
+        $this->bot->editMediaMessage(
+            $this->chatId, 
+            $currentPanel, 
+            $visualsLinks[1], 
+            str_replace('{author}', htmlspecialchars($author['name']), $this->translate('confirm_delete_message')), 
+            $keyboard
+        );
+    }
+
+    private function doDelete(int $authorId): void
+    {
+        if (!$this->isGranted('moderator')) {
+            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            return;
+        }
+
+        $authorService = $this->bot->getContainer()->get('author_service');
+        $author = $authorService->getAuthorById($authorId);
+        
+        if ($author === false) {
+            $this->bot->sendMessage($this->chatId, $this->translate('author_not_found_message'));
+            return;
+        }
+
+        $this->bot->deleteAuthor($authorId);
+
+        $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId) ?? 'control_panel';
+        $backCallback = preg_match("/^delete_page_(\d+)$/", $currentPage, $matches) ? 'author:delete_page:' . $matches[1] : 'admin:panel';
+
+        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
+        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+
+        $keyboard = [
+            'inline_keyboard' => [
+                [
+                    ['text' => $this->translate('go_back'), 'callback_data' => $backCallback],
+                ],
+            ],
+        ];
+
+        $this->bot->editMediaMessage(
+            $this->chatId, 
+            $currentPanel, 
+            $visualsLinks[1], 
+            str_replace('{author}', htmlspecialchars($author['name']), $this->translate('author_deleted_message')), 
+            $keyboard
+        );
+    }
+}

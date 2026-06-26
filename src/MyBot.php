@@ -36,6 +36,8 @@ class MyBot extends tgLib
 
     private CommandFactory $command_factory;
 
+    private \morfeditorial\screens\ScreenDispatcher $screen_dispatcher;
+
     private ContainerInterface $container;
 
     public function __construct($token)
@@ -135,6 +137,8 @@ class MyBot extends tgLib
 
         $this->command_factory = new CommandFactory($this, $this->container);
         $this->initializeCommands();
+        
+        $this->screen_dispatcher = new \morfeditorial\screens\ScreenDispatcher($this);
     }
 
     private function initializeCommands() : void
@@ -172,7 +176,18 @@ class MyBot extends tgLib
         if (null !== $message || null !== $photo) {
             $this->processMessage($message_data, $message);
         } else {
-            $this->handlePanels($message_data);
+            $payload = $message_data['payload'] ?? '';
+            $dispatched = false;
+            
+            // Якщо формат нового роутингу
+            if (str_contains($payload, ':')) {
+                $dispatched = $this->screen_dispatcher->dispatchCallback($message_data, $payload);
+            }
+            
+            // Фолбек для старих кнопок
+            if (!$dispatched) {
+                $this->handlePanels($message_data);
+            }
         }
     }
 
@@ -187,7 +202,12 @@ class MyBot extends tgLib
         if ($command_data) {
             $this->executeCommand($command_data, $message_data);
         } else {
-            $this->handleStates($message_data);
+            $text = $message_data['message'] ?? '';
+            $dispatched = $this->screen_dispatcher->dispatchMessage($message_data, $text);
+            
+            if (!$dispatched) {
+                $this->handleStates($message_data);
+            }
         }
     }
 
