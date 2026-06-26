@@ -49,11 +49,14 @@ class AuthorListScreen extends AbstractScreen
             'author:list:'
         );
 
+        $authors = $this->bot->getContainer()->get('author_service')->getAllAuthors();
+        $messageText = empty($authors) ? $this->translate('empty_authors_list_message') : $this->translate('list_of_authors_message');
+
         $this->bot->editMediaMessage(
             $this->chatId,
             $currentPanel,
             $visualsLinks[9],
-            $this->translate('list_of_authors_message'),
+            $messageText,
             $keyboard
         );
     }

@@ -48,7 +48,10 @@ class AuthorDeleteScreen extends AbstractScreen
             'author:delete_page:'
         );
 
-        $this->bot->editMediaMessage($this->chatId, $currentPanel, $visualsLinks[1], $this->translate('delete_author_message'), $keyboard);
+        $authors = $this->bot->getContainer()->get('author_service')->getAllAuthors();
+        $messageText = empty($authors) ? $this->translate('empty_authors_list_message') : $this->translate('delete_author_message');
+
+        $this->bot->editMediaMessage($this->chatId, $currentPanel, $visualsLinks[1], $messageText, $keyboard);
     }
 
     public function handleCallback(string $action, array $params) : void

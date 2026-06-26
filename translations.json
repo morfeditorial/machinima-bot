@@ -197,6 +197,12 @@
         "be": "Як і прасіў, вось спіс усіх машыніматараў:",
         "uk": "Як і просив, ось список всіх машиніматорів:"
     },
+    "empty_authors_list_message": {
+        "en": "Unfortunately, there are no machinimators right now.",
+        "pl": "Niestety, obecnie nie ma żadnych machinimatorów.",
+        "be": "На жаль, зараз няма ніводнага машыніматара.",
+        "uk": "На жаль, список машиніматорів наразі порожній."
+    },
     "previous_page": {
         "en": "↩️ Back",
         "pl": "↩️ Wstecz",
