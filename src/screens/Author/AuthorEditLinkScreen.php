@@ -86,7 +86,7 @@ class AuthorEditLinkScreen extends AbstractScreen
             'inline_keyboard' => [
                 [
                     ['text' => $this->translate('change_name'), 'callback_data' => 'author:change_name:' . $authorId],
-                    ['text' => ($authorStatus ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'author:set_privacy:' . $authorId],
+                    ['text' => ($authorStatus ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'author:set_private:' . $authorId],
                 ],
                 [
                     ['text' => ($author['biography'] ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'author:edit_bio:' . $authorId],

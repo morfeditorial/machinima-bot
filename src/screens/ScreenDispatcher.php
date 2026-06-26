@@ -43,7 +43,7 @@ class ScreenDispatcher
         'author:set_about' => \morfeditorial\screens\Author\AuthorEditBioScreen::class,
         'author:add_link' => \morfeditorial\screens\Author\AuthorEditLinkScreen::class,
         'author:delete_confirm' => \morfeditorial\screens\Author\AuthorDeleteScreen::class,
-        'author:set_private' => \morfeditorial\screens\Author\AuthorPrivacyScreen::class,
+        'author:set_private' => \morfeditorial\screens\Author\AuthorProfileScreen::class,
 
         // Role
         'role:control' => \morfeditorial\screens\Role\RoleControlScreen::class,

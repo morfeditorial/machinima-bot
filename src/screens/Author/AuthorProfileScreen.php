@@ -97,6 +97,23 @@ class AuthorProfileScreen extends AbstractScreen
         if ('profile' === $action) {
             $this->data['author_id'] = $params[0] ?? 0;
             $this->render();
+        } elseif ('set_private' === $action) {
+            if (!$this->isGranted('moderator')) {
+                $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+                return;
+            }
+
+            $authorId = (int)($params[0] ?? 0);
+            $authorService = $this->bot->getContainer()->get('author_service');
+            $author = $authorService->getAuthorById($authorId);
+
+            if (false !== $author) {
+                $isPrivate = $authorService->isPrivate($authorId);
+                $authorService->setPrivate($authorId, !$isPrivate);
+
+                $this->data['author_id'] = $authorId;
+                $this->render();
+            }
         }
     }
 
