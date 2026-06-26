@@ -38,7 +38,15 @@ class AuthorDeleteScreen extends AbstractScreen
         $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
-        $keyboard = $this->bot->generateAuthorsKeyboard($page, 3, 1, 'author:to_delete:', 'author:delete_page:');
+        $keyboard = \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
+            $this->translator,
+            $this->bot->getContainer()->get('author_service'),
+            $page,
+            3,
+            1,
+            'author:to_delete:',
+            'author:delete_page:'
+        );
 
         $this->bot->editMediaMessage($this->chatId, $currentPanel, $visualsLinks[1], $this->translate('delete_author_message'), $keyboard);
     }

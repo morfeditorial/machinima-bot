@@ -39,8 +39,16 @@ class AuthorListScreen extends AbstractScreen
         $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
-        // Ми продовжуємо використовувати generateAuthorsKeyboard, але згодом його теж можна перенести
-        $keyboard = $this->bot->generateAuthorsKeyboard($page, 3, 1, 'author:profile:', 'author:list:');
+
+        $keyboard = \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
+            $this->translator,
+            $this->bot->getContainer()->get('author_service'),
+            $page,
+            3,
+            1,
+            'author:profile:',
+            'author:list:'
+        );
 
         $this->bot->editMediaMessage(
             $this->chatId,

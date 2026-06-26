@@ -68,6 +68,15 @@ class SearchAuthorCommand extends AbstractCommand
             return;
         }
 
-        $this->bot->sendButton($chat_id, str_replace(['{searchQuery}', '{count}'], [htmlspecialchars($search_query), count($results)], $this->translate('search_author_message')), $this->bot->generateAuthorsKeyboard(1, 6, 1, 'author:profile:', 'author:search_page:' . $search_query . ':', $results));
+        $this->bot->sendButton($chat_id, str_replace(['{searchQuery}', '{count}'], [htmlspecialchars($search_query), count($results)], $this->translate('search_author_message')), \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
+            $this->getTranslator(),
+            $this->getAuthorService(),
+            1,
+            6,
+            1,
+            'author:profile:',
+            'author:search_page:' . $search_query . ':',
+            $results
+        ));
     }
 }

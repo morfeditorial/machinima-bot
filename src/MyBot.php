@@ -337,52 +337,6 @@ class MyBot extends tgLib
         return curl_file_create($temp_file);
     }
 
-    public function generateAuthorsKeyboard(
-        int $page_number = 1,
-        int $buttons_per_page = 3,
-        int $authors_per_row = 1,
-        string $prefix = 'author:profile:',
-        string $page_prefix = 'author:list:',
-        ?array $authors = null
-    ) : array {
-        $is_from_database = is_null($authors);
-        $authors = $authors ?? $this->container->get('author_service')->getAllAuthors();
-        $total_buttons = count($authors);
-        $total_pages = (int) ceil($total_buttons / $buttons_per_page);
-        $page_number = max(1, min($page_number, $total_pages));
-
-        $sliced_authors = array_slice($authors, ($page_number - 1) * $buttons_per_page, $buttons_per_page);
-        $keyboard = ['inline_keyboard' => []];
-
-        $current_row = [];
-        foreach ($sliced_authors as $author) {
-            $current_row[] = ['text' => $author['name'], 'callback_data' => $prefix . $author['id']];
-            if (count($current_row) === $authors_per_row) {
-                $keyboard['inline_keyboard'][] = $current_row;
-                $current_row = [];
-            }
-        }
-        if (! empty($current_row)) {
-            $keyboard['inline_keyboard'][] = $current_row;
-        }
-
-        if ($total_pages > 1) {
-            $pagination = [];
-            if ($page_number > 1) {
-                $pagination[] = ['text' => $this->translate('previous_page'), 'callback_data' => $page_prefix . ($page_number - 1)];
-            }
-            if ($page_number < $total_pages) {
-                $pagination[] = ['text' => $this->translate('next_page'), 'callback_data' => $page_prefix . ($page_number + 1)];
-            }
-            $keyboard['inline_keyboard'][] = $pagination;
-        }
-
-        if ($is_from_database) {
-            $keyboard['inline_keyboard'][] = [['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel']];
-        }
-
-        return $keyboard;
-    }
 
     private function translate(string $key)
     {

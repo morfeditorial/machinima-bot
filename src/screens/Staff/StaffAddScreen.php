@@ -73,7 +73,15 @@ class StaffAddScreen extends AbstractScreen
             $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('enter_staff_role_message'), $keyboard);
         } else {
             // Select author
-            $keyboard = $this->bot->generateAuthorsKeyboard($this->page, 3, 1, "staff:add:select_role:{$this->projectId}:", "staff:add:select_author:{$this->projectId}:page:");
+            $keyboard = \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
+                $this->translator,
+                $this->bot->getContainer()->get('author_service'),
+                $this->page,
+                3,
+                1,
+                "staff:add:select_role:{$this->projectId}:",
+                "staff:add:select_author:{$this->projectId}:page:"
+            );
             // Replace the default go_back from generateAuthorsKeyboard
             array_pop($keyboard['inline_keyboard']);
             $keyboard['inline_keyboard'][] = [['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('staff', 'manage', $this->projectId)]];
