@@ -27,7 +27,10 @@ class AuthorPrivacyScreen extends AbstractScreen
 {
     public function render() : void
     {
-        // Rendering is handled by redirecting to AuthorProfileScreen after action
+        if (isset($this->data['author_id'])) {
+            $screen = new AuthorProfileScreen($this->bot, $this->data);
+            $screen->render();
+        }
     }
 
     public function handleCallback(string $action, array $params) : void
@@ -46,10 +49,9 @@ class AuthorPrivacyScreen extends AbstractScreen
                 $isPrivate = $authorService->isPrivate($authorId);
                 $authorService->setPrivate($authorId, !$isPrivate);
 
-                // Manually render AuthorProfileScreen
+                // Setup data for render
                 $this->data['author_id'] = $authorId;
-                $screen = new AuthorProfileScreen($this->bot, $this->data);
-                $screen->render();
+                $this->render();
             }
         }
     }

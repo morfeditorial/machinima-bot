@@ -25,7 +25,27 @@ use morfeditorial\screens\AbstractScreen;
 
 class RoleAssignScreen extends AbstractScreen
 {
-    public function render() : void {}
+    public function render() : void
+    {
+        $role_name = $this->data['role_name'] ?? '';
+        if (empty($role_name)) {
+            return;
+        }
+
+        $user_service = $this->bot->getContainer()->get('user_service');
+        $visuals_links = $this->bot->getContainer()->get('visuals_links');
+        $current_panel = $user_service->getCurrentPanel($this->userId);
+
+        $keyboard = [
+            'inline_keyboard' => [
+                [
+                    ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'view', 'show', $role_name)],
+                ],
+            ],
+        ];
+
+        $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('enter_user_id_for_role_message')), $keyboard);
+    }
 
     public function handleCallback(string $action, array $params) : void
     {
@@ -35,23 +55,13 @@ class RoleAssignScreen extends AbstractScreen
         }
 
         $user_state_service = $this->bot->getContainer()->get('user_state_service');
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        $current_panel = $user_service->getCurrentPanel($this->userId);
 
         if ('ask_user' === $action) {
             $role_name = $params[0] ?? '';
             $user_state_service->setState($this->userId, ['role_name' => $role_name], 'awaiting_user_id_for_role');
 
-            $keyboard = [
-                'inline_keyboard' => [
-                    [
-                        ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'view', 'show', $role_name)],
-                    ],
-                ],
-            ];
-
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('enter_user_id_for_role_message')), $keyboard);
+            $this->data['role_name'] = $role_name;
+            $this->render();
         }
     }
 

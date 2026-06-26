@@ -25,57 +25,41 @@ use morfeditorial\screens\AbstractScreen;
 
 class RoleRemoveScreen extends AbstractScreen
 {
-    public function render() : void {}
-
-    public function handleCallback(string $action, array $params) : void
+    public function render() : void
     {
-        if (! $this->isGranted('admin')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+        $render_type = $this->data['render_type'] ?? '';
+        if (!$render_type) {
             return;
         }
 
-        $role_service = $this->bot->getContainer()->get('role_service');
         $user_service = $this->bot->getContainer()->get('user_service');
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
         $current_panel = $user_service->getCurrentPanel($this->userId);
 
-        if ('select_child' === $action) {
-            $role_name = $params[0] ?? '';
-            $children = $role_service->getChildren($role_name);
+        if ('select_child' === $render_type) {
+            $role_name = $this->data['role_name'] ?? '';
+            $children = $this->data['children'] ?? [];
 
-            $callback_query_id = $this->data['callback_query_id'] ?? null;
+            $keyboard = ['inline_keyboard' => []];
 
-            if (empty($children)) {
-                if ($callback_query_id) {
-                    $this->bot->callbackAnswer($callback_query_id, $this->translate('no_children_message'));
-                }
-            } else {
-                $keyboard = ['inline_keyboard' => []];
-
-                foreach ($children as $child) {
-                    $keyboard['inline_keyboard'][] = [
-                        [
-                            'text' => $child['role_name'],
-                            'callback_data' => $this->makePayload('role', 'remove', 'confirm_remove_child', $role_name, $child['role_name']),
-                        ],
-                    ];
-                }
-
+            foreach ($children as $child) {
                 $keyboard['inline_keyboard'][] = [
-                    ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'view', 'show', $role_name)],
+                    [
+                        'text' => $child['role_name'],
+                        'callback_data' => $this->makePayload('role', 'remove', 'confirm_remove_child', $role_name, $child['role_name']),
+                    ],
                 ];
-
-                $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('select_child_to_remove_message')), $keyboard);
             }
-        } elseif ('confirm_remove_child' === $action) {
-            $parent_name = $params[0] ?? '';
-            $child_name = $params[1] ?? '';
 
-            $role_service->removeParentChild($parent_name, $child_name);
-            $callback_query_id = $this->data['callback_query_id'] ?? null;
-            if ($callback_query_id) {
-                $this->bot->callbackAnswer($callback_query_id, str_replace(['{parent}', '{child}'], [$parent_name, $child_name], $this->translate('child_removed_message')));
-            }
+            $keyboard['inline_keyboard'][] = [
+                ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'view', 'show', $role_name)],
+            ];
+
+            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('select_child_to_remove_message')), $keyboard);
+
+        } elseif ('confirm_remove_child' === $render_type) {
+            $parent_name = $this->data['parent_name'] ?? '';
+            $role_service = $this->bot->getContainer()->get('role_service');
 
             // Refresh to parent's detail panel
             $parents = $role_service->getParents($parent_name);
@@ -105,6 +89,47 @@ class RoleRemoveScreen extends AbstractScreen
             ];
 
             $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $message_text, $keyboard);
+        }
+    }
+
+    public function handleCallback(string $action, array $params) : void
+    {
+        if (! $this->isGranted('admin')) {
+            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            return;
+        }
+
+        $role_service = $this->bot->getContainer()->get('role_service');
+
+        if ('select_child' === $action) {
+            $role_name = $params[0] ?? '';
+            $children = $role_service->getChildren($role_name);
+
+            $callback_query_id = $this->data['callback_query_id'] ?? null;
+
+            if (empty($children)) {
+                if ($callback_query_id) {
+                    $this->bot->callbackAnswer($callback_query_id, $this->translate('no_children_message'));
+                }
+            } else {
+                $this->data['render_type'] = 'select_child';
+                $this->data['role_name'] = $role_name;
+                $this->data['children'] = $children;
+                $this->render();
+            }
+        } elseif ('confirm_remove_child' === $action) {
+            $parent_name = $params[0] ?? '';
+            $child_name = $params[1] ?? '';
+
+            $role_service->removeParentChild($parent_name, $child_name);
+            $callback_query_id = $this->data['callback_query_id'] ?? null;
+            if ($callback_query_id) {
+                $this->bot->callbackAnswer($callback_query_id, str_replace(['{parent}', '{child}'], [$parent_name, $child_name], $this->translate('child_removed_message')));
+            }
+
+            $this->data['render_type'] = 'confirm_remove_child';
+            $this->data['parent_name'] = $parent_name;
+            $this->render();
         }
     }
 
