@@ -44,7 +44,7 @@ abstract class AbstractScreen implements ScreenInterface
      */
     protected function translate(string $key, array $params = []) : string
     {
-        return $this->bot->getTranslator()->translate($key, $params);
+        return $this->bot->getContainer()->get('translator')->translate($key, $params);
     }
 
     /**
@@ -52,7 +52,7 @@ abstract class AbstractScreen implements ScreenInterface
      */
     protected function isGranted(string $role) : bool
     {
-        return $this->bot->isGranted($this->userId, $role);
+        return $this->bot->isGranted($role);
     }
 
     /**
