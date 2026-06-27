@@ -74,8 +74,12 @@ class AssignRoleCommand extends AbstractCommand
             return;
         }
 
-        if ($this->getRoleService()->assignRole($target_user_id, $role_name)) {
+        $result = $this->getRoleService()->assignRole($target_user_id, $role_name);
+
+        if ('success' === $result) {
             $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('assign_role_message')));
+        } elseif ('already_assigned' === $result) {
+            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_already_assigned_message')));
         } else {
             $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_assignment_failure_message')));
         }

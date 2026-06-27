@@ -113,11 +113,11 @@ class RoleService
         );
     }
 
-    public function assignRole(int $user_id, string $role_name) : bool
+    public function assignRole(int $user_id, string $role_name) : string
     {
         $role = $this->getRoleByName($role_name);
         if (! $role) {
-            return false;
+            return 'role_not_found';
         }
 
         $exists = $this->db->fetchOne(
@@ -126,13 +126,15 @@ class RoleService
         );
 
         if ($exists > 0) {
-            return false;
+            return 'already_assigned';
         }
 
-        return (bool) $this->db->executeStatement(
+        $this->db->executeStatement(
             'INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)',
             [$user_id, $role['id']]
         );
+
+        return 'success';
     }
 
     public function removeUserRole(int $user_id, string $role_name) : bool

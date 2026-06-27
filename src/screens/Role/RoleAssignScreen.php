@@ -83,14 +83,21 @@ class RoleAssignScreen extends AbstractScreen
             }
 
             $role_name = $state_data['role_name'] ?? '';
+            $result = $role_service->assignRole($target_user_id, $role_name);
 
-            if ($role_service->assignRole($target_user_id, $role_name)) {
+            if ('success' === $result) {
                 $this->bot->sendMessage($this->chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('assign_role_message')));
+            } elseif ('already_assigned' === $result) {
+                $this->bot->sendMessage($this->chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_already_assigned_message')));
             } else {
                 $this->bot->sendMessage($this->chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_assignment_failure_message')));
             }
 
             $user_state_service->clearState($this->userId, 'awaiting_user_id_for_role');
+
+            // Повернути панель назад до перегляду ролі
+            $view_screen = new \morfeditorial\screens\Role\RoleViewScreen($this->bot, $this->data);
+            $view_screen->handleCallback('view', ['show', $role_name]);
         }
     }
 }
