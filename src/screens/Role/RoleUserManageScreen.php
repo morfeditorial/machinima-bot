@@ -123,7 +123,7 @@ class RoleUserManageScreen extends AbstractScreen
             $roleName = $params[2] ?? '';
 
             if ('ask_user' === $subAction) {
-                $this->bot->getContainer()->get('user_state_service')->setState($this->userId, [], 'awaiting_user_id_for_management');
+                $this->bot->getContainer()->get('user_state_service')->setState($this->userId, ['active' => true], 'awaiting_user_id_for_management');
                 $this->data['action'] = 'ask_user';
                 $this->render();
                 return;
