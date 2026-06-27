@@ -971,6 +971,12 @@
         "be": "Адмін-панэль",
         "uk": "Адмін-панель"
     },
+    "create_public_page": {
+        "en": "➕ Create Public Page",
+        "pl": "➕ Utwórz stronę publiczną",
+        "be": "➕ Стварыць публічную старонку",
+        "uk": "➕ Створити публічну сторінку"
+    },
     "public_page": {
         "en": "Public Page",
         "pl": "Strona publiczna",

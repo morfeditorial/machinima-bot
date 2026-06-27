@@ -45,33 +45,31 @@ class ControlPanelScreen extends AbstractScreen
         $authorService = $this->bot->getContainer()->get('author_service');
         $myAuthorProfile = $authorService->getAuthorByTelegramId($this->userId);
         
-        if (! $myAuthorProfile) {
-            $authorName = 'Staff #' . $this->userId;
-            $authorService->createAuthor($authorName, $this->userId);
-            $myAuthorProfile = $authorService->getAuthorByTelegramId($this->userId);
-        }
-
         if ($myAuthorProfile) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => '📝 ' . $this->translate('public_page'), 'callback_data' => 'author:profile:' . $myAuthorProfile['id']],
             ];
+        } else {
+            $keyboard['inline_keyboard'][] = [
+                ['text' => $this->translate('create_public_page'), 'callback_data' => 'admin:create_public_page'],
+            ];
         }
 
-        // Creator і вище: керування авторами
+        // Moderator і вище: керування авторами
         if ($this->isGranted('moderator')) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('add_author'), 'callback_data' => 'author:add'],
-                ['text' => $this->translate('delete_author'), 'callback_data' => 'author:delete:page:1'],
+                ['text' => '✍️ ' . $this->translate('add_author'), 'callback_data' => 'author:add'],
+                ['text' => '❌ ' . $this->translate('delete_author'), 'callback_data' => 'author:delete'],
             ];
             $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('manage_categories'), 'callback_data' => 'category:manage'],
+                ['text' => '📂 ' . $this->translate('manage_categories'), 'callback_data' => 'category:manage'],
             ];
         }
 
-        // Admin: контроль ролей
+        // Admin: керування ролями, категоріями тощо
         if ($this->isGranted('admin')) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('access_control'), 'callback_data' => 'role:control'],
+                ['text' => '🔒 ' . $this->translate('access_control'), 'callback_data' => 'role:control'],
             ];
         }
 
@@ -91,6 +89,19 @@ class ControlPanelScreen extends AbstractScreen
     {
         if ('panel' === $action) {
             $this->render();
+            return;
+        }
+
+        if ('create_public_page' === $action) {
+            $authorService = $this->bot->getContainer()->get('author_service');
+            $myAuthorProfile = $authorService->getAuthorByTelegramId($this->userId);
+            if (! $myAuthorProfile) {
+                // Fetch first name from telegram or just use "Staff #ID"
+                $authorName = $this->data['first_name'] ?? ('Staff #' . $this->userId);
+                $authorService->createAuthor($authorName, $this->userId);
+            }
+            $this->render();
+            return;
         }
     }
 
