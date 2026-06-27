@@ -115,7 +115,7 @@ class StaffAddScreen extends AbstractScreen
         $state_data = $user_state_service->getState($this->userId, 'awaiting_staff_role');
 
         if ($state_data) {
-            $message_id = $this->data['message']['message_id'] ?? null;
+            $message_id = $this->data['message_id'] ?? null;
             if ($message_id) {
                 $this->bot->deleteMessage($this->chatId, $message_id);
             }
