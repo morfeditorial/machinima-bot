@@ -77,6 +77,12 @@
         "be": "Прызначыць ролю карыстальніку",
         "uk": "Призначити роль користувачу"
     },
+    "remove_role_command_description": {
+        "en": "Remove a role from a user",
+        "pl": "Usuń rolę użytkownikowi",
+        "be": "Выдаліць ролю ў карыстальніка",
+        "uk": "Забрати роль у користувача"
+    },
     "welcome_message": {
         "en": "Hello, I`m a chatbot named Pai! 👋🏻\n\nMy mission is to centralize Ukrainian machinimators in one list. I`ll help you find interesting projects, short films, and series based on <b>Minecraft<\/b>. You won`t be bored with me!\n\n📚 You can learn commands to interact with me by sending the word «\/help».",
         "pl": "Cześć, jestem czatbotem o imieniu Pai! 👋🏻\n\nMoje zadanie to scentralizować ukraińskich machinimatorów w jednym spisie. Pomogę ci znaleźć interesujące projekty, krótkometrażowe filmy i seriale oparte na <b>Minecraft<\/b>. Z pewnością się nie nudzisz ze mną!\n\n📚 Aby dowiedzieć się więcej o moich komendach, wyślij słowo «\/help».",
@@ -712,6 +718,24 @@
         "pl": "Użycie: \/assign_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
         "be": "Выкарыстанне: \/assign_role &lt;user_id&gt; &lt;назва_ролі&gt;",
         "uk": "Використання: \/assign_role &lt;user_id&gt; &lt;назва_ролі&gt;"
+    },
+    "remove_role_usage_message": {
+        "en": "Usage: \/remove_role &lt;user_id&gt; &lt;role_name&gt;",
+        "pl": "Użycie: \/remove_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/remove_role &lt;user_id&gt; &lt;назва_ролі&gt;",
+        "uk": "Використання: \/remove_role &lt;user_id&gt; &lt;назва_ролі&gt;"
+    },
+    "remove_role_message": {
+        "en": "Role «{roleName}» was successfully removed from user {userId}.",
+        "pl": "Rola «{roleName}» została pomyślnie usunięta użytkownikowi {userId}.",
+        "be": "Роля «{roleName}» была паспяхова выдалена ў карыстальніка {userId}.",
+        "uk": "Роль «{roleName}» була успішно забрана у користувача {userId}."
+    },
+    "remove_role_failed_message": {
+        "en": "Failed to remove role (does the user have it?).",
+        "pl": "Nie udało się usunąć roli (czy użytkownik ją ma?).",
+        "be": "Не ўдалося выдаліць ролю (ці ёсць яна ў карыстальніка?).",
+        "uk": "Не вдалося забрати роль (чи є вона взагалі у користувача?)."
     },
     "success_initialled_admin_message": {
         "en": "You have been appointed as an administrator.",
