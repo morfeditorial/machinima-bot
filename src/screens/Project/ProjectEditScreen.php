@@ -35,7 +35,7 @@ class ProjectEditScreen extends AbstractScreen
         $user_service = $this->bot->getContainer()->get('user_service');
         $content_service = $this->bot->getContainer()->get('content_service');
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        
+
         $current_panel = $user_service->getCurrentPanel($this->userId);
         $project_id = $this->data['project_id'] ?? 0;
 
@@ -73,9 +73,9 @@ class ProjectEditScreen extends AbstractScreen
         $user_state_service = $this->bot->getContainer()->get('user_state_service');
         $content_service = $this->bot->getContainer()->get('content_service');
         $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        
+
         $current_panel = $user_service->getCurrentPanel($this->userId);
-        
+
         if ('edit' === $action) {
             $project_id = isset($params[0]) ? (int)$params[0] : 0;
             $sub_action = isset($params[1]) ? $params[1] : null;
@@ -117,7 +117,7 @@ class ProjectEditScreen extends AbstractScreen
                 $type = $params[2] ?? '';
                 $content_service->updateContent($project_id, ['type' => $type]);
                 $this->bot->callbackAnswer($this->data['callback_query_id'] ?? '', $this->translate('project_updated_message'));
-                
+
                 $this->data['project_id'] = $project_id;
                 $this->render();
             }
@@ -132,9 +132,9 @@ class ProjectEditScreen extends AbstractScreen
 
         $user_state_service = $this->bot->getContainer()->get('user_state_service');
         $content_service = $this->bot->getContainer()->get('content_service');
-        
+
         $message_id = $this->data['message_id'] ?? null;
-        
+
         if ($state_data = $user_state_service->getState($this->userId, 'editing_project_field')) {
             $this->bot->deleteMessage($this->chatId, $message_id);
             $user_state_service->clearState($this->userId, 'editing_project_field');

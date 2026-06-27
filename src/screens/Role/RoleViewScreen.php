@@ -97,7 +97,7 @@ class RoleViewScreen extends AbstractScreen
 
                 $users = $role_service->getUsersByRole($role_name);
                 $users_count = count($users);
-                
+
                 $users_text = $users_count > 0 ? implode(', ', array_slice($users, 0, 10)) : "\u{2014}";
                 if ($users_count > 10) {
                     $users_text .= ' (та ще ' . ($users_count - 10) . ')';
@@ -114,6 +114,7 @@ class RoleViewScreen extends AbstractScreen
                         [
                             ['text' => $this->translate('add_parent'), 'callback_data' => $this->makePayload('role', 'create', 'add_parent', $role_name)],
                             ['text' => $this->translate('remove_child'), 'callback_data' => $this->makePayload('role', 'remove', 'select_child', $role_name)],
+                        ],
                         [
                             ['text' => $this->translate('delete_this_role'), 'callback_data' => $this->makePayload('role', 'delete', 'confirm', $role_name)],
                         ],

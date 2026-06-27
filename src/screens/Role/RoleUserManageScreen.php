@@ -62,7 +62,7 @@ class RoleUserManageScreen extends AbstractScreen
         if ('detail' === $action) {
             $rolesText = empty($userRoles) ? "—" : "▫️ <b>" . implode("</b>\n▫️ <b>", $userRoles) . "</b>";
             $text = str_replace(['{userId}', '{roles}'], [$targetUserId, $rolesText], $this->translate('user_roles_detail_message'));
-            
+
             $keyboard = [
                 'inline_keyboard' => [
                     [
