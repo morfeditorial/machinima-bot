@@ -93,6 +93,38 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                     return json_encode(['success' => true, 'data' => $projects]);
                 }
                 
+                if ($path === '/api/categories') {
+                    $categories = $contentService->getAllCategories();
+                    return json_encode(['success' => true, 'data' => $categories]);
+                }
+                
+                if (preg_match('#^/api/categories/(\d+)$#', $path, $matches)) {
+                    $categoryId = (int) $matches[1];
+                    $category = $contentService->getCategoryById($categoryId);
+                    
+                    if (!$category) {
+                        return json_encode(['success' => false, 'error' => 'Category not found']);
+                    }
+                    
+                    return json_encode(['success' => true, 'data' => $category]);
+                }
+                
+                if (preg_match('#^/api/categories/(\d+)/projects$#', $path, $matches)) {
+                    $categoryId = (int) $matches[1];
+                    $category = $contentService->getCategoryById($categoryId);
+                    
+                    if (!$category) {
+                        return json_encode(['success' => false, 'error' => 'Category not found']);
+                    }
+                    
+                    $queryParams = $request->getQueryParams();
+                    $limit = isset($queryParams['limit']) ? (int) $queryParams['limit'] : 10;
+                    $offset = isset($queryParams['offset']) ? (int) $queryParams['offset'] : 0;
+                    
+                    $projects = $contentService->getCategoryProjects($categoryId, $limit, $offset);
+                    return json_encode(['success' => true, 'data' => $projects]);
+                }
+                
                 if ($path === '/api/interact' && $request->getMethod() === 'POST') {
                     $body = (string) $request->getBody();
                     $data = json_decode($body, true);

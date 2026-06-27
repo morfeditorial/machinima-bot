@@ -143,13 +143,15 @@ class ContentService
         return $result[0] ?? null;
     }
 
-    public function getContentByCategory(int $categoryId) : array
+    public function getCategoryProjects(int $category_id, int $limit = 10, int $offset = 0) : array
     {
         return $this->db->fetchAllAssociative(
             'SELECT c.* FROM content c 
              JOIN content_categories cc ON c.id = cc.content_id 
-             WHERE cc.category_id = ? AND c.status = ?',
-            [$categoryId, 'published']
+             WHERE cc.category_id = ? AND c.status = ?
+             ORDER BY c.trending_score DESC 
+             LIMIT ? OFFSET ?',
+            [$category_id, 'published', $limit, $offset]
         );
     }
 
