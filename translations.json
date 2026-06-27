@@ -210,10 +210,10 @@
         "uk": "Вперед ↪️"
     },
     "admin_panel_message": {
-        "en": "Hello, it looks like you`re a moderator of this bot. Here are buttons to assist you! 🔧",
-        "pl": "Cześć, wygląda na to, że jesteś moderatorem tego bota. Oto przyciski, które pomogą ci w pracy! 🔧",
-        "be": "Прывітанне, выглядае, што вы мадэратар гэтага бота. Вось кнопкі, якія дапамогуць вам у справе! 🔧",
-        "uk": "Привіт, виглядає, що ти модератор цього бота. Тримай кнопки, які допоможуть тобі у справі! 🔧"
+        "en": "Hello! This is your control panel. Here are the buttons to assist you! 🔧",
+        "pl": "Cześć! To jest twój panel sterowania. Oto przyciski, które pomogą ci w pracy! 🔧",
+        "be": "Прывітанне! Гэта твая панэль кіравання. Вось кнопкі, якія дапамогуць табе ў справе! 🔧",
+        "uk": "Привіт! Це твоя панель керування. Тримай кнопки, які допоможуть тобі у справі! 🔧"
     },
     "manage_projects": {
         "en": "Manage Projects 📦",
