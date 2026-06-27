@@ -44,7 +44,7 @@ class RandomContentCommand extends AbstractCommand
 
         if ($randomContent) {
             $screenClass = \morfeditorial\screens\Project\ProjectViewScreen::class;
-            $screen = new $screenClass($this->bot, $chat_id, $user_id);
+            $screen = new $screenClass($this->bot, ["chat_id" => $chat_id, "user_id" => $user_id]);
             $screen->handleCallback('view', [(string)$randomContent['id']]);
         } else {
             $this->bot->sendMessage($chat_id, $this->translate('no_content_found'));

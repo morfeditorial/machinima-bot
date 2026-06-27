@@ -42,7 +42,7 @@ class SearchContentScreen extends AbstractScreen
             $this->bot->getUserStateService()->clearState($this->userId);
             // Go back to main menu or something
             $screenClass = \morfeditorial\screens\Public\MainMenuScreen::class;
-            $screen = new $screenClass($this->bot, $this->chatId, $this->userId);
+            $screen = new $screenClass($this->bot, ["chat_id" => $this->chatId, "user_id" => $this->userId]);
             $screen->render();
         }
     }

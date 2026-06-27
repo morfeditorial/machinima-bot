@@ -40,7 +40,7 @@ class TopAuthorsCommand extends AbstractCommand
         array $args
     ) : void {
         $screenClass = \morfeditorial\screens\Public\TopAuthorsScreen::class;
-        $screen = new $screenClass($this->bot, $chat_id, $user_id);
+        $screen = new $screenClass($this->bot, ["chat_id" => $chat_id, "user_id" => $user_id]);
         $screen->render();
     }
 }

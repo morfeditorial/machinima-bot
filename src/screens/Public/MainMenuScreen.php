@@ -55,17 +55,17 @@ class MainMenuScreen extends AbstractScreen
     {
         if ('search' === $action) {
             $screenClass = \morfeditorial\screens\Public\SearchContentScreen::class;
-            $screen = new $screenClass($this->bot, $this->chatId, $this->userId);
+            $screen = new $screenClass($this->bot, ["chat_id" => $this->chatId, "user_id" => $this->userId]);
             $screen->render();
         } elseif ('main' === $action || 'cancel' === $action) {
             $this->render();
         } elseif ('categories' === $action) {
             $screenClass = \morfeditorial\screens\Public\CategoryListScreen::class;
-            $screen = new $screenClass($this->bot, $this->chatId, $this->userId);
+            $screen = new $screenClass($this->bot, ["chat_id" => $this->chatId, "user_id" => $this->userId]);
             $screen->render();
         } elseif ('top_authors' === $action) {
             $screenClass = \morfeditorial\screens\Public\TopAuthorsScreen::class;
-            $screen = new $screenClass($this->bot, $this->chatId, $this->userId);
+            $screen = new $screenClass($this->bot, ["chat_id" => $this->chatId, "user_id" => $this->userId]);
             $screen->render();
         } elseif ('random' === $action) {
             // Re-use RandomContentCommand logic
@@ -74,7 +74,7 @@ class MainMenuScreen extends AbstractScreen
 
             if ($randomContent) {
                 $screenClass = \morfeditorial\screens\Project\ProjectViewScreen::class;
-                $screen = new $screenClass($this->bot, $this->chatId, $this->userId);
+                $screen = new $screenClass($this->bot, ["chat_id" => $this->chatId, "user_id" => $this->userId]);
                 $screen->handleCallback('view', [(string)$randomContent['id']]);
             } else {
                 $this->bot->sendMessage($this->chatId, $this->translate('no_content_found'));
