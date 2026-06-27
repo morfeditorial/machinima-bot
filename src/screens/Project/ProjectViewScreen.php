@@ -77,12 +77,12 @@ class ProjectViewScreen extends AbstractScreen
 
             $transition_buttons = [];
             if ('draft' === $project['status'] && $this->isGranted('creator')) {
-                $transition_buttons[] = ['text' => $this->translate('submit_project'), 'callback_data' => 'transition_project:' . $project_id . ':submit'];
+                $transition_buttons[] = ['text' => $this->translate('submit_project'), 'callback_data' => 'project:transition:' . $project_id . ':submit'];
             } elseif ('pending_review' === $project['status'] && $this->isGranted('moderator')) {
-                $transition_buttons[] = ['text' => $this->translate('publish_project'), 'callback_data' => 'transition_project:' . $project_id . ':publish'];
-                $transition_buttons[] = ['text' => $this->translate('reject_project'), 'callback_data' => 'transition_project:' . $project_id . ':reject'];
+                $transition_buttons[] = ['text' => $this->translate('publish_project'), 'callback_data' => 'project:transition:' . $project_id . ':publish'];
+                $transition_buttons[] = ['text' => $this->translate('reject_project'), 'callback_data' => 'project:transition:' . $project_id . ':reject'];
             } elseif ('rejected' === $project['status'] && $this->isGranted('moderator')) {
-                $transition_buttons[] = ['text' => $this->translate('redraft_project'), 'callback_data' => 'transition_project:' . $project_id . ':re-draft'];
+                $transition_buttons[] = ['text' => $this->translate('redraft_project'), 'callback_data' => 'project:transition:' . $project_id . ':re-draft'];
             }
 
             if (!empty($transition_buttons)) {
@@ -103,6 +103,23 @@ class ProjectViewScreen extends AbstractScreen
         if ('view' === $action) {
             $this->data['payload'] = $this->makePayload('project', 'view', $params[0] ?? '0');
             $this->render();
+        } elseif ('transition' === $action) {
+            $projectId = (int)($params[0] ?? 0);
+            $transition = $params[1] ?? '';
+
+            $contentService = $this->bot->getContainer()->get('content_service');
+            $success = $contentService->applyTransition($projectId, $transition);
+
+            if ($success) {
+                // Re-render the view
+                $this->data['payload'] = $this->makePayload('project', 'view', (string)$projectId);
+                $this->render();
+
+                // Show an alert to user
+                $this->bot->sendMessage($this->chatId, $this->translate('status_updated_message'));
+            } else {
+                $this->bot->sendMessage($this->chatId, $this->translate('error_transition_message'));
+            }
         }
     }
 

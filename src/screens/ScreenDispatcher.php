@@ -63,6 +63,7 @@ class ScreenDispatcher
         'project:set_type' => \morfeditorial\screens\Project\ProjectTypeScreen::class,
         'project:list' => \morfeditorial\screens\Project\ProjectListScreen::class,
         'project:view' => \morfeditorial\screens\Project\ProjectViewScreen::class,
+        'project:transition' => \morfeditorial\screens\Project\ProjectViewScreen::class,
         'project:edit' => \morfeditorial\screens\Project\ProjectEditScreen::class,
         'project:delete' => \morfeditorial\screens\Project\ProjectDeleteScreen::class,
 
