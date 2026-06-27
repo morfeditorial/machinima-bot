@@ -21,6 +21,7 @@ $contentService = $container->get('content_service');
 $authorService = $container->get('author_service');
 $ratingService = $container->get('rating_service');
 $roleService = $container->get('role_service');
+$notificationService = $container->get('notification_service');
 
 $cache = new ArrayCache();
 $cacheManager = new AsyncCacheManager(
@@ -31,7 +32,7 @@ $cacheOptions = new CacheOptions(ttl: 30);
 
 $sseConnections = new \SplObjectStorage();
 
-$http = new HttpServer(function (ServerRequestInterface $request) use ($contentService, $authorService, $ratingService, $roleService, $cacheManager, $cacheOptions, $sseConnections, $botToken) {
+$http = new HttpServer(function (ServerRequestInterface $request) use ($contentService, $authorService, $ratingService, $roleService, $notificationService, $cacheManager, $cacheOptions, $sseConnections, $botToken) {
     $path = $request->getUri()->getPath();
 
     $headers = [
@@ -59,9 +60,9 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
         ], $stream);
     }
 
-    $handler = function () use ($path, $request, $contentService, $authorService, $ratingService, $roleService, $sseConnections, $botToken) {
+    $handler = function () use ($path, $request, $contentService, $authorService, $ratingService, $roleService, $notificationService, $sseConnections, $botToken) {
         static $avatarCache = [];
-        return \React\Promise\resolve(null)->then(function () use ($path, $request, $contentService, $authorService, $ratingService, $roleService, $sseConnections, &$avatarCache, $botToken) {
+        return \React\Promise\resolve(null)->then(function () use ($path, $request, $contentService, $authorService, $ratingService, $roleService, $notificationService, $sseConnections, &$avatarCache, $botToken) {
             if ($path === '/api/feed') {
                 $feed = $ratingService->getTrendingContent(20);
                 return json_encode(['success' => true, 'data' => $feed]);
@@ -166,7 +167,51 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                     $conn->write("data: {$payload}\n\n");
                 }
                 
+                // Notify Project Author
+                try {
+                    $project = $contentService->getContentById($projectId);
+                    if ($project && !empty($project['author_id'])) {
+                        $projectAuthor = $authorService->getAuthorById((int) $project['author_id']);
+                        if ($projectAuthor && !empty($projectAuthor['telegram_user_id'])) {
+                            $targetUserId = (int) $projectAuthor['telegram_user_id'];
+                            if ($targetUserId !== (int) $body['user_id']) {
+                                $shortText = mb_substr($body['text'], 0, 50) . (mb_strlen($body['text']) > 50 ? '...' : '');
+                                $notif = $notificationService->notify($targetUserId, 'new_comment', $projectId, "Новий коментар: {$shortText}");
+                                
+                                $notifPayload = json_encode([
+                                    'type' => 'NEW_NOTIFICATION',
+                                    'notification' => $notif
+                                ]);
+                                foreach ($sseConnections as $conn) {
+                                    $conn->write("data: {$notifPayload}\n\n");
+                                }
+                            }
+                        }
+                    }
+                } catch (\Exception $e) {}
+
                 return json_encode(['success' => true, 'data' => $newComment]);
+            }
+            
+            if (preg_match('#^/api/user/(\d+)/notifications$#', $path, $matches) && $request->getMethod() === 'GET') {
+                $userId = (int) $matches[1];
+                $notifications = $notificationService->getUserNotifications($userId);
+                $unreadCount = $notificationService->getUnreadCount($userId);
+                return json_encode(['success' => true, 'data' => ['notifications' => $notifications, 'unread_count' => $unreadCount]]);
+            }
+            
+            if (preg_match('#^/api/user/(\d+)/notifications/read-all$#', $path, $matches) && $request->getMethod() === 'PUT') {
+                $userId = (int) $matches[1];
+                $notificationService->markAllAsRead($userId);
+                return json_encode(['success' => true]);
+            }
+            
+            if (preg_match('#^/api/notifications/(\d+)/read$#', $path, $matches) && $request->getMethod() === 'PUT') {
+                $notifId = (int) $matches[1];
+                $body = json_decode((string) $request->getBody(), true);
+                $userId = $body['user_id'] ?? 0;
+                $notificationService->markAsRead($notifId, $userId);
+                return json_encode(['success' => true]);
             }
 
             if (preg_match('#^/api/comments/(\d+)$#', $path, $matches) && $request->getMethod() === 'PUT') {

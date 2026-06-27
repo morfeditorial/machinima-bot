@@ -88,6 +88,11 @@ class MyBot extends tgLib
             ->setPublic(true);
         $container_builder->setAlias(\morfeditorial\services\ContentService::class, 'content_service');
 
+        $container_builder->register('notification_service', \morfeditorial\services\NotificationService::class)
+            ->setAutowired(true)
+            ->setPublic(true);
+        $container_builder->setAlias(\morfeditorial\services\NotificationService::class, 'notification_service');
+
         $container_builder->register('rating_service', \morfeditorial\services\RatingService::class)
             ->setAutowired(true)
             ->setPublic(true);
