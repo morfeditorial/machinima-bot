@@ -49,6 +49,7 @@ class RoleControlScreen extends AbstractScreen
                     ['text' => $this->translate('delete_role'), 'callback_data' => $this->makePayload('role', 'delete')],
                 ],
                 [
+                    ['text' => $this->translate('manage_user_roles'), 'callback_data' => $this->makePayload('role', 'user')],
                     ['text' => $this->translate('view_roles'), 'callback_data' => $this->makePayload('role', 'view')],
                 ],
                 [

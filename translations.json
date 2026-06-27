@@ -857,6 +857,48 @@
         "be": "Увядзіце ID карыстальніка, якому хочаце прызначыць ролю {role}:",
         "uk": "Введіть ID користувача, якому хочете призначити роль {role}:"
     },
+    "manage_user_roles": {
+        "en": "Manage Users",
+        "pl": "Zarządzaj użytkownikami",
+        "be": "Кіраванне карыстальнікамі",
+        "uk": "Управління користувачами"
+    },
+    "enter_user_id_for_management_message": {
+        "en": "Enter the Telegram ID of the user whose roles you want to manage:",
+        "pl": "Wprowadź identyfikator Telegram użytkownika, którego rolami chcesz zarządzać:",
+        "be": "Увядзіце Telegram ID карыстальніка, ролямі якога вы хочаце кіраваць:",
+        "uk": "Введіть Telegram ID користувача, ролями якого ви хочете керувати:"
+    },
+    "user_roles_detail_message": {
+        "en": "Roles for user {userId}:\n\n<b>{roles}</b>",
+        "pl": "Role dla użytkownika {userId}:\n\n<b>{roles}</b>",
+        "be": "Ролі для карыстальніка {userId}:\n\n<b>{roles}</b>",
+        "uk": "Ролі користувача {userId}:\n\n<b>{roles}</b>"
+    },
+    "add_role": {
+        "en": "Add Role",
+        "pl": "Dodaj rolę",
+        "be": "Дадаць ролю",
+        "uk": "Додати роль"
+    },
+    "remove_role": {
+        "en": "Remove Role",
+        "pl": "Usuń rolę",
+        "be": "Выдаліць ролю",
+        "uk": "Забрати роль"
+    },
+    "select_role_to_add_message": {
+        "en": "Select a role to assign to user {userId}:",
+        "pl": "Wybierz rolę do przypisania użytkownikowi {userId}:",
+        "be": "Абярыце ролю для прызначэння карыстальніку {userId}:",
+        "uk": "Оберіть роль для призначення користувачу {userId}:"
+    },
+    "select_role_to_remove_message": {
+        "en": "Select a role to remove from user {userId}:",
+        "pl": "Wybierz rolę do usunięcia od użytkownika {userId}:",
+        "be": "Абярыце ролю для выдалення ў карыстальніка {userId}:",
+        "uk": "Оберіть роль для того, щоб забрати у користувача {userId}:"
+    },
     "enter_user_id_to_remove_role_message": {
         "en": "Enter User ID to remove role {role}:",
         "pl": "Wprowadź ID użytkownika, aby zabrać rolę {role}:",
