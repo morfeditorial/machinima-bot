@@ -695,6 +695,12 @@
         "be": "Роля «{roleName}» была прызначаная карыстальніку {userId}.",
         "uk": "Роль «{roleName}» була призначена користувачу {userId}."
     },
+    "role_already_assigned_message": {
+        "uk": "Роль «{roleName}» вже призначена користувачу {userId}.",
+        "en": "Role \"{roleName}\" is already assigned to user {userId}.",
+        "pl": "Rola «{roleName}» jest już przypisana użytkownikowi {userId}.",
+        "be": "Роля «{roleName}» ужо прызначана карыстальніку {userId}."
+    },
     "role_assignment_failure_message": {
         "en": "Failed to assign role «{roleName}» to user {userId}.",
         "pl": "Nie udało się przypisać roli «{roleName}» użytkownikowi {userId}.",
@@ -898,11 +904,5 @@
         "en": "Admin Panel",
         "pl": "Panel Admina",
         "be": "Адмін-панэль"
-    },
-    "role_already_assigned_message": {
-        "uk": "Роль «{roleName}» вже призначена користувачу {userId}.",
-        "en": "Role \"{roleName}\" is already assigned to user {userId}.",
-        "pl": "Rola «{roleName}» jest już przypisana użytkownikowi {userId}.",
-        "be": "Роля «{roleName}» ужо прызначана карыстальніку {userId}."
     }
 }
