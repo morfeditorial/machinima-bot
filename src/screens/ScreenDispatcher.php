@@ -57,7 +57,6 @@ class ScreenDispatcher
         'role:remove' => \morfeditorial\screens\Role\RoleRemoveScreen::class,
 
         // Project
-        'project:manage' => \morfeditorial\screens\Project\ProjectListScreen::class,
         'project:create' => \morfeditorial\screens\Project\ProjectCreateScreen::class,
         'project:set_type' => \morfeditorial\screens\Project\ProjectTypeScreen::class,
         'project:list' => \morfeditorial\screens\Project\ProjectListScreen::class,

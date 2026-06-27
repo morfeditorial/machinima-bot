@@ -49,7 +49,7 @@ class ControlPanelScreen extends AbstractScreen
         }
 
         $projectRow = [];
-        $projectRow[] = ['text' => $this->translate('manage_projects'), 'callback_data' => 'project:manage'];
+        $projectRow[] = ['text' => $this->translate('manage_projects'), 'callback_data' => 'project:list'];
         if ($this->isGranted('moderator')) {
             $projectRow[] = ['text' => $this->translate('manage_categories'), 'callback_data' => 'category:manage'];
         }

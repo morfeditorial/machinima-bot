@@ -80,7 +80,7 @@ class AdminPanelCommand extends AbstractCommand
         }
 
         $project_row = [];
-        $project_row[] = ['text' => $this->translate('manage_projects'), 'callback_data' => 'project:manage'];
+        $project_row[] = ['text' => $this->translate('manage_projects'), 'callback_data' => 'project:list'];
         if ($this->isGranted('moderator')) {
             $project_row[] = ['text' => $this->translate('manage_categories'), 'callback_data' => 'category:manage'];
         }
