@@ -101,6 +101,14 @@ class AuthorService
         );
     }
 
+    public function setTelegramId(int $author_id, ?int $telegram_user_id) : void
+    {
+        $this->db->executeStatement(
+            'UPDATE authors SET telegram_user_id = ? WHERE id = ?',
+            [$telegram_user_id, $author_id]
+        );
+    }
+
     public function setPrivate(int $author_id, bool $private = true) : void
     {
         $state = $private ? self::STATE_PRIVATE : self::STATE_PUBLIC;

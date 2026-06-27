@@ -45,6 +45,8 @@ class ScreenDispatcher
         'author:to_delete' => \morfeditorial\screens\Author\AuthorDeleteScreen::class,
         'author:delete_confirm' => \morfeditorial\screens\Author\AuthorDeleteScreen::class,
         'author:set_private' => \morfeditorial\screens\Author\AuthorProfileScreen::class,
+        'author:link_telegram' => \morfeditorial\screens\Author\AuthorLinkTelegramScreen::class,
+        'author:unlink_telegram' => \morfeditorial\screens\Author\AuthorProfileScreen::class,
 
         // Role
         'role:control' => \morfeditorial\screens\Role\RoleControlScreen::class,
@@ -81,6 +83,7 @@ class ScreenDispatcher
         'change_name' => \morfeditorial\screens\Author\AuthorEditNameScreen::class,
         'set_author_about' => \morfeditorial\screens\Author\AuthorEditBioScreen::class,
         'add_author_link' => \morfeditorial\screens\Author\AuthorEditLinkScreen::class,
+        'link_telegram' => \morfeditorial\screens\Author\AuthorLinkTelegramScreen::class,
 
         'awaiting_role_creation' => \morfeditorial\screens\Role\RoleCreateScreen::class,
         'awaiting_user_id_for_role' => \morfeditorial\screens\Role\RoleAssignScreen::class,

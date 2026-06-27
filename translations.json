@@ -982,5 +982,23 @@
         "pl": "Strona publiczna",
         "be": "Публічная старонка",
         "uk": "Публічна сторінка"
+    },
+    "link_telegram": {
+        "en": "🔗 Link Telegram ID",
+        "pl": "🔗 Powiąż ID Telegram",
+        "be": "🔗 Прывязаць ID Telegram",
+        "uk": "🔗 Прив'язати Telegram ID"
+    },
+    "unlink_telegram": {
+        "en": "🔗 Unlink Telegram ID",
+        "pl": "🔗 Odłącz ID Telegram",
+        "be": "🔗 Адвязаць ID Telegram",
+        "uk": "🔗 Відв'язати Telegram ID"
+    },
+    "pending_telegram_link": {
+        "en": "Enter the Telegram ID of the user you want to link to this page:",
+        "pl": "Wprowadź ID Telegram użytkownika, którego chcesz powiązać z tą stroną:",
+        "be": "Увядзіце ID Telegram карыстальніка, якога хочаце прывязаць да гэтай старонкі:",
+        "uk": "Введи Telegram ID користувача, якого хочеш прив'язати до цієї сторінки:"
     }
 }

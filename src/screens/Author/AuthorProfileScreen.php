@@ -58,6 +58,18 @@ class AuthorProfileScreen extends AbstractScreen
                 ],
             ];
 
+            if ($this->isGranted('admin')) {
+                if ($author['telegram_user_id']) {
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $this->translate('unlink_telegram'), 'callback_data' => 'author:unlink_telegram:' . $authorId],
+                    ];
+                } else {
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $this->translate('link_telegram'), 'callback_data' => 'author:link_telegram:' . $authorId],
+                    ];
+                }
+            }
+
             if ($this->isGranted('moderator')) {
                 $keyboard['inline_keyboard'][] = [
                     ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
@@ -122,6 +134,15 @@ class AuthorProfileScreen extends AbstractScreen
                 $this->data['author_id'] = $authorId;
                 $this->render();
             }
+        } elseif ('unlink_telegram' === $action) {
+            if (!$this->isGranted('admin')) {
+                return;
+            }
+            $authorId = (int)($params[0] ?? 0);
+            $authorService = $this->bot->getContainer()->get('author_service');
+            $authorService->setTelegramId($authorId, null);
+            $this->data['author_id'] = $authorId;
+            $this->render();
         }
     }
 
