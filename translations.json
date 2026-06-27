@@ -623,6 +623,18 @@
         "be": "🔙 Вярнуцца",
         "uk": "🔙 Повернутися назад"
     },
+    "cancel": {
+        "en": "❌ Cancel",
+        "pl": "❌ Anuluj",
+        "be": "❌ Адмяніць",
+        "uk": "❌ Скасувати"
+    },
+    "no_content_found": {
+        "en": "No content found.",
+        "pl": "Nie znaleziono żadnej treści.",
+        "be": "Кантэнт не знойдзены.",
+        "uk": "Контент не знайдено."
+    },
     "unknown_command_message": {
         "en": "I'm sorry, but I don't recognize that command. Please try a different command.",
         "pl": "Przepraszam, ale nie rozpoznaję tej komendy. Proszę spróbuj innej komendy.",
