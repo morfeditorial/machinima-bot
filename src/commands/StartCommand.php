@@ -55,6 +55,6 @@ class StartCommand extends AbstractCommand
         $this->getUserStateService()->clearState($user_id);
 
         $photoUrl = $this->getContainer()->get('visuals_links')[0];
-        $this->bot->sendPhotoMessage($chat_id, $photoUrl, $this->translate('welcome_message'));
+        $this->bot->pictureReply($chat_id, $this->translate('welcome_message'), $photoUrl);
     }
 }
