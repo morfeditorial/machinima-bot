@@ -74,6 +74,13 @@ class AuthorLinkTelegramScreen extends AbstractScreen
         }
 
         $authorService = $this->bot->getContainer()->get('author_service');
+        $existingAuthor = $authorService->getAuthorByTelegramId($telegramId);
+        if ($existingAuthor !== null) {
+            $this->bot->sendMessage($this->chatId, $this->translate('telegram_already_linked'));
+            $this->bot->getUserStateService()->clearState($this->userId);
+            return;
+        }
+
         $authorService->setTelegramId($authorId, $telegramId);
 
         $this->bot->getUserStateService()->clearState($this->userId);

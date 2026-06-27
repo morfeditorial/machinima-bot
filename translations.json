@@ -1000,5 +1000,11 @@
         "pl": "Wprowadź ID Telegram użytkownika, którego chcesz powiązać z tą stroną:",
         "be": "Увядзіце ID Telegram карыстальніка, якога хочаце прывязаць да гэтай старонкі:",
         "uk": "Введи Telegram ID користувача, якого хочеш прив'язати до цієї сторінки:"
+    },
+    "telegram_already_linked": {
+        "en": "❌ This user already has a public page!",
+        "pl": "❌ Ten użytkownik ma już stronę publiczną!",
+        "be": "❌ У гэтага карыстальніка ўжо ёсць публічная старонка!",
+        "uk": "❌ Цей користувач вже має публічну сторінку!"
     }
 }
