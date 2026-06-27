@@ -88,6 +88,11 @@ class MyBot extends tgLib
             ->setPublic(true);
         $container_builder->setAlias(\morfeditorial\services\ContentService::class, 'content_service');
 
+        $container_builder->register('rating_service', \morfeditorial\services\RatingService::class)
+            ->setAutowired(true)
+            ->setPublic(true);
+        $container_builder->setAlias(\morfeditorial\services\RatingService::class, 'rating_service');
+
         $container_builder->register('content_workflow_definition', \Symfony\Component\Workflow\Definition::class)
             ->setFactory([self::class, 'createContentWorkflowDefinition']);
 

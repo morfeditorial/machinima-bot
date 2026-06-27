@@ -7,7 +7,10 @@
         "doctrine/dbal": "^4.4",
         "symfony/dependency-injection": "^8.1",
         "symfony/security-core": "^8.1",
-        "symfony/workflow": "^8.1"
+        "symfony/workflow": "^8.1",
+        "fyennyi/async-cache-php": "^1.2",
+        "react/http": "^1.11",
+        "react/socket": "^1.17"
     },
     "autoload": {
         "psr-4": {
