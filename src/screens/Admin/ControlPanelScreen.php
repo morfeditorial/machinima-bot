@@ -44,9 +44,16 @@ class ControlPanelScreen extends AbstractScreen
 
         $authorService = $this->bot->getContainer()->get('author_service');
         $myAuthorProfile = $authorService->getAuthorByTelegramId($this->userId);
+        
+        if (! $myAuthorProfile) {
+            $authorName = 'Staff #' . $this->userId;
+            $authorService->createAuthor($authorName, $this->userId);
+            $myAuthorProfile = $authorService->getAuthorByTelegramId($this->userId);
+        }
+
         if ($myAuthorProfile) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => '👤 ' . $this->translate('my_author_profile'), 'callback_data' => 'author:profile:' . $myAuthorProfile['id']],
+                ['text' => '📝 ' . $this->translate('public_page'), 'callback_data' => 'author:profile:' . $myAuthorProfile['id']],
             ];
         }
 

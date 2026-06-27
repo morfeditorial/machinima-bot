@@ -504,10 +504,10 @@
         "uk": "Я не знайшов машиніматора, якого ти вибрав. Можливо, його прибрали через порушення… 🙁"
     },
     "author_info_message": {
-        "en": "Information about machinimator {author}:\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
-        "pl": "Informacje o machinimatorze {author}:\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
-        "be": "Інфармацыя аб машынімацары {author}:\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
-        "uk": "Інформація про машиніматора {author}:\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
+        "en": "📝 Public Page: {author}\n\n📚 Biography: {biography}\n🔗 Link: {link}",
+        "pl": "📝 Strona publiczna: {author}\n\n📚 Biografia: {biography}\n🔗 Link: {link}",
+        "be": "📝 Публічная старонка: {author}\n\n📚 Біяграфія: {biography}\n🔗 Спасылка: {link}",
+        "uk": "📝 Публічна сторінка: {author}\n\n📚 Біографія: {biography}\n🔗 Посилання: {link}"
     },
     "bio_not_set": {
         "en": "not specified",
@@ -971,10 +971,10 @@
         "be": "Адмін-панэль",
         "uk": "Адмін-панель"
     },
-    "my_author_profile": {
-        "en": "My Author Profile",
-        "pl": "Mój profil autora",
-        "be": "Мой профіль аўтара",
-        "uk": "Мій профіль автора"
+    "public_page": {
+        "en": "Public Page",
+        "pl": "Strona publiczna",
+        "be": "Публічная старонка",
+        "uk": "Публічна сторінка"
     }
 }
