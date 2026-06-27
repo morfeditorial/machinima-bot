@@ -41,7 +41,7 @@ class AuthorProfileScreen extends AbstractScreen
         $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
-        if (false !== $author) {
+        if (null !== $author) {
             $authorStatus = $authorService->isPrivate($authorId);
             $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
 
@@ -127,7 +127,7 @@ class AuthorProfileScreen extends AbstractScreen
                 return;
             }
 
-            if (false !== $author) {
+            if (null !== $author) {
                 $isPrivate = $authorService->isPrivate($authorId);
                 $authorService->setPrivate($authorId, !$isPrivate);
 
