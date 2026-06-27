@@ -108,6 +108,8 @@ class ScreenDispatcher
 
         'awaiting_category_name' => \morfeditorial\screens\Category\CategoryCreateScreen::class,
         'awaiting_staff_role' => \morfeditorial\screens\Staff\StaffAddScreen::class,
+
+        'awaiting_search_query' => \morfeditorial\screens\Public\SearchContentScreen::class,
     ];
 
     public function __construct(MyBot $bot)

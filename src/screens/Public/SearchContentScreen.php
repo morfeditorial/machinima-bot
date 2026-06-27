@@ -49,10 +49,8 @@ class SearchContentScreen extends AbstractScreen
 
     public function handleMessage(string $text) : void
     {
-        if ('awaiting_search_query' === $this->bot->getUserStateService()->getState($this->userId)) {
-            $this->bot->getUserStateService()->clearState($this->userId);
-            $this->doSearch($text);
-        }
+        $this->bot->getUserStateService()->clearState($this->userId);
+        $this->doSearch($text);
     }
 
     private function doSearch(string $query) : void
