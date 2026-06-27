@@ -39,8 +39,22 @@ class SearchContentCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        $screenClass = \morfeditorial\screens\Public\SearchContentScreen::class;
-        $screen = new $screenClass($this->bot, ["chat_id" => $chat_id, "user_id" => $user_id]);
-        $screen->render();
+        $this->getUserStateService()->setState($user_id, [], 'awaiting_search_query');
+        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+
+        $keyboard = [
+            'inline_keyboard' => [
+                [
+                    ['text' => $this->translate('cancel'), 'callback_data' => 'public:cancel'],
+                ],
+            ],
+        ];
+
+        if (!is_null($current_panel)) {
+            $this->bot->deleteMessage($chat_id, $current_panel);
+        }
+
+        $this->getUserService()->setCurrentPanel($user_id, $message_id + 1);
+        $this->bot->pictureReply($chat_id, $this->translate('enter_search_query'), $visualsLinks[1], $keyboard);
     }
 }

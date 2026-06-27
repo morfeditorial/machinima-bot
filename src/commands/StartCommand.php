@@ -52,8 +52,37 @@ class StartCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        $screenClass = \morfeditorial\screens\Public\MainMenuScreen::class;
-        $screen = new $screenClass($this->bot, ["chat_id" => $chat_id, "user_id" => $user_id]);
-        $screen->render();
+        $this->getUserStateService()->clearState($user_id);
+        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+
+        $keyboard = [
+            'inline_keyboard' => [
+                [
+                    ['text' => $this->translate('search_content'), 'callback_data' => 'public:search'],
+                ],
+                [
+                    ['text' => $this->translate('categories'), 'callback_data' => 'public:categories'],
+                ],
+                [
+                    ['text' => $this->translate('top_authors'), 'callback_data' => 'public:top_authors'],
+                ],
+                [
+                    ['text' => $this->translate('random_content'), 'callback_data' => 'public:random'],
+                ],
+            ],
+        ];
+
+        if ($this->bot->isGranted('moderator')) {
+            $keyboard['inline_keyboard'][] = [
+                ['text' => '⚙️ Admin Panel', 'callback_data' => 'admin:panel'],
+            ];
+        }
+
+        if (!is_null($current_panel)) {
+            $this->bot->deleteMessage($chat_id, $current_panel);
+        }
+
+        $this->getUserService()->setCurrentPanel($user_id, $message_id + 1);
+        $this->bot->pictureReply($chat_id, $this->translate('welcome_message'), $visualsLinks[0], $keyboard);
     }
 }

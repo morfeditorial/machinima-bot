@@ -39,8 +39,29 @@ class TopAuthorsCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        $screenClass = \morfeditorial\screens\Public\TopAuthorsScreen::class;
-        $screen = new $screenClass($this->bot, ["chat_id" => $chat_id, "user_id" => $user_id]);
-        $screen->render();
+        $this->getUserStateService()->clearState($user_id);
+
+        $authorService = $this->bot->getContainer()->get('author_service');
+        $topAuthors = $authorService->getTopAuthors(10);
+        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+
+        $keyboard = ['inline_keyboard' => []];
+
+        foreach ($topAuthors as $author) {
+            $keyboard['inline_keyboard'][] = [
+                ['text' => $author['name'] . ' (' . $author['projects_count'] . ' 🎬)', 'callback_data' => 'author:profile:' . $author['id']],
+            ];
+        }
+
+        $messageText = empty($topAuthors)
+            ? $this->translate('empty_authors_list_message')
+            : $this->translate('top_authors');
+
+        if (!is_null($current_panel)) {
+            $this->bot->deleteMessage($chat_id, $current_panel);
+        }
+
+        $this->getUserService()->setCurrentPanel($user_id, $message_id + 1);
+        $this->bot->pictureReply($chat_id, $messageText, $visualsLinks[1], $keyboard);
     }
 }

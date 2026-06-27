@@ -39,8 +39,24 @@ class CategoriesCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        $screenClass = \morfeditorial\screens\Public\CategoryListScreen::class;
-        $screen = new $screenClass($this->bot, ["chat_id" => $chat_id, "user_id" => $user_id]);
-        $screen->render();
+        $this->getUserStateService()->clearState($user_id);
+        $contentService = $this->bot->getContainer()->get('content_service');
+        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+
+        $keyboard = ['inline_keyboard' => []];
+
+        $categories = $contentService->getCategoriesByParent(null);
+        foreach ($categories as $cat) {
+            $keyboard['inline_keyboard'][] = [
+                ['text' => '📁 ' . $cat['name'], 'callback_data' => 'public:category:' . $cat['id']],
+            ];
+        }
+
+        if (!is_null($current_panel)) {
+            $this->bot->deleteMessage($chat_id, $current_panel);
+        }
+
+        $this->getUserService()->setCurrentPanel($user_id, $message_id + 1);
+        $this->bot->pictureReply($chat_id, $this->translate('categories'), $visualsLinks[1], $keyboard);
     }
 }
