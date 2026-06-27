@@ -19,6 +19,7 @@ $bot = new \morfeditorial\MyBot($botToken);
 $container = $bot->getContainer();
 $contentService = $container->get('content_service');
 $authorService = $container->get('author_service');
+$ratingService = $container->get('rating_service');
 
 $cache = new ArrayCache();
 $cacheManager = new AsyncCacheManager(
@@ -27,7 +28,7 @@ $cacheManager = new AsyncCacheManager(
 
 $cacheOptions = new CacheOptions(ttl: 30);
 
-$http = new HttpServer(function (ServerRequestInterface $request) use ($contentService, $authorService, $cacheManager, $cacheOptions) {
+$http = new HttpServer(function (ServerRequestInterface $request) use ($contentService, $authorService, $ratingService, $cacheManager, $cacheOptions) {
     $path = $request->getUri()->getPath();
 
     $headers = [
@@ -42,8 +43,13 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
 
     return $cacheManager->wrap(
         'api_' . md5($path),
-        function () use ($path, $contentService, $authorService) {
-            return \React\Promise\resolve(null)->then(function () use ($path, $contentService, $authorService) {
+        function () use ($path, $contentService, $authorService, $ratingService) {
+            return \React\Promise\resolve(null)->then(function () use ($path, $contentService, $authorService, $ratingService) {
+                if ($path === '/api/feed') {
+                    $feed = $ratingService->getTrendingContent(20);
+                    return json_encode(['success' => true, 'data' => $feed]);
+                }
+
                 if ($path === '/api/projects/random') {
                     $content = $contentService->getRandomContent();
                     return json_encode(['success' => true, 'data' => $content]);
