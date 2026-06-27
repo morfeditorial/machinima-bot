@@ -43,8 +43,8 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
 
     return $cacheManager->wrap(
         'api_' . md5($path),
-        function () use ($path, $contentService, $authorService, $ratingService) {
-            return \React\Promise\resolve(null)->then(function () use ($path, $contentService, $authorService, $ratingService) {
+        function () use ($path, $request, $contentService, $authorService, $ratingService) {
+            return \React\Promise\resolve(null)->then(function () use ($path, $request, $contentService, $authorService, $ratingService) {
                 if ($path === '/api/feed') {
                     $feed = $ratingService->getTrendingContent(20);
                     return json_encode(['success' => true, 'data' => $feed]);
@@ -64,6 +64,33 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                     $query = urldecode($matches[1]);
                     $results = $contentService->searchContent($query);
                     return json_encode(['success' => true, 'data' => $results]);
+                }
+                
+                if (preg_match('#^/api/authors/(\d+)$#', $path, $matches)) {
+                    $authorId = (int) $matches[1];
+                    $author = $authorService->getAuthorById($authorId);
+                    
+                    if (!$author || $author['state'] !== 'public') {
+                        return json_encode(['success' => false, 'error' => 'Author not found']);
+                    }
+                    
+                    return json_encode(['success' => true, 'data' => $author]);
+                }
+                
+                if (preg_match('#^/api/authors/(\d+)/projects$#', $path, $matches)) {
+                    $authorId = (int) $matches[1];
+                    $author = $authorService->getAuthorById($authorId);
+                    
+                    if (!$author || $author['state'] !== 'public') {
+                        return json_encode(['success' => false, 'error' => 'Author not found']);
+                    }
+                    
+                    $queryParams = $request->getQueryParams();
+                    $limit = isset($queryParams['limit']) ? (int) $queryParams['limit'] : 10;
+                    $offset = isset($queryParams['offset']) ? (int) $queryParams['offset'] : 0;
+                    
+                    $projects = $authorService->getAuthorProjects($authorId, $limit, $offset);
+                    return json_encode(['success' => true, 'data' => $projects]);
                 }
 
                 return json_encode(['success' => false, 'error' => 'Endpoint Not Found']);

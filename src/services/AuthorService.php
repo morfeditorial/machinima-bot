@@ -84,11 +84,15 @@ class AuthorService
         return $this->db->fetchAllAssociative('SELECT * FROM authors');
     }
 
-    public function getContentByAuthorId(int $author_id) : array
+    public function getAuthorProjects(int $author_id, int $limit = 10, int $offset = 0) : array
     {
         return $this->db->fetchAllAssociative(
-            'SELECT description FROM content WHERE author_id = ?',
-            [$author_id]
+            'SELECT c.* FROM content c 
+             JOIN content_staff cs ON c.id = cs.content_id 
+             WHERE cs.author_id = ? AND c.status = ?
+             ORDER BY c.trending_score DESC 
+             LIMIT ? OFFSET ?',
+            [$author_id, 'published', $limit, $offset]
         );
     }
 
