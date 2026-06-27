@@ -63,7 +63,9 @@ class RoleControlScreen extends AbstractScreen
 
     public function handleCallback(string $action, array $params) : void
     {
-        $this->render();
+        if ('control' === $action) {
+            $this->render();
+        }
     }
 
     public function handleMessage(string $text) : void {}
