@@ -72,7 +72,7 @@ class AuthorProfileScreen extends AbstractScreen
                 }
             }
 
-            if ($this->isGranted('moderator')) {
+            if ($this->isGranted('moderator') || $isOwnProfile) {
                 $keyboard['inline_keyboard'][] = [
                     ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
                 ];

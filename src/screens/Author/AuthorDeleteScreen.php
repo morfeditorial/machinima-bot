@@ -76,14 +76,6 @@ class AuthorDeleteScreen extends AbstractScreen
 
     private function confirmDelete(int $authorId) : void
     {
-        if (!$this->isGranted('moderator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
-        }
-
-        $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
-        $prefix = preg_match("/^delete_page_(\d+)$/", $currentPage ?? 'delete_page_1', $matches) ? 'author:delete_page:' . $matches[1] : 'author:profile:' . $authorId;
-
         $authorService = $this->bot->getContainer()->get('author_service');
         $author = $authorService->getAuthorById($authorId);
 
@@ -91,6 +83,16 @@ class AuthorDeleteScreen extends AbstractScreen
             $this->bot->sendMessage($this->chatId, $this->translate('author_not_found_message'));
             return;
         }
+
+        $isOwnProfile = (int) $author['telegram_user_id'] === $this->userId;
+
+        if (!$this->isGranted('moderator') && !$isOwnProfile) {
+            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            return;
+        }
+
+        $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
+        $prefix = preg_match("/^delete_page_(\d+)$/", $currentPage ?? 'delete_page_1', $matches) ? 'author:delete_page:' . $matches[1] : 'author:profile:' . $authorId;
 
         $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
@@ -117,16 +119,18 @@ class AuthorDeleteScreen extends AbstractScreen
 
     private function doDelete(int $authorId) : void
     {
-        if (!$this->isGranted('moderator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
-        }
-
         $authorService = $this->bot->getContainer()->get('author_service');
         $author = $authorService->getAuthorById($authorId);
 
         if (false === $author) {
             $this->bot->sendMessage($this->chatId, $this->translate('author_not_found_message'));
+            return;
+        }
+
+        $isOwnProfile = (int) $author['telegram_user_id'] === $this->userId;
+
+        if (!$this->isGranted('moderator') && !$isOwnProfile) {
+            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
             return;
         }
 
