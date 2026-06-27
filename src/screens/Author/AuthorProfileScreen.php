@@ -27,6 +27,8 @@ class AuthorProfileScreen extends AbstractScreen
 {
     public function render() : void
     {
+        $this->bot->getUserStateService()->clearState($this->userId);
+
         $authorId = (int)$this->data['author_id'];
         $authorService = $this->bot->getContainer()->get('author_service');
         $author = $authorService->getAuthorById($authorId);

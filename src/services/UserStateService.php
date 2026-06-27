@@ -34,6 +34,8 @@ class UserStateService
 
     public function setState(int $user_id, mixed $value, string $key = 'default') : void
     {
+        $this->clearState($user_id);
+
         $this->db->executeStatement(
             'INSERT INTO user_states (user_id, state_key, state_value) VALUES (?, ?, ?)
              ON CONFLICT(user_id, state_key) DO UPDATE SET state_value = excluded.state_value',

@@ -110,9 +110,6 @@ class ScreenDispatcher
      */
     public function dispatchCallback(array $data, string $payload) : bool
     {
-        // Очищаємо стан, адже будь-яке натискання інлайн-кнопки перериває очікування тексту
-        $this->bot->getUserStateService()->clearState($data['user_id']);
-
         $parts = explode(':', $payload);
         $domain = $parts[0] ?? '';
         $action = $parts[1] ?? '';
