@@ -1,1026 +1,1022 @@
 {
-  "start_command_description": {
-    "en": "Start communication with the assistant",
-    "pl": "Rozpocznij komunikację z asystentem",
-    "be": "Пачніце зносіны з памочнікам",
-    "uk": "Почати спілкування з помічником"
-  },
-  "help_command_description": {
-    "en": "Learn more about the bot",
-    "pl": "Dowiedz się więcej o bocie",
-    "be": "Даведайцеся больш пра бота",
-    "uk": "Дізнатися більше про бота"
-  },
-  "update_command_description": {
-    "en": "Update the bot, including name, description, and localized information",
-    "pl": "Zaktualizuj bota, w tym nazwę, opis i informacje lokalne",
-    "be": "Абнавіце бота, уключаючы назву, апісанне і лакалізаваную інфармацыю",
-    "uk": "Оновити бота, включаючи назву, опис та локалізовану інформацію"
-  },
-  "delete_role_command_description": {
-    "en": "Delete a role",
-    "pl": "Usuń rolę",
-    "be": "Выдаліць ролю",
-    "uk": "Видалити роль"
-  },
-  "delete_role_usage_message": {
-    "en": "Usage: /delete_role &lt;role_name&gt;",
-    "pl": "Użycie: /delete_role &lt;nazwa_roli&gt;",
-    "be": "Выкарыстанне: /delete_role &lt;назва_ролі&gt;",
-    "uk": "Використання: /delete_role &lt;назва_ролі&gt;"
-  },
-  "search_content_command_description": {
-    "en": "Find content by tag",
-    "pl": "Znajdź zawartość według tagu",
-    "be": "Знайдзіце кантэнт па тэгу",
-    "uk": "Знайти контент за тегами"
-  },
-  "search_author_command_description": {
-    "en": "Find information about the author",
-    "pl": "Znajdź informacje o autorze",
-    "be": "Знайдзіце звесткі пра аўтара",
-    "uk": "Знайти інформацію про автора"
-  },
-  "categories_command_description": {
-    "en": "View available categories",
-    "pl": "Zobacz dostępne kategorie",
-    "be": "Прагляд даступных катэгорый",
-    "uk": "Переглянути доступні категорії"
-  },
-  "top_authors_command_description": {
-    "en": "View the most popular authors",
-    "pl": "Zobacz najpopularniejszych autorów",
-    "be": "Прагляд самых папулярных аўтараў",
-    "uk": "Переглянути найпопулярніших авторів"
-  },
-  "random_content_command_description": {
-    "en": "Get random content",
-    "pl": "Zdobądź losową zawartość",
-    "be": "Атрымаць выпадковы кантэнт",
-    "uk": "Отримати випадковий контент"
-  },
-  "create_role_command_description": {
-    "en": "Create a new role",
-    "pl": "Utwórz nową rolę",
-    "be": "Стварыць новую ролю",
-    "uk": "Створити нову роль"
-  },
-  "assign_initial_admin_command_description": {
-    "en": "Assign the first admin role to the initiator",
-    "pl": "Przypisz pierwszą rolę administratora inicjatorowi",
-    "be": "Прызначыць першую ролю адміністратара ініцыятару",
-    "uk": "Призначити першу роль адміністратора ініціатору"
-  },
-  "assign_role_command_description": {
-    "en": "Assign a role to a user",
-    "pl": "Przypisz rolę użytkownikowi",
-    "be": "Прызначыць ролю карыстальніку",
-    "uk": "Призначити роль користувачу"
-  },
-  "remove_role_command_description": {
-    "en": "Remove a role from a user",
-    "pl": "Usuń rolę użytkownikowi",
-    "be": "Выдаліць ролю ў карыстальніка",
-    "uk": "Забрати роль у користувача"
-  },
-  "welcome_message": {
-    "en": "Hello, I`m a chatbot named Pai! 👋🏻\n\nMy mission is to centralize Ukrainian machinimators in one list. I`ll help you find interesting projects, short films, and series based on <b>Minecraft</b>. You won`t be bored with me!\n\n📚 You can learn commands to interact with me by sending the word «/help».",
-    "pl": "Cześć, jestem czatbotem o imieniu Pai! 👋🏻\n\nMoje zadanie to scentralizować ukraińskich machinimatorów w jednym spisie. Pomogę ci znaleźć interesujące projekty, krótkometrażowe filmy i seriale oparte na <b>Minecraft</b>. Z pewnością się nie nudzisz ze mną!\n\n📚 Aby dowiedzieć się więcej o moich komendach, wyślij słowo «/help».",
-    "be": "Прывітанне, я чат‐бот пад імем Пай! 👋🏻\n\nМая мэта — цэнтралізаваць украінскіх машыніматараў у адным спісе. Я дапаможу вам знайсці цікавыя праекты, кароткометражныя фільмы і серыялы, знятыя на аснове <b>Minecraft</b>. За мной вам не будзе нудна!\n\n📚 Каманды для взаемадзеяння з мной можна атрымаць, высылаючы слова «/help».",
-    "uk": "Привіт, я чат‐бот на ім’я Пай! 👋🏻\n\nМоє покликання — централізувати українських машиніматорів в одному списку. Я допоможу тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі <b>Minecraft</b>. Зі мною тобі не буде нудно!\n\n📚 Дізнатися команди взаємодії зі мною можна відправивши слово «/help»"
-  },
-  "help_message": {
-    "en": "🌟 These commands might be useful:\n\n/help — learn more about me\n/search_content — find content by tags\n/search_author — find information about an author\n/categories — view available categories\n/top_authors — view top authors\n/random_content — get random content\n\nBut I`m not allowed to add new content or authors. Please contact the bot administrator for that.",
-    "pl": "🌟 Oto kilka przydatnych poleceń:\n\n/help — dowiedz się więcej o mnie\n/search_content — znajdź treści według tagów\n/search_author — znajdź informacje o autorze\n/categories — przeglądaj dostępne kategorie\n/top_authors — przeglądaj najlepszych autorów\n/random_content — otrzymaj losową treść\n\nJednak nie mam uprawnień do dodawania nowych treści ani autorów. Skontaktuj się z administratorem bota w celu uzyskania pomocy.",
-    "be": "🌟 Вось некалькі карысных каманд:\n\n/help — даведацца больш пра мяне\n/search_content — знайсці кантэнт па тэгах\n/search_author — знайсці інфармацыю аб аўтары\n/categories — праглядзець даступныя катэгорыі\n/top_authors — праглядзець лепшых аўтароў\n/random_content — атрымаць выпадковы кантэнт\n\nАле ў мяне няма праваў дадаць новы кантэнт ці аўтараў. Звярніцеся да адміністратара бота за дапамогай.",
-    "uk": "🌟 Тобі можуть бути корисними ось ці команди:\n\n/help — дізнатися більше про мене\n/search_content — знайти контент за теґами\n/search_author — знайти інформацію про автора\n/categories — переглянути доступні категорії\n/top_authors — переглянути найпопулярніших авторів\n/random_content — отримати випадковий контент\n\nАле мені не дозволено додавати новий контент або авторів. Для цього слід звернутися до адміністратора бота."
-  },
-  "search_author_usage_message": {
-    "en": "Usage: /search_author &lt;query&gt;",
-    "pl": "Użycie: /search_author &lt;zapytanie&gt;",
-    "be": "Выкарыстанне: /search_author &lt;запыт&gt;",
-    "uk": "Використання: /search_author &lt;запит&gt;"
-  },
-  "no_search_results_message": {
-    "en": "📑 I found nothing for the search query «<code>{searchQuery}</code>». Try again, changing your query.",
-    "pl": "📑 Nie znalazłem niczego dla zapytania «<code>{searchQuery}</code>». Spróbuj ponownie, zmieniając zapytanie.",
-    "be": "📑 Нічога не знойдзена па запыце «<code>{searchQuery}</code>». Паспрабуйце яшчэ раз, змяняючы запыт.",
-    "uk": "📑 За пошуковим запитом «<code>{searchQuery}</code>» я нічого не знайшов. Спробуй ще раз, змінивши запит."
-  },
-  "search_author_message": {
-    "en": "📑 I found several authors ({count}) for your query: «<code>{searchQuery}</code>». You can review them by pressing the buttons below:",
-    "pl": "📑 Znalazłem kilku autorów ({count}) dla twojego zapytania: «<code>{searchQuery}</code>». Możesz je przejrzeć, naciskając przyciski poniżej:",
-    "be": "📑 Знойдзена некалькі аўтараў ({count}) па вашым запыце: «<code>{searchQuery}</code>». Вы можаце праглядзець іх, націскаючы кнопкі ніжэй:",
-    "uk": "📑 Я знайшов кілька авторів ({count}) за твоїм запитом: «<code>{searchQuery}</code>». Ти можеш оглянути їх, натискаючи кнопки знизу:"
-  },
-  "bot_name": {
-    "en": "Morf — centralized chatbot",
-    "pl": "Morf — scentralizowany chatbot",
-    "be": "Morf — цэнтралізаваны чат-бот",
-    "uk": "Morf — централізований чат‐бот"
-  },
-  "bot_description": {
-    "en": "Hello, I will help you discover interesting projects, short films, and series created based on Minecraft. You won't be bored with me!\n\nMy purpose is to centralize Ukrainian machinimators in one list.",
-    "pl": "Cześć, pomogę Ci odkryć interesujące projekty, krótkie filmy i seriale stworzone na podstawie Minecrafta. Z nami nie będziesz się nudzić!\n\nMoim celem jest skupienie ukraińskich machinimatorów w jednym miejscu.",
-    "be": "Прывітанне, я дапаможу табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft. За мной табе не будзе нудна!\n\nМой мэт — цэнтралізаваць украінскіх машыніматараў у адным спісе.",
-    "uk": "Привіт, я допоможу тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft. Зі мною тобі не буде нудно!\n\nМоє покликання — централізувати українських машиніматорів в одному списку."
-  },
-  "bot_short_description": {
-    "en": "A bot that helps you discover interesting projects, short films, and series created based on Minecraft.",
-    "pl": "Bot, który pomoże Ci odkryć interesujące projekty, krótkie filmy i seriale stworzone na podstawie Minecrafta.",
-    "be": "Бот, які дапаможа табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft.",
-    "uk": "Бот, який допоможе тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft."
-  },
-  "update_message": {
-    "en": "I successfully updated the bot`s data! 🔄",
-    "pl": "Pomyślnie zaktualizowałem dane bota! 🔄",
-    "be": "Я паспяхова абнавіў даныя бота! 🔄",
-    "uk": "Я успішно оновив дані бота! 🔄"
-  },
-  "add_author": {
-    "en": "Add Author",
-    "pl": "Dodaj autora",
-    "be": "Дадаць аўтара",
-    "uk": "Додати автора"
-  },
-  "add_author_message": {
-    "en": "Enter the name for the new public page:",
-    "pl": "Wprowadź nazwę nowej strony publicznej:",
-    "be": "Увядзіце назву для новай публічнай старонкі:",
-    "uk": "Введи назву для нової публічної сторінки:"
-  },
-  "author_added_message": {
-    "en": "I`ve created public page {author}! Choose an action:",
-    "pl": "Utworzyłem stronę publiczną {author}! Wybierz działanie:",
-    "be": "Я стварыў публічную старонку {author}! Выберыце дзеянне:",
-    "uk": "Я створив публічну сторінку {author}! Вибери дію:"
-  },
-  "delete_author": {
-    "en": "Delete Authors",
-    "pl": "Usuń autorów",
-    "be": "Выдалення аўтараў",
-    "uk": "Видалення авторів"
-  },
-  "delete_author_message": {
-    "en": "Choose a public page from the list you want to delete:",
-    "pl": "Wybierz stronę publiczną z listy, którą chcesz usunąć:",
-    "be": "Выберыце публічную старонку са спісу, якую хочаце выдаліць:",
-    "uk": "Вибери публічну сторінку зі списку, яку ти хочеш видалити:"
-  },
-  "confirm_delete": {
-    "en": "Yes, confirm deletion",
-    "pl": "Tak, potwierdź usunięcie",
-    "be": "Так, пацвердзіць выдаленне",
-    "uk": "Так, підтвердити видалення"
-  },
-  "confirm_delete_message": {
-    "en": "Confirm whether you really want to delete the public page named {author}. This action cannot be undone!",
-    "pl": "Potwierdź, czy naprawdę chcesz usunąć stronę publiczną {author}. Tej operacji nie można cofnąć!",
-    "be": "Пацвердзіце, ці сапраўды вы хочаце выдаліць публічную старонку {author}. Гэта дзеянне немагчыма адмяніць!",
-    "uk": "Підтверди, чи точно ти хочеш видалити публічну сторінку {author}. Скасувати цю дію неможливо!"
-  },
-  "author_deleted_message": {
-    "en": "Public page named {author} has been irreversibly deleted.",
-    "pl": "Strona publiczna {author} została bezpowrotnie usunięta.",
-    "be": "Публічная старонка {author} была безваротна выдаленая.",
-    "uk": "Публічна сторінка {author} була безповоротно видалена."
-  },
-  "list_of_authors": {
-    "en": "List of Authors",
-    "pl": "Lista autorów",
-    "be": "Спіс аўтараў",
-    "uk": "Список авторів"
-  },
-  "list_of_authors_message": {
-    "en": "Here is a list of all public pages in the system:",
-    "pl": "Oto lista wszystkich stron publicznych w systemie:",
-    "be": "Вось спіс усіх публічных старонак у сістэме:",
-    "uk": "Ось перелік усіх публічних сторінок у системі:"
-  },
-  "empty_authors_list_message": {
-    "en": "No public pages have been created in the system yet.",
-    "pl": "W systemie nie utworzono jeszcze żadnych stron publicznych.",
-    "be": "У сістэме яшчэ не створана ніводнай публічнай старонкі.",
-    "uk": "У системі ще не створено жодної публічної сторінки."
-  },
-  "previous_page": {
-    "en": "↩️ Back",
-    "pl": "↩️ Wstecz",
-    "be": "↩️ Назад",
-    "uk": "↩️ Назад"
-  },
-  "next_page": {
-    "en": "Forward ↪️",
-    "pl": "Naprzód ↪️",
-    "be": "Наперад ↪️",
-    "uk": "Вперед ↪️"
-  },
-  "admin_panel_message": {
-    "en": "Hello! This is your control panel. Here are the buttons to assist you! 🔧",
-    "pl": "Cześć! To jest twój panel sterowania. Oto przyciski, które pomogą ci w pracy! 🔧",
-    "be": "Прывітанне! Гэта твая панэль кіравання. Вось кнопкі, якія дапамогуць табе ў справе! 🔧",
-    "uk": "Привіт! Це твоя панель керування. Тримай кнопки, які допоможуть тобі у справі! 🔧"
-  },
-  "manage_projects": {
-    "en": "Manage Projects 📦",
-    "pl": "Zarządzaj projektami 📦",
-    "be": "Кіраванне праектамі 📦",
-    "uk": "Управління проєктами 📦"
-  },
-  "add_project": {
-    "en": "Add Project",
-    "pl": "Dodaj projekt",
-    "be": "Дадаць праект",
-    "uk": "Додати проєкт"
-  },
-  "enter_project_title_message": {
-    "en": "Enter the title of the project:",
-    "pl": "Wprowadź tytuł projektu:",
-    "be": "Увядзіце назву праекта:",
-    "uk": "Введи назву проєкту:"
-  },
-  "select_project_type_message": {
-    "en": "Select project type:",
-    "pl": "Wybierz typ projektu:",
-    "be": "Выберыце тып праекта:",
-    "uk": "Обери тип проєкту:"
-  },
-  "project_type_short": {
-    "en": "Short Film",
-    "pl": "Film krótkometrażowy",
-    "be": "Кароткаметражны фільм",
-    "uk": "Короткометражка"
-  },
-  "project_type_series": {
-    "en": "Series",
-    "pl": "Serial",
-    "be": "Серыял",
-    "uk": "Серіал"
-  },
-  "project_type_music_video": {
-    "en": "Music Video",
-    "pl": "Teledysk",
-    "be": "Музычны кліп",
-    "uk": "Музичний кліп"
-  },
-  "enter_project_description_message": {
-    "en": "Enter project description:",
-    "pl": "Wprowadź opis projektu:",
-    "be": "Увядзіце апісанне праекта:",
-    "uk": "Введи опис проєкту:"
-  },
-  "enter_project_url_message": {
-    "en": "Enter YouTube link:",
-    "pl": "Wprowadź link do YouTube:",
-    "be": "Увядзіце спасылку на YouTube:",
-    "uk": "Введи посилання на YouTube:"
-  },
-  "upload_project_cover_message": {
-    "en": "Upload project cover (image):",
-    "pl": "Prześlij okładkę projektu (obraz):",
-    "be": "Загрузіце вокладку праекта (выява):",
-    "uk": "Завантаж обкладинку проєкту (зображення):"
-  },
-  "project_created_message": {
-    "en": "Project «{title}» created as draft! 📝",
-    "pl": "Projekt «{title}» został utworzony jako wersja robocza! 📝",
-    "be": "Праект «{title}» створаны як чарнавік! 📝",
-    "uk": "Проєкт «{title}» створено як чернетку! 📝"
-  },
-  "manage_staff": {
-    "en": "Manage Staff 👥",
-    "pl": "Zarządzaj zespołem 👥",
-    "be": "Кіраванне камандай 👥",
-    "uk": "Керувати командою 👥"
-  },
-  "add_staff_member": {
-    "en": "Add Staff Member",
-    "pl": "Dodaj członka zespołu",
-    "be": "Дадаць удзельніка каманды",
-    "uk": "Додати учасника"
-  },
-  "select_author_for_staff_message": {
-    "en": "Select a public page to add to the project staff:",
-    "pl": "Wybierz stronę publiczną, którą chcesz dodać do zespołu projektu:",
-    "be": "Абярыце публічную старонку для дадання ў каманду праекта:",
-    "uk": "Оберіть публічну сторінку, щоб додати до команди проєкту:"
-  },
-  "enter_staff_role_message": {
-    "en": "Enter the role for this staff member (e.g., Director, Actor):",
-    "pl": "Wprowadź rolę dla tego członka zespołu (np. Reżyser, Aktor):",
-    "be": "Увядзіце ролю для гэтага ўдзельніка каманды (напрыклад: Рэжысёр, Акцёр):",
-    "uk": "Введи роль для цього учасника (наприклад: Режисер, Актор):"
-  },
-  "staff_member_added_message": {
-    "en": "Staff member {author} added as {role}!",
-    "pl": "Członek zespołu {author} dodany jako {role}!",
-    "be": "Удзельнік каманды {author} дададзены як {role}!",
-    "uk": "Учасника {author} додано як {role}!"
-  },
-  "staff_list_message": {
-    "en": "Project Staff:",
-    "pl": "Zespół projektu:",
-    "be": "Каманда праекта:",
-    "uk": "Команда проєкту:"
-  },
-  "remove_staff_member": {
-    "en": "Remove member",
-    "pl": "Usuń członka",
-    "be": "Выдаліць удзельніка",
-    "uk": "Видалити учасника"
-  },
-  "manage_categories": {
-    "en": "Manage Categories 🏷",
-    "pl": "Zarządzaj kategoriami 🏷",
-    "be": "Кіраванне катэгорыямі 🏷",
-    "uk": "Управління категоріями 🏷"
-  },
-  "manage_subcategories": {
-    "en": "Subcategories of «{category}» 🏷",
-    "pl": "Podkategorie «{category}» 🏷",
-    "be": "Падкатэгорыі «{category}» 🏷",
-    "uk": "Підкатегорії «{category}» 🏷"
-  },
-  "add_category": {
-    "en": "Add Category",
-    "pl": "Dodaj kategorię",
-    "be": "Дадаць катэгорыю",
-    "uk": "Додати категорію"
-  },
-  "add_subcategory": {
-    "en": "Add Subcategory",
-    "pl": "Dodaj podkategorię",
-    "be": "Дадаць падкатэгорыю",
-    "uk": "Додати підкатегорію"
-  },
-  "enter_category_name_message": {
-    "en": "Enter the name of the new category:",
-    "pl": "Wprowadź nazwę nowej kategorii:",
-    "be": "Увядзіце назву новай катэгорыі:",
-    "uk": "Введи назву нової категорії:"
-  },
-  "category_added_message": {
-    "en": "Category «{name}» added!",
-    "pl": "Kategoria «{name}» została dodana!",
-    "be": "Катэгорыя «{name}» дададзена!",
-    "uk": "Категорію «{name}» додано!"
-  },
-  "delete_category": {
-    "en": "Delete Category",
-    "pl": "Usuń kategorię",
-    "be": "Выдаліць катэгорыю",
-    "uk": "Видалити категорію"
-  },
-  "confirm_delete_category_message": {
-    "en": "Are you sure you want to delete category «{name}»? This will NOT delete subcategories but will remove links.",
-    "pl": "Czy na pewno chcesz usunąć kategorię «{name}»? To NIE usunie podkategorii, ale usunie powiązania.",
-    "be": "Вы ўпэўнены, што хочаце выдаліць катэгорыю «{name}»? Гэта НЕ выдаліць падкатэгорыі, але выдаліць сувязі.",
-    "uk": "Ти впевнений, що хочеш видалити категорію «{name}»? Це НЕ видалить підкатегорії, але розірве зв'язки."
-  },
-  "category_deleted_message": {
-    "en": "Category deleted!",
-    "pl": "Kategoria usunięta!",
-    "be": "Катэгорыя выдалена!",
-    "uk": "Категорію видалено!"
-  },
-  "select_categories_for_project": {
-    "en": "Select Categories",
-    "pl": "Wybierz kategorie",
-    "be": "Абярыце катэгорыі",
-    "uk": "Обрати категорії"
-  },
-  "no_categories_message": {
-    "en": "No categories found.",
-    "pl": "Nie znaleziono żadnych kategorii.",
-    "be": "Катэгорый не знойдзена.",
-    "uk": "Категорій не знайдено."
-  },
-  "submit_project": {
-    "en": "Submit for Review",
-    "pl": "Prześlij do recenzji",
-    "be": "Адправіць на праверку",
-    "uk": "Відправити на перевірку"
-  },
-  "publish_project": {
-    "en": "Publish ✅",
-    "pl": "Opublikuj ✅",
-    "be": "Апублікаваць ✅",
-    "uk": "Опублікувати ✅"
-  },
-  "reject_project": {
-    "en": "Reject ❌",
-    "pl": "Odrzuć ❌",
-    "be": "Адхіліць ❌",
-    "uk": "Відхилити ❌"
-  },
-  "redraft_project": {
-    "en": "Return to Draft",
-    "pl": "Wróć do wersji roboczej",
-    "be": "Вярнуць у чарнавікі",
-    "uk": "Повернути в чернетки"
-  },
-  "status_changed_message": {
-    "en": "Project status changed to: {status}",
-    "pl": "Status projektu zmieniony na: {status}",
-    "be": "Статус праекта зменены на: {status}",
-    "uk": "Статус проєкту змінено на: {status}"
-  },
-  "status_change_failed_message": {
-    "en": "Failed to change status. Invalid transition.",
-    "pl": "Nie udało się zmienić statusu. Nieprawidłowe przejście.",
-    "be": "Не ўдалося змяніць статус. Няправільны пераход.",
-    "uk": "Не вдалося змінити статус. Недопустимий перехід."
-  },
-  "delete_this_project": {
-    "en": "Delete Project",
-    "pl": "Usuń projekt",
-    "be": "Выдаліць праект",
-    "uk": "Видалити проєкт"
-  },
-  "edit_project": {
-    "en": "Edit Project ✏️",
-    "pl": "Edytuj projekt ✏️",
-    "be": "Рэдагаваць праект ✏️",
-    "uk": "Редагувати проєкт ✏️"
-  },
-  "edit_title": {
-    "en": "Edit Title",
-    "pl": "Edytuj tytuł",
-    "be": "Рэдагаваць назву",
-    "uk": "Змінити назву"
-  },
-  "edit_description": {
-    "en": "Edit Description",
-    "pl": "Edytuj opis",
-    "be": "Рэдагаваць апісанне",
-    "uk": "Змінити опис"
-  },
-  "edit_url": {
-    "en": "Edit URL",
-    "pl": "Edytuj URL",
-    "be": "Рэдагаваць URL",
-    "uk": "Змінити URL"
-  },
-  "edit_cover": {
-    "en": "Edit Cover",
-    "pl": "Edytuj okładkę",
-    "be": "Рэдагаваць вокладку",
-    "uk": "Змінити обкладинку"
-  },
-  "edit_type": {
-    "en": "Edit Type",
-    "pl": "Edytuj typ",
-    "be": "Рэдагаваць тып",
-    "uk": "Змінити тип"
-  },
-  "enter_new_value_message": {
-    "en": "Enter the new value:",
-    "pl": "Wprowadź nową wartość:",
-    "be": "Увядзіце новае значэнне:",
-    "uk": "Введи нове значення:"
-  },
-  "project_updated_message": {
-    "en": "Project updated!",
-    "pl": "Projekt zaktualizowany!",
-    "be": "Праект абноўлены!",
-    "uk": "Проєкт оновлено!"
-  },
-  "confirm_delete_project_message": {
-    "en": "Are you sure you want to delete project «{title}»?",
-    "pl": "Czy na pewno chcesz usunąć projekt «{title}»?",
-    "be": "Вы ўпэўнены, што хочаце выдаліць праект «{title}»?",
-    "uk": "Ти впевнений, що хочеш видалити проєкт «{title}»?"
-  },
-  "project_deleted_message": {
-    "en": "Project deleted!",
-    "pl": "Projekt usunięty!",
-    "be": "Праект выдалены!",
-    "uk": "Проєкт видалено!"
-  },
-  "author_not_found_message": {
-    "en": "I couldn`t find the public page you selected. Perhaps it was removed due to a violation… 🙁",
-    "pl": "Nie mogłem odnaleźć wybranej przez ciebie strony publicznej. Być może została usunięta z powodu naruszenia… 🙁",
-    "be": "Я не знайшоў публічную старонку, якую ты выбраў. Магчыма, яе выдалілі з‐за парушэння… 🙁",
-    "uk": "Я не знайшов публічну сторінку, яку ти вибрав. Можливо, її видалили через порушення… 🙁"
-  },
-  "author_info_message": {
-    "en": "📝 Public Page: {author}\n\n📚 Biography: {biography}\n🔗 Link: {link}",
-    "pl": "📝 Strona publiczna: {author}\n\n📚 Biografia: {biography}\n🔗 Link: {link}",
-    "be": "📝 Публічная старонка: {author}\n\n📚 Біяграфія: {biography}\n🔗 Спасылка: {link}",
-    "uk": "📝 Публічна сторінка: {author}\n\n📚 Біографія: {biography}\n🔗 Посилання: {link}"
-  },
-  "bio_not_set": {
-    "en": "not specified",
-    "pl": "brak określonej",
-    "be": "не вызначана",
-    "uk": "не вказана"
-  },
-  "link_not_set": {
-    "en": "not specified",
-    "pl": "brak określonego",
-    "be": "не вызначана",
-    "uk": "не вказане"
-  },
-  "change_name": {
-    "en": "✍🏻 Change name",
-    "pl": "✍🏻 Zmień imię",
-    "be": "✍🏻 Змяніць імя",
-    "uk": "✍🏻 Змінити ім’я"
-  },
-  "pending_name_change": {
-    "en": "Enter the text in the next message to change the page`s name:",
-    "pl": "Wprowadź tekst w następnym komunikacie, aby zmienić nazwę strony publicznej:",
-    "be": "Увядзіце тэкст у наступным паведамленні, каб змяніць назву старонкі:",
-    "uk": "Введи текст в наступному повідомленні, щоб змінити назву сторінки:"
-  },
-  "name_changed_message": {
-    "en": "Updated information for page {author} (formerly {oldName}):\n\n📚 Biography: {biography}\n🔗 Link: {link}",
-    "pl": "Zaktualizowane informacje dla strony {author} (dawniej {oldName}):\n\n📚 Biografia: {biography}\n🔗 Link: {link}",
-    "be": "Абноўленая інфармацыя для старонкі {author} (раней {oldName}):\n\n📚 Біяграфія: {biography}\n🔗 Спасылка: {link}",
-    "uk": "Оновлена інформація для сторінки {author} (раніше {oldName}):\n\n📚 Біографія: {biography}\n🔗 Посилання: {link}"
-  },
-  "make_public": {
-    "en": "Make public 🔓",
-    "pl": "Upublicznij 🔓",
-    "be": "Зрабіць публічнай 🔓",
-    "uk": "Зробити публічною 🔓"
-  },
-  "make_private": {
-    "en": "Make private 🔒",
-    "pl": "Uprywatnij 🔒",
-    "be": "Зрабіць прыватнай 🔒",
-    "uk": "Зробити приватною 🔒"
-  },
-  "change_bio": {
-    "en": "Edit biography",
-    "pl": "Edytuj biografię",
-    "be": "Рэдагаваць біяграфію",
-    "uk": "Редагувати біографію"
-  },
-  "pending_bio_change": {
-    "en": "Enter the text in the next message to add a biography for the machinimator:",
-    "pl": "Wprowadź tekst w następnym komunikacie, aby dodać biografię machinimatora:",
-    "be": "Увядзіце тэкст у наступным паведамленні, каб дадаць біяграфію машыніматара:",
-    "uk": "Введи текст в наступному повідомленні, щоб додати біографію машиніматора:"
-  },
-  "bio_changed_message": {
-    "en": "Updated information for machinimator {author}:\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
-    "pl": "Zaktualizowane informacje dla machinimatora {author}:\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
-    "be": "Абноўленая інфармацыя для машыніматара {author}:\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
-    "uk": "Оновлена інформація про машиніматора {author}:\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
-  },
-  "add_bio": {
-    "en": "Set biography",
-    "pl": "Ustaw biografię",
-    "be": "Устанавіць біяграфію",
-    "uk": "Встановити біографію"
-  },
-  "pending_bio_add": {
-    "en": "Enter the text in the next message to add a biography for the machinimator:",
-    "pl": "Wprowadź tekst w następnym komunikacie, aby dodać biografię machinimatora:",
-    "be": "Увядзіце тэкст у наступным паведамленні, каб дадаць біяграфію машыніматара:",
-    "uk": "Введи текст в наступному повідомленні, щоб додати біографію машиніматора:"
-  },
-  "bio_added_message": {
-    "en": "Updated information for machinimator {author}:\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
-    "pl": "Zaktualizowane informacje dla machinimatora {author}:\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
-    "be": "Абноўленая інфармацыя для машыніматара {author}:\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
-    "uk": "Оновлена інформація про машиніматора {author}:\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
-  },
-  "change_link": {
-    "en": "Change link",
-    "pl": "Zmień link",
-    "be": "Змяніць спасылку",
-    "uk": "Змінити посилання"
-  },
-  "pending_link_change": {
-    "en": "Enter the text of the link to the machinimator`s channel in the next message:",
-    "pl": "Wprowadź tekst linku do kanału machinimatora w następnym komunikacie:",
-    "be": "Увядзіце тэкст спасылкі на канал машыніматара ў наступным паведамленні:",
-    "uk": "Введи текст посилання на канал трансляцій машиніматора в наступному повідомленні:"
-  },
-  "link_changed_message": {
-    "en": "Updated information for machinimator {author}:\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
-    "pl": "Zaktualizowane informacje dla machinimatora {author}:\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
-    "be": "Абноўленая інфармацыя для машыніматара {author}:\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
-    "uk": "Оновлена інформація про машиніматора {author}:\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
-  },
-  "add_link": {
-    "en": "Add link",
-    "pl": "Dodaj link",
-    "be": "Дадаць спасылку",
-    "uk": "Додати посилання"
-  },
-  "delete_this_author": {
-    "en": "Delete this page",
-    "pl": "Usuń tę stronę",
-    "be": "Выдаліць гэту старонку",
-    "uk": "Видалити цю сторінку"
-  },
-  "go_back": {
-    "en": "🔙 Go Back",
-    "pl": "🔙 Wróć",
-    "be": "🔙 Вярнуцца",
-    "uk": "🔙 Повернутися назад"
-  },
-  "unknown_command_message": {
-    "en": "I'm sorry, but I don't recognize that command. Please try a different command.",
-    "pl": "Przepraszam, ale nie rozpoznaję tej komendy. Proszę spróbuj innej komendy.",
-    "be": "Прабачце, але я не распазнаю гэтую каманду. Калі ласка, паспрабуйце іншую каманду.",
-    "uk": "Вибачте, але я не розпізнаю цю команду. Будь ласка, спробуйте іншу команду."
-  },
-  "no_permission_message": {
-    "en": "You do not have permission to perform this command.",
-    "pl": "Nie masz uprawnień do wykonania tego polecenia.",
-    "be": "У вас няма правоў для выканання гэтай каманды.",
-    "uk": "У вас немає прав для виконання цієї команди."
-  },
-  "access_control": {
-    "en": "Access Control 🔐",
-    "pl": "Kontrola dostępu 🔐",
-    "be": "Кантроль доступу 🔐",
-    "uk": "Управління доступом 🔐"
-  },
-  "access_control_panel_message": {
-    "en": "Here you can manage access to the bot.",
-    "pl": "Tutaj możesz zarządzać dostępem do bota.",
-    "be": "Тут вы можаце кіраваць доступам да бота.",
-    "uk": "Тут ви можете керувати доступом до бота."
-  },
-  "create_role": {
-    "en": "Create role",
-    "pl": "Utwórz rolę",
-    "be": "Стварыць ролю",
-    "uk": "Створити роль"
-  },
-  "create_role_message": {
-    "en": "Role «{roleName}» has been created.",
-    "pl": "Rola «{roleName}» została utworzona.",
-    "be": "Роля «{roleName}» была створана.",
-    "uk": "Роль «{roleName}» була створена."
-  },
-  "role_already_exist_message": {
-    "en": "Role «{roleName}» already exists. Choose a different name.",
-    "pl": "Rola o nazwie «{roleName}» już istnieje. Wybierz inną nazwę.",
-    "be": "Роля з назвай «{roleName}» ужо існуе. Выберыце іншую назву.",
-    "uk": "Роль з назвою «{roleName}» вже існує. Виберіть іншу назву."
-  },
-  "create_role_usage_message": {
-    "en": "Usage: /create_role &lt;role_name&gt;",
-    "pl": "Użycie: /create_role &lt;nazwa_roli&gt;",
-    "be": "Выкарыстанне: /create_role &lt;назва_ролі&gt;",
-    "uk": "Використання: /create_role &lt;назва_ролі&gt;"
-  },
-  "delete_role": {
-    "en": "Delete role",
-    "pl": "Usuń rolę",
-    "be": "Выдаліць ролю",
-    "uk": "Видалити роль"
-  },
-  "delete_this_role": {
-    "en": "Delete role",
-    "pl": "Usuń rolę",
-    "be": "Выдаліць ролю",
-    "uk": "Видалити роль"
-  },
-  "view_roles": {
-    "en": "View roles",
-    "pl": "Zobacz role",
-    "be": "Прагледзець ролі",
-    "uk": "Переглянути ролі"
-  },
-  "assign_role_message": {
-    "en": "Role «{roleName}» has been assigned to user {userId}.",
-    "pl": "Rola «{roleName}» została przypisana do użytkownika {userId}.",
-    "be": "Роля «{roleName}» была прызначаная карыстальніку {userId}.",
-    "uk": "Роль «{roleName}» була призначена користувачу {userId}."
-  },
-  "role_already_assigned_message": {
-    "en": "Role \"{roleName}\" is already assigned to user {userId}.",
-    "pl": "Rola «{roleName}» jest już przypisana użytkownikowi {userId}.",
-    "be": "Роля «{roleName}» ужо прызначана карыстальніку {userId}.",
-    "uk": "Роль «{roleName}» вже призначена користувачу {userId}."
-  },
-  "role_assignment_failure_message": {
-    "en": "Failed to assign role «{roleName}» to user {userId}.",
-    "pl": "Nie udało się przypisać roli «{roleName}» użytkownikowi {userId}.",
-    "be": "Не атрымалася прызначыць ролю «{roleName}» карыстальніку {userId}.",
-    "uk": "Не вдалося призначити роль «{roleName}» користувачу {userId}."
-  },
-  "role_not_found_message": {
-    "en": "Role «{roleName}» not found.",
-    "pl": "Nie znaleziono roli «{roleName}».",
-    "be": "Ролю «{roleName}» не знойдзена.",
-    "uk": "Ролі «{roleName}» не знайдено."
-  },
-  "assign_role_usage_message": {
-    "en": "Usage: /assign_role &lt;user_id&gt; &lt;role_name&gt;",
-    "pl": "Użycie: /assign_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
-    "be": "Выкарыстанне: /assign_role &lt;user_id&gt; &lt;назва_ролі&gt;",
-    "uk": "Використання: /assign_role &lt;user_id&gt; &lt;назва_ролі&gt;"
-  },
-  "remove_role_usage_message": {
-    "en": "Usage: /remove_role &lt;user_id&gt; &lt;role_name&gt;",
-    "pl": "Użycie: /remove_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
-    "be": "Выкарыстанне: /remove_role &lt;user_id&gt; &lt;назва_ролі&gt;",
-    "uk": "Використання: /remove_role &lt;user_id&gt; &lt;назва_ролі&gt;"
-  },
-  "remove_role_message": {
-    "en": "Role «{roleName}» was successfully removed from user {userId}.",
-    "pl": "Rola «{roleName}» została pomyślnie usunięta użytkownikowi {userId}.",
-    "be": "Роля «{roleName}» была паспяхова выдалена ў карыстальніка {userId}.",
-    "uk": "Роль «{roleName}» була успішно забрана у користувача {userId}."
-  },
-  "remove_role_failed_message": {
-    "en": "Failed to remove role (does the user have it?).",
-    "pl": "Nie udało się usunąć roli (czy użytkownik ją ma?).",
-    "be": "Не ўдалося выдаліць ролю (ці ёсць яна ў карыстальніка?).",
-    "uk": "Не вдалося забрати роль (чи є вона взагалі у користувача?)."
-  },
-  "success_initialled_admin_message": {
-    "en": "You have been appointed as an administrator.",
-    "pl": "Zostałeś mianowany administratorem.",
-    "be": "Вы былі прызначаныя адміністратарам.",
-    "uk": "Ви були призначені адміністратором."
-  },
-  "already_initialled_admin_message": {
-    "en": "An administrator already exists.",
-    "pl": "Administrator już istnieje.",
-    "be": "Адміністратар ужо існуе.",
-    "uk": "Адміністратор вже існує."
-  },
-  "role_hierarchy_message": {
-    "en": "Role Hierarchy:",
-    "pl": "Hierarchia ról:",
-    "be": "Іерархія роляў:",
-    "uk": "Ієрархія ролей:"
-  },
-  "role_detail_message": {
-    "en": "Role: {role}\nParents: {parents}\nChildren: {children}\nUsers: {users}",
-    "pl": "Rola: {role}\nRodzice: {parents}\nDzieci: {children}\nUżytkownicy: {users}",
-    "be": "Роля: {role}\nБацькі: {parents}\nДзеці: {children}\nКарыстальнікі: {users}",
-    "uk": "Роль: {role}\nБатьки: {parents}\nДіти: {children}\nКористувачі: {users}"
-  },
-  "add_parent": {
-    "en": "Add Parent",
-    "pl": "Dodaj rodzica",
-    "be": "Дадаць бацькоўскую ролю",
-    "uk": "Додати батька"
-  },
-  "remove_child": {
-    "en": "Remove Child",
-    "pl": "Usuń dziecko",
-    "be": "Выдаліць даччыную ролю",
-    "uk": "Видалити дитину"
-  },
-  "assign_role_to_user": {
-    "en": "Assign Role to User",
-    "pl": "Przypisz rolę użytkownikowi",
-    "be": "Прызначыць ролю карыстальніку",
-    "uk": "Призначити роль користувачу"
-  },
-  "unassign_role_from_user": {
-    "en": "Remove Role from User",
-    "pl": "Zabierz rolę użytkownikowi",
-    "be": "Забраць ролю ў карыстальніка",
-    "uk": "Забрати роль у користувача"
-  },
-  "select_parent_message": {
-    "en": "Select parent role for {role}:",
-    "pl": "Wybierz rolę nadrzędną dla {role}:",
-    "be": "Абярыце бацькоўскую ролю для {role}:",
-    "uk": "Оберіть батьківську роль для {role}:"
-  },
-  "parent_added_message": {
-    "en": "Role {parent} is now a parent of {child}.",
-    "pl": "Rola {parent} jest teraz rolą nadrzędną dla {child}.",
-    "be": "Роля {parent} цяпер з'яўляецца бацькоўскай для {child}.",
-    "uk": "Роль {parent} тепер є батьківською для {child}."
-  },
-  "no_children_message": {
-    "en": "This role has no children.",
-    "pl": "Ta rola nie ma ról podrzędnych.",
-    "be": "Гэтая роля не мае даччыных роляў.",
-    "uk": "Ця роль не має дочірніх ролей."
-  },
-  "remove": {
-    "en": "Remove",
-    "pl": "Usuń",
-    "be": "Выдаліць",
-    "uk": "Видалити"
-  },
-  "select_child_to_remove_message": {
-    "en": "Select child of {role} to remove relationship:",
-    "pl": "Wybierz rolę podrzędną {role}, aby usunąć powiązanie:",
-    "be": "Абярыце даччыную ролю {role} для выдалення сувязі:",
-    "uk": "Оберіть дитину ролі {role} для видалення зв'язку:"
-  },
-  "child_removed_message": {
-    "en": "Relationship between {parent} and {child} removed.",
-    "pl": "Powiązanie między {parent} a {child} zostało usunięte.",
-    "be": "Сувязь паміж {parent} і {child} выдалена.",
-    "uk": "Зв'язок між {parent} та {child} видалено."
-  },
-  "confirm_yes": {
-    "en": "Yes, delete",
-    "pl": "Tak, usuń",
-    "be": "Так, выдаліць",
-    "uk": "Так, видалити"
-  },
-  "confirm_no": {
-    "en": "No, back",
-    "pl": "Nie, wróć",
-    "be": "Не, назад",
-    "uk": "Ні, назад"
-  },
-  "confirm_delete_role_message": {
-    "en": "Are you sure you want to delete role {role}? This will also remove all hierarchy links and user assignments.",
-    "pl": "Czy na pewno chcesz usunąć rolę {role}? Spowoduje to również usunięcie wszystkich powiązań w hierarchii i przypisań do użytkowników.",
-    "be": "Вы ўпэўнены, што хочаце выдаліць ролю {role}? Гэта таксама выдаліць усе іерархічныя сувязі і прызначэнні карыстальнікам.",
-    "uk": "Ви впевнені, що хочете видалити роль {role}? Це також видалить всі ієрархічні зв'язки та призначення користувачам."
-  },
-  "role_deleted_message": {
-    "en": "Role {role} deleted.",
-    "pl": "Rola {role} została usunięta.",
-    "be": "Роля {role} выдалена.",
-    "uk": "Роль {role} видалена."
-  },
-  "delete_role_failure_message": {
-    "en": "Failed to delete role.",
-    "pl": "Nie udało się usunąć roli.",
-    "be": "Не атрымалася выдаліць ролю.",
-    "uk": "Не вдалося видалити роль."
-  },
-  "enter_user_id_for_role_message": {
-    "en": "Enter User ID to assign role {role}:",
-    "pl": "Wprowadź ID użytkownika, aby przypisać rolę {role}:",
-    "be": "Увядзіце ID карыстальніка, якому хочаце прызначыць ролю {role}:",
-    "uk": "Введіть ID користувача, якому хочете призначити роль {role}:"
-  },
-  "manage_user_roles": {
-    "en": "Manage Users",
-    "pl": "Zarządzaj użytkownikami",
-    "be": "Кіраванне карыстальнікамі",
-    "uk": "Управління користувачами"
-  },
-  "enter_user_id_for_management_message": {
-    "en": "Enter the Telegram ID of the user whose roles you want to manage:",
-    "pl": "Wprowadź identyfikator Telegram użytkownika, którego rolami chcesz zarządzać:",
-    "be": "Увядзіце Telegram ID карыстальніка, ролямі якога вы хочаце кіраваць:",
-    "uk": "Введіть Telegram ID користувача, ролями якого ви хочете керувати:"
-  },
-  "user_roles_detail_message": {
-    "en": "Roles for user {userId}:\n\n{roles}",
-    "pl": "Role dla użytkownika {userId}:\n\n{roles}",
-    "be": "Ролі для карыстальніка {userId}:\n\n{roles}",
-    "uk": "Ролі користувача {userId}:\n\n{roles}"
-  },
-  "add_role": {
-    "en": "Add Role",
-    "pl": "Dodaj rolę",
-    "be": "Дадаць ролю",
-    "uk": "Додати роль"
-  },
-  "remove_role": {
-    "en": "Remove Role",
-    "pl": "Usuń rolę",
-    "be": "Выдаліць ролю",
-    "uk": "Забрати роль"
-  },
-  "select_role_to_add_message": {
-    "en": "Select a role to assign to user {userId}:",
-    "pl": "Wybierz rolę do przypisania użytkownikowi {userId}:",
-    "be": "Абярыце ролю для прызначэння карыстальніку {userId}:",
-    "uk": "Оберіть роль для призначення користувачу {userId}:"
-  },
-  "select_role_to_remove_message": {
-    "en": "Select a role to remove from user {userId}:",
-    "pl": "Wybierz rolę do usunięcia od użytkownika {userId}:",
-    "be": "Абярыце ролю для выдалення ў карыстальніка {userId}:",
-    "uk": "Оберіть роль для того, щоб забрати у користувача {userId}:"
-  },
-  "enter_user_id_to_remove_role_message": {
-    "en": "Enter User ID to remove role {role}:",
-    "pl": "Wprowadź ID użytkownika, aby zabrać rolę {role}:",
-    "be": "Увядзіце ID карыстальніка, у якога хочаце забраць ролю {role}:",
-    "uk": "Введіть ID користувача, у якого хочете забрати роль {role}:"
-  },
-  "no_parent": {
-    "en": "— No parent —",
-    "pl": "— Brak roli nadrzędnej —",
-    "be": "— Без бацькоўскай ролі —",
-    "uk": "— Без батьківської ролі —"
-  },
-  "enter_role_name_message": {
-    "en": "Enter name for the new role:",
-    "pl": "Wprowadź nazwę dla nowej roli:",
-    "be": "Увядзіце назву новай ролі:",
-    "uk": "Введіть назву нової ролі:"
-  },
-  "select_role_to_delete_message": {
-    "en": "Select role to delete:",
-    "pl": "Wybierz rolę do usunięcia:",
-    "be": "Абярыце ролю для выдалення:",
-    "uk": "Оберіть роль для видалення:"
-  },
-  "role_already_exist_text_message": {
-    "en": "Role with this name already exists.",
-    "pl": "Rola o tej nazwie już istnieje.",
-    "be": "Роля з такой назвай ужо існуе.",
-    "uk": "Роль з такою назвою вже існує."
-  },
-  "role_created_redirect_message": {
-    "en": "Role {role} created. Now you can configure its hierarchy.",
-    "pl": "Rola {role} została utworzona. Teraz możesz skonfigurować jej hierarchię.",
-    "be": "Роля {role} створана. Цяпер вы можаце наладзіць яе іерархію.",
-    "uk": "Роль {role} створена. Тепер ви можете налаштувати її ієрархію."
-  },
-  "invalid_user_id_message": {
-    "en": "Invalid User ID.",
-    "pl": "Nieprawidłowe ID użytkownika.",
-    "be": "Няправільны ID карыстальніка.",
-    "uk": "Невірний ID користувача."
-  },
-  "main_menu_command_description": {
-    "en": "Open main menu",
-    "pl": "Otwórz menu główne",
-    "be": "Адкрыць галоўнае меню",
-    "uk": "Відкрити головне меню"
-  },
-  "authors": {
-    "en": "Authors",
-    "pl": "Autorzy",
-    "be": "Аўтары",
-    "uk": "Автори"
-  },
-  "projects": {
-    "en": "Projects",
-    "pl": "Projekty",
-    "be": "Праекты",
-    "uk": "Проєкти"
-  },
-  "settings": {
-    "en": "Settings",
-    "pl": "Ustawienia",
-    "be": "Налады",
-    "uk": "Налаштування"
-  },
-  "admin_panel": {
-    "en": "Admin Panel",
-    "pl": "Panel Admina",
-    "be": "Адмін-панэль",
-    "uk": "Адмін-панель"
-  },
-  "create_public_page": {
-    "en": "➕ Create Public Page",
-    "pl": "➕ Utwórz stronę publiczną",
-    "be": "➕ Стварыць публічную старонку",
-    "uk": "➕ Створити публічну сторінку"
-  },
-  "public_page": {
-    "en": "Public Page",
-    "pl": "Strona publiczna",
-    "be": "Публічная старонка",
-    "uk": "Публічна сторінка"
-  },
-  "link_telegram": {
-    "en": "🔗 Link Telegram ID",
-    "pl": "🔗 Powiąż ID Telegram",
-    "be": "🔗 Прывязаць ID Telegram",
-    "uk": "🔗 Прив'язати Telegram ID"
-  },
-  "unlink_telegram": {
-    "en": "🔗 Unlink Telegram ID",
-    "pl": "🔗 Odłącz ID Telegram",
-    "be": "🔗 Адвязаць ID Telegram",
-    "uk": "🔗 Відв'язати Telegram ID"
-  },
-  "pending_telegram_link": {
-    "en": "Enter the Telegram ID of the user you want to link to this page:",
-    "pl": "Wprowadź ID Telegram użytkownika, którego chcesz powiązać z tą stroną:",
-    "be": "Увядзіце ID Telegram карыстальніка, якога хочаце прывязаць да гэтай старонкі:",
-    "uk": "Введи Telegram ID користувача, якого хочеш прив'язати до цієї сторінки:"
-  },
-  "telegram_already_linked": {
-    "en": "❌ This user already has a public page!",
-    "pl": "❌ Ten użytkownik ma już stronę publiczną!",
-    "be": "❌ У гэтага карыстальніка ўжо ёсць публічная старонка!",
-    "uk": "❌ Цей користувач вже має публічну сторінку!"
-  },
-  "en": {
-    "status_updated_message": "Status successfully updated.",
-    "error_transition_message": "Error: Cannot update status. You may not have permission or the transition is invalid.",
-    "submit_project": "Submit for Review",
-    "publish_project": "Publish Project",
-    "reject_project": "Reject Project",
-    "redraft_project": "Send back to Draft"
-  },
-  "uk": {
-    "status_updated_message": "✅ Статус успішно оновлено!",
-    "error_transition_message": "❌ Помилка: неможливо оновити статус. Можливо, у вас немає прав, або перехід неможливий.",
-    "submit_project": "📤 Надіслати на модерацію",
-    "publish_project": "✅ Опублікувати проект",
-    "reject_project": "❌ Відхилити проект",
-    "redraft_project": "📝 Повернути в чернетки"
-  }
+    "start_command_description": {
+        "en": "Start communication with the assistant",
+        "pl": "Rozpocznij komunikację z asystentem",
+        "be": "Пачніце зносіны з памочнікам",
+        "uk": "Почати спілкування з помічником"
+    },
+    "help_command_description": {
+        "en": "Learn more about the bot",
+        "pl": "Dowiedz się więcej o bocie",
+        "be": "Даведайцеся больш пра бота",
+        "uk": "Дізнатися більше про бота"
+    },
+    "update_command_description": {
+        "en": "Update the bot, including name, description, and localized information",
+        "pl": "Zaktualizuj bota, w tym nazwę, opis i informacje lokalne",
+        "be": "Абнавіце бота, уключаючы назву, апісанне і лакалізаваную інфармацыю",
+        "uk": "Оновити бота, включаючи назву, опис та локалізовану інформацію"
+    },
+    "delete_role_command_description": {
+        "en": "Delete a role",
+        "pl": "Usuń rolę",
+        "be": "Выдаліць ролю",
+        "uk": "Видалити роль"
+    },
+    "delete_role_usage_message": {
+        "en": "Usage: \/delete_role &lt;role_name&gt;",
+        "pl": "Użycie: \/delete_role &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/delete_role &lt;назва_ролі&gt;",
+        "uk": "Використання: \/delete_role &lt;назва_ролі&gt;"
+    },
+    "search_content_command_description": {
+        "en": "Find content by tag",
+        "pl": "Znajdź zawartość według tagu",
+        "be": "Знайдзіце кантэнт па тэгу",
+        "uk": "Знайти контент за тегами"
+    },
+    "search_author_command_description": {
+        "en": "Find information about the author",
+        "pl": "Znajdź informacje o autorze",
+        "be": "Знайдзіце звесткі пра аўтара",
+        "uk": "Знайти інформацію про автора"
+    },
+    "categories_command_description": {
+        "en": "View available categories",
+        "pl": "Zobacz dostępne kategorie",
+        "be": "Прагляд даступных катэгорый",
+        "uk": "Переглянути доступні категорії"
+    },
+    "top_authors_command_description": {
+        "en": "View the most popular authors",
+        "pl": "Zobacz najpopularniejszych autorów",
+        "be": "Прагляд самых папулярных аўтараў",
+        "uk": "Переглянути найпопулярніших авторів"
+    },
+    "random_content_command_description": {
+        "en": "Get random content",
+        "pl": "Zdobądź losową zawartość",
+        "be": "Атрымаць выпадковы кантэнт",
+        "uk": "Отримати випадковий контент"
+    },
+    "create_role_command_description": {
+        "en": "Create a new role",
+        "pl": "Utwórz nową rolę",
+        "be": "Стварыць новую ролю",
+        "uk": "Створити нову роль"
+    },
+    "assign_initial_admin_command_description": {
+        "en": "Assign the first admin role to the initiator",
+        "pl": "Przypisz pierwszą rolę administratora inicjatorowi",
+        "be": "Прызначыць першую ролю адміністратара ініцыятару",
+        "uk": "Призначити першу роль адміністратора ініціатору"
+    },
+    "assign_role_command_description": {
+        "en": "Assign a role to a user",
+        "pl": "Przypisz rolę użytkownikowi",
+        "be": "Прызначыць ролю карыстальніку",
+        "uk": "Призначити роль користувачу"
+    },
+    "remove_role_command_description": {
+        "en": "Remove a role from a user",
+        "pl": "Usuń rolę użytkownikowi",
+        "be": "Выдаліць ролю ў карыстальніка",
+        "uk": "Забрати роль у користувача"
+    },
+    "welcome_message": {
+        "en": "Hello, I`m a chatbot named Pai! 👋🏻\n\nMy mission is to centralize Ukrainian machinimators in one list. I`ll help you find interesting projects, short films, and series based on <b>Minecraft<\/b>. You won`t be bored with me!\n\n📚 You can learn commands to interact with me by sending the word «\/help».",
+        "pl": "Cześć, jestem czatbotem o imieniu Pai! 👋🏻\n\nMoje zadanie to scentralizować ukraińskich machinimatorów w jednym spisie. Pomogę ci znaleźć interesujące projekty, krótkometrażowe filmy i seriale oparte na <b>Minecraft<\/b>. Z pewnością się nie nudzisz ze mną!\n\n📚 Aby dowiedzieć się więcej o moich komendach, wyślij słowo «\/help».",
+        "be": "Прывітанне, я чат‐бот пад імем Пай! 👋🏻\n\nМая мэта — цэнтралізаваць украінскіх машыніматараў у адным спісе. Я дапаможу вам знайсці цікавыя праекты, кароткометражныя фільмы і серыялы, знятыя на аснове <b>Minecraft<\/b>. За мной вам не будзе нудна!\n\n📚 Каманды для взаемадзеяння з мной можна атрымаць, высылаючы слова «\/help».",
+        "uk": "Привіт, я чат‐бот на ім’я Пай! 👋🏻\n\nМоє покликання — централізувати українських машиніматорів в одному списку. Я допоможу тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі <b>Minecraft<\/b>. Зі мною тобі не буде нудно!\n\n📚 Дізнатися команди взаємодії зі мною можна відправивши слово «\/help»"
+    },
+    "help_message": {
+        "en": "🌟 These commands might be useful:\n\n\/help — learn more about me\n\/search_content — find content by tags\n\/search_author — find information about an author\n\/categories — view available categories\n\/top_authors — view top authors\n\/random_content — get random content\n\nBut I`m not allowed to add new content or authors. Please contact the bot administrator for that.",
+        "pl": "🌟 Oto kilka przydatnych poleceń:\n\n\/help — dowiedz się więcej o mnie\n\/search_content — znajdź treści według tagów\n\/search_author — znajdź informacje o autorze\n\/categories — przeglądaj dostępne kategorie\n\/top_authors — przeglądaj najlepszych autorów\n\/random_content — otrzymaj losową treść\n\nJednak nie mam uprawnień do dodawania nowych treści ani autorów. Skontaktuj się z administratorem bota w celu uzyskania pomocy.",
+        "be": "🌟 Вось некалькі карысных каманд:\n\n\/help — даведацца больш пра мяне\n\/search_content — знайсці кантэнт па тэгах\n\/search_author — знайсці інфармацыю аб аўтары\n\/categories — праглядзець даступныя катэгорыі\n\/top_authors — праглядзець лепшых аўтароў\n\/random_content — атрымаць выпадковы кантэнт\n\nАле ў мяне няма праваў дадаць новы кантэнт ці аўтараў. Звярніцеся да адміністратара бота за дапамогай.",
+        "uk": "🌟 Тобі можуть бути корисними ось ці команди:\n\n\/help — дізнатися більше про мене\n\/search_content — знайти контент за теґами\n\/search_author — знайти інформацію про автора\n\/categories — переглянути доступні категорії\n\/top_authors — переглянути найпопулярніших авторів\n\/random_content — отримати випадковий контент\n\nАле мені не дозволено додавати новий контент або авторів. Для цього слід звернутися до адміністратора бота."
+    },
+    "search_author_usage_message": {
+        "en": "Usage: \/search_author &lt;query&gt;",
+        "pl": "Użycie: \/search_author &lt;zapytanie&gt;",
+        "be": "Выкарыстанне: \/search_author &lt;запыт&gt;",
+        "uk": "Використання: \/search_author &lt;запит&gt;"
+    },
+    "no_search_results_message": {
+        "en": "📑 I found nothing for the search query «<code>{searchQuery}<\/code>». Try again, changing your query.",
+        "pl": "📑 Nie znalazłem niczego dla zapytania «<code>{searchQuery}<\/code>». Spróbuj ponownie, zmieniając zapytanie.",
+        "be": "📑 Нічога не знойдзена па запыце «<code>{searchQuery}<\/code>». Паспрабуйце яшчэ раз, змяняючы запыт.",
+        "uk": "📑 За пошуковим запитом «<code>{searchQuery}<\/code>» я нічого не знайшов. Спробуй ще раз, змінивши запит."
+    },
+    "search_author_message": {
+        "en": "📑 I found several authors ({count}) for your query: «<code>{searchQuery}<\/code>». You can review them by pressing the buttons below:",
+        "pl": "📑 Znalazłem kilku autorów ({count}) dla twojego zapytania: «<code>{searchQuery}<\/code>». Możesz je przejrzeć, naciskając przyciski poniżej:",
+        "be": "📑 Знойдзена некалькі аўтараў ({count}) па вашым запыце: «<code>{searchQuery}<\/code>». Вы можаце праглядзець іх, націскаючы кнопкі ніжэй:",
+        "uk": "📑 Я знайшов кілька авторів ({count}) за твоїм запитом: «<code>{searchQuery}<\/code>». Ти можеш оглянути їх, натискаючи кнопки знизу:"
+    },
+    "bot_name": {
+        "en": "Morf — centralized chatbot",
+        "pl": "Morf — scentralizowany chatbot",
+        "be": "Morf — цэнтралізаваны чат-бот",
+        "uk": "Morf — централізований чат‐бот"
+    },
+    "bot_description": {
+        "en": "Hello, I will help you discover interesting projects, short films, and series created based on Minecraft. You won't be bored with me!\n\nMy purpose is to centralize Ukrainian machinimators in one list.",
+        "pl": "Cześć, pomogę Ci odkryć interesujące projekty, krótkie filmy i seriale stworzone na podstawie Minecrafta. Z nami nie będziesz się nudzić!\n\nMoim celem jest skupienie ukraińskich machinimatorów w jednym miejscu.",
+        "be": "Прывітанне, я дапаможу табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft. За мной табе не будзе нудна!\n\nМой мэт — цэнтралізаваць украінскіх машыніматараў у адным спісе.",
+        "uk": "Привіт, я допоможу тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft. Зі мною тобі не буде нудно!\n\nМоє покликання — централізувати українських машиніматорів в одному списку."
+    },
+    "bot_short_description": {
+        "en": "A bot that helps you discover interesting projects, short films, and series created based on Minecraft.",
+        "pl": "Bot, który pomoże Ci odkryć interesujące projekty, krótkie filmy i seriale stworzone na podstawie Minecrafta.",
+        "be": "Бот, які дапаможа табе знайсці цікавыя праекты, кароткаметражныя фільмы і серыялы, знятыя на аснове Minecraft.",
+        "uk": "Бот, який допоможе тобі знайти цікаві проєкти, короткометражні фільми і серіали, зняті на основі Minecraft."
+    },
+    "update_message": {
+        "en": "I successfully updated the bot`s data! 🔄",
+        "pl": "Pomyślnie zaktualizowałem dane bota! 🔄",
+        "be": "Я паспяхова абнавіў даныя бота! 🔄",
+        "uk": "Я успішно оновив дані бота! 🔄"
+    },
+    "add_author": {
+        "en": "Add Author",
+        "pl": "Dodaj autora",
+        "be": "Дадаць аўтара",
+        "uk": "Додати автора"
+    },
+    "add_author_message": {
+        "en": "Enter the name for the new public page:",
+        "pl": "Wprowadź nazwę nowej strony publicznej:",
+        "be": "Увядзіце назву для новай публічнай старонкі:",
+        "uk": "Введи назву для нової публічної сторінки:"
+    },
+    "author_added_message": {
+        "en": "I`ve created public page {author}! Choose an action:",
+        "pl": "Utworzyłem stronę publiczną {author}! Wybierz działanie:",
+        "be": "Я стварыў публічную старонку {author}! Выберыце дзеянне:",
+        "uk": "Я створив публічну сторінку {author}! Вибери дію:"
+    },
+    "delete_author": {
+        "en": "Delete Authors",
+        "pl": "Usuń autorów",
+        "be": "Выдалення аўтараў",
+        "uk": "Видалення авторів"
+    },
+    "delete_author_message": {
+        "en": "Choose a public page from the list you want to delete:",
+        "pl": "Wybierz stronę publiczną z listy, którą chcesz usunąć:",
+        "be": "Выберыце публічную старонку са спісу, якую хочаце выдаліць:",
+        "uk": "Вибери публічну сторінку зі списку, яку ти хочеш видалити:"
+    },
+    "confirm_delete": {
+        "en": "Yes, confirm deletion",
+        "pl": "Tak, potwierdź usunięcie",
+        "be": "Так, пацвердзіць выдаленне",
+        "uk": "Так, підтвердити видалення"
+    },
+    "confirm_delete_message": {
+        "en": "Confirm whether you really want to delete the public page named {author}. This action cannot be undone!",
+        "pl": "Potwierdź, czy naprawdę chcesz usunąć stronę publiczną {author}. Tej operacji nie można cofnąć!",
+        "be": "Пацвердзіце, ці сапраўды вы хочаце выдаліць публічную старонку {author}. Гэта дзеянне немагчыма адмяніць!",
+        "uk": "Підтверди, чи точно ти хочеш видалити публічну сторінку {author}. Скасувати цю дію неможливо!"
+    },
+    "author_deleted_message": {
+        "en": "Public page named {author} has been irreversibly deleted.",
+        "pl": "Strona publiczna {author} została bezpowrotnie usunięta.",
+        "be": "Публічная старонка {author} была безваротна выдаленая.",
+        "uk": "Публічна сторінка {author} була безповоротно видалена."
+    },
+    "list_of_authors": {
+        "en": "List of Authors",
+        "pl": "Lista autorów",
+        "be": "Спіс аўтараў",
+        "uk": "Список авторів"
+    },
+    "list_of_authors_message": {
+        "en": "Here is a list of all public pages in the system:",
+        "pl": "Oto lista wszystkich stron publicznych w systemie:",
+        "be": "Вось спіс усіх публічных старонак у сістэме:",
+        "uk": "Ось перелік усіх публічних сторінок у системі:"
+    },
+    "empty_authors_list_message": {
+        "en": "No public pages have been created in the system yet.",
+        "pl": "W systemie nie utworzono jeszcze żadnych stron publicznych.",
+        "be": "У сістэме яшчэ не створана ніводнай публічнай старонкі.",
+        "uk": "У системі ще не створено жодної публічної сторінки."
+    },
+    "previous_page": {
+        "en": "↩️ Back",
+        "pl": "↩️ Wstecz",
+        "be": "↩️ Назад",
+        "uk": "↩️ Назад"
+    },
+    "next_page": {
+        "en": "Forward ↪️",
+        "pl": "Naprzód ↪️",
+        "be": "Наперад ↪️",
+        "uk": "Вперед ↪️"
+    },
+    "admin_panel_message": {
+        "en": "Hello! This is your control panel. Here are the buttons to assist you! 🔧",
+        "pl": "Cześć! To jest twój panel sterowania. Oto przyciski, które pomogą ci w pracy! 🔧",
+        "be": "Прывітанне! Гэта твая панэль кіравання. Вось кнопкі, якія дапамогуць табе ў справе! 🔧",
+        "uk": "Привіт! Це твоя панель керування. Тримай кнопки, які допоможуть тобі у справі! 🔧"
+    },
+    "manage_projects": {
+        "en": "Manage Projects 📦",
+        "pl": "Zarządzaj projektami 📦",
+        "be": "Кіраванне праектамі 📦",
+        "uk": "Управління проєктами 📦"
+    },
+    "add_project": {
+        "en": "Add Project",
+        "pl": "Dodaj projekt",
+        "be": "Дадаць праект",
+        "uk": "Додати проєкт"
+    },
+    "enter_project_title_message": {
+        "en": "Enter the title of the project:",
+        "pl": "Wprowadź tytuł projektu:",
+        "be": "Увядзіце назву праекта:",
+        "uk": "Введи назву проєкту:"
+    },
+    "select_project_type_message": {
+        "en": "Select project type:",
+        "pl": "Wybierz typ projektu:",
+        "be": "Выберыце тып праекта:",
+        "uk": "Обери тип проєкту:"
+    },
+    "project_type_short": {
+        "en": "Short Film",
+        "pl": "Film krótkometrażowy",
+        "be": "Кароткаметражны фільм",
+        "uk": "Короткометражка"
+    },
+    "project_type_series": {
+        "en": "Series",
+        "pl": "Serial",
+        "be": "Серыял",
+        "uk": "Серіал"
+    },
+    "project_type_music_video": {
+        "en": "Music Video",
+        "pl": "Teledysk",
+        "be": "Музычны кліп",
+        "uk": "Музичний кліп"
+    },
+    "enter_project_description_message": {
+        "en": "Enter project description:",
+        "pl": "Wprowadź opis projektu:",
+        "be": "Увядзіце апісанне праекта:",
+        "uk": "Введи опис проєкту:"
+    },
+    "enter_project_url_message": {
+        "en": "Enter YouTube link:",
+        "pl": "Wprowadź link do YouTube:",
+        "be": "Увядзіце спасылку на YouTube:",
+        "uk": "Введи посилання на YouTube:"
+    },
+    "upload_project_cover_message": {
+        "en": "Upload project cover (image):",
+        "pl": "Prześlij okładkę projektu (obraz):",
+        "be": "Загрузіце вокладку праекта (выява):",
+        "uk": "Завантаж обкладинку проєкту (зображення):"
+    },
+    "project_created_message": {
+        "en": "Project «{title}» created as draft! 📝",
+        "pl": "Projekt «{title}» został utworzony jako wersja robocza! 📝",
+        "be": "Праект «{title}» створаны як чарнавік! 📝",
+        "uk": "Проєкт «{title}» створено як чернетку! 📝"
+    },
+    "manage_staff": {
+        "en": "Manage Staff 👥",
+        "pl": "Zarządzaj zespołem 👥",
+        "be": "Кіраванне камандай 👥",
+        "uk": "Керувати командою 👥"
+    },
+    "add_staff_member": {
+        "en": "Add Staff Member",
+        "pl": "Dodaj członka zespołu",
+        "be": "Дадаць удзельніка каманды",
+        "uk": "Додати учасника"
+    },
+    "select_author_for_staff_message": {
+        "en": "Select a public page to add to the project staff:",
+        "pl": "Wybierz stronę publiczną, którą chcesz dodać do zespołu projektu:",
+        "be": "Абярыце публічную старонку для дадання ў каманду праекта:",
+        "uk": "Оберіть публічну сторінку, щоб додати до команди проєкту:"
+    },
+    "enter_staff_role_message": {
+        "en": "Enter the role for this staff member (e.g., Director, Actor):",
+        "pl": "Wprowadź rolę dla tego członka zespołu (np. Reżyser, Aktor):",
+        "be": "Увядзіце ролю для гэтага ўдзельніка каманды (напрыклад: Рэжысёр, Акцёр):",
+        "uk": "Введи роль для цього учасника (наприклад: Режисер, Актор):"
+    },
+    "staff_member_added_message": {
+        "en": "Staff member {author} added as {role}!",
+        "pl": "Członek zespołu {author} dodany jako {role}!",
+        "be": "Удзельнік каманды {author} дададзены як {role}!",
+        "uk": "Учасника {author} додано як {role}!"
+    },
+    "staff_list_message": {
+        "en": "Project Staff:",
+        "pl": "Zespół projektu:",
+        "be": "Каманда праекта:",
+        "uk": "Команда проєкту:"
+    },
+    "remove_staff_member": {
+        "en": "Remove member",
+        "pl": "Usuń członka",
+        "be": "Выдаліць удзельніка",
+        "uk": "Видалити учасника"
+    },
+    "manage_categories": {
+        "en": "Manage Categories 🏷",
+        "pl": "Zarządzaj kategoriami 🏷",
+        "be": "Кіраванне катэгорыямі 🏷",
+        "uk": "Управління категоріями 🏷"
+    },
+    "manage_subcategories": {
+        "en": "Subcategories of «{category}» 🏷",
+        "pl": "Podkategorie «{category}» 🏷",
+        "be": "Падкатэгорыі «{category}» 🏷",
+        "uk": "Підкатегорії «{category}» 🏷"
+    },
+    "add_category": {
+        "en": "Add Category",
+        "pl": "Dodaj kategorię",
+        "be": "Дадаць катэгорыю",
+        "uk": "Додати категорію"
+    },
+    "add_subcategory": {
+        "en": "Add Subcategory",
+        "pl": "Dodaj podkategorię",
+        "be": "Дадаць падкатэгорыю",
+        "uk": "Додати підкатегорію"
+    },
+    "enter_category_name_message": {
+        "en": "Enter the name of the new category:",
+        "pl": "Wprowadź nazwę nowej kategorii:",
+        "be": "Увядзіце назву новай катэгорыі:",
+        "uk": "Введи назву нової категорії:"
+    },
+    "category_added_message": {
+        "en": "Category «{name}» added!",
+        "pl": "Kategoria «{name}» została dodana!",
+        "be": "Катэгорыя «{name}» дададзена!",
+        "uk": "Категорію «{name}» додано!"
+    },
+    "delete_category": {
+        "en": "Delete Category",
+        "pl": "Usuń kategorię",
+        "be": "Выдаліць катэгорыю",
+        "uk": "Видалити категорію"
+    },
+    "confirm_delete_category_message": {
+        "en": "Are you sure you want to delete category «{name}»? This will NOT delete subcategories but will remove links.",
+        "pl": "Czy na pewno chcesz usunąć kategorię «{name}»? To NIE usunie podkategorii, ale usunie powiązania.",
+        "be": "Вы ўпэўнены, што хочаце выдаліць катэгорыю «{name}»? Гэта НЕ выдаліць падкатэгорыі, але выдаліць сувязі.",
+        "uk": "Ти впевнений, що хочеш видалити категорію «{name}»? Це НЕ видалить підкатегорії, але розірве зв'язки."
+    },
+    "category_deleted_message": {
+        "en": "Category deleted!",
+        "pl": "Kategoria usunięta!",
+        "be": "Катэгорыя выдалена!",
+        "uk": "Категорію видалено!"
+    },
+    "select_categories_for_project": {
+        "en": "Select Categories",
+        "pl": "Wybierz kategorie",
+        "be": "Абярыце катэгорыі",
+        "uk": "Обрати категорії"
+    },
+    "no_categories_message": {
+        "en": "No categories found.",
+        "pl": "Nie znaleziono żadnych kategorii.",
+        "be": "Катэгорый не знойдзена.",
+        "uk": "Категорій не знайдено."
+    },
+    "submit_project": {
+        "en": "Submit for Review",
+        "pl": "Prześlij do recenzji",
+        "be": "Адправіць на праверку",
+        "uk": "Відправити на перевірку"
+    },
+    "publish_project": {
+        "en": "Publish ✅",
+        "pl": "Opublikuj ✅",
+        "be": "Апублікаваць ✅",
+        "uk": "Опублікувати ✅"
+    },
+    "reject_project": {
+        "en": "Reject ❌",
+        "pl": "Odrzuć ❌",
+        "be": "Адхіліць ❌",
+        "uk": "Відхилити ❌"
+    },
+    "redraft_project": {
+        "en": "Return to Draft",
+        "pl": "Wróć do wersji roboczej",
+        "be": "Вярнуць у чарнавікі",
+        "uk": "Повернути в чернетки"
+    },
+    "status_changed_message": {
+        "en": "Project status changed to: {status}",
+        "pl": "Status projektu zmieniony na: {status}",
+        "be": "Статус праекта зменены на: {status}",
+        "uk": "Статус проєкту змінено на: {status}"
+    },
+    "status_change_failed_message": {
+        "en": "Failed to change status. Invalid transition.",
+        "pl": "Nie udało się zmienić statusu. Nieprawidłowe przejście.",
+        "be": "Не ўдалося змяніць статус. Няправільны пераход.",
+        "uk": "Не вдалося змінити статус. Недопустимий перехід."
+    },
+    "delete_this_project": {
+        "en": "Delete Project",
+        "pl": "Usuń projekt",
+        "be": "Выдаліць праект",
+        "uk": "Видалити проєкт"
+    },
+    "edit_project": {
+        "en": "Edit Project ✏️",
+        "pl": "Edytuj projekt ✏️",
+        "be": "Рэдагаваць праект ✏️",
+        "uk": "Редагувати проєкт ✏️"
+    },
+    "edit_title": {
+        "en": "Edit Title",
+        "pl": "Edytuj tytuł",
+        "be": "Рэдагаваць назву",
+        "uk": "Змінити назву"
+    },
+    "edit_description": {
+        "en": "Edit Description",
+        "pl": "Edytuj opis",
+        "be": "Рэдагаваць апісанне",
+        "uk": "Змінити опис"
+    },
+    "edit_url": {
+        "en": "Edit URL",
+        "pl": "Edytuj URL",
+        "be": "Рэдагаваць URL",
+        "uk": "Змінити URL"
+    },
+    "edit_cover": {
+        "en": "Edit Cover",
+        "pl": "Edytuj okładkę",
+        "be": "Рэдагаваць вокладку",
+        "uk": "Змінити обкладинку"
+    },
+    "edit_type": {
+        "en": "Edit Type",
+        "pl": "Edytuj typ",
+        "be": "Рэдагаваць тып",
+        "uk": "Змінити тип"
+    },
+    "enter_new_value_message": {
+        "en": "Enter the new value:",
+        "pl": "Wprowadź nową wartość:",
+        "be": "Увядзіце новае значэнне:",
+        "uk": "Введи нове значення:"
+    },
+    "project_updated_message": {
+        "en": "Project updated!",
+        "pl": "Projekt zaktualizowany!",
+        "be": "Праект абноўлены!",
+        "uk": "Проєкт оновлено!"
+    },
+    "confirm_delete_project_message": {
+        "en": "Are you sure you want to delete project «{title}»?",
+        "pl": "Czy na pewno chcesz usunąć projekt «{title}»?",
+        "be": "Вы ўпэўнены, што хочаце выдаліць праект «{title}»?",
+        "uk": "Ти впевнений, що хочеш видалити проєкт «{title}»?"
+    },
+    "project_deleted_message": {
+        "en": "Project deleted!",
+        "pl": "Projekt usunięty!",
+        "be": "Праект выдалены!",
+        "uk": "Проєкт видалено!"
+    },
+    "author_not_found_message": {
+        "en": "I couldn`t find the public page you selected. Perhaps it was removed due to a violation… 🙁",
+        "pl": "Nie mogłem odnaleźć wybranej przez ciebie strony publicznej. Być może została usunięta z powodu naruszenia… 🙁",
+        "be": "Я не знайшоў публічную старонку, якую ты выбраў. Магчыма, яе выдалілі з‐за парушэння… 🙁",
+        "uk": "Я не знайшов публічну сторінку, яку ти вибрав. Можливо, її видалили через порушення… 🙁"
+    },
+    "author_info_message": {
+        "en": "📝 Public Page: {author}\n\n📚 Biography: {biography}\n🔗 Link: {link}",
+        "pl": "📝 Strona publiczna: {author}\n\n📚 Biografia: {biography}\n🔗 Link: {link}",
+        "be": "📝 Публічная старонка: {author}\n\n📚 Біяграфія: {biography}\n🔗 Спасылка: {link}",
+        "uk": "📝 Публічна сторінка: {author}\n\n📚 Біографія: {biography}\n🔗 Посилання: {link}"
+    },
+    "bio_not_set": {
+        "en": "not specified",
+        "pl": "brak określonej",
+        "be": "не вызначана",
+        "uk": "не вказана"
+    },
+    "link_not_set": {
+        "en": "not specified",
+        "pl": "brak określonego",
+        "be": "не вызначана",
+        "uk": "не вказане"
+    },
+    "change_name": {
+        "en": "✍🏻 Change name",
+        "pl": "✍🏻 Zmień imię",
+        "be": "✍🏻 Змяніць імя",
+        "uk": "✍🏻 Змінити ім’я"
+    },
+    "pending_name_change": {
+        "en": "Enter the text in the next message to change the page`s name:",
+        "pl": "Wprowadź tekst w następnym komunikacie, aby zmienić nazwę strony publicznej:",
+        "be": "Увядзіце тэкст у наступным паведамленні, каб змяніць назву старонкі:",
+        "uk": "Введи текст в наступному повідомленні, щоб змінити назву сторінки:"
+    },
+    "name_changed_message": {
+        "en": "Updated information for page {author} (formerly {oldName}):\n\n📚 Biography: {biography}\n🔗 Link: {link}",
+        "pl": "Zaktualizowane informacje dla strony {author} (dawniej {oldName}):\n\n📚 Biografia: {biography}\n🔗 Link: {link}",
+        "be": "Абноўленая інфармацыя для старонкі {author} (раней {oldName}):\n\n📚 Біяграфія: {biography}\n🔗 Спасылка: {link}",
+        "uk": "Оновлена інформація для сторінки {author} (раніше {oldName}):\n\n📚 Біографія: {biography}\n🔗 Посилання: {link}"
+    },
+    "make_public": {
+        "en": "Make public 🔓",
+        "pl": "Upublicznij 🔓",
+        "be": "Зрабіць публічнай 🔓",
+        "uk": "Зробити публічною 🔓"
+    },
+    "make_private": {
+        "en": "Make private 🔒",
+        "pl": "Uprywatnij 🔒",
+        "be": "Зрабіць прыватнай 🔒",
+        "uk": "Зробити приватною 🔒"
+    },
+    "change_bio": {
+        "en": "Edit biography",
+        "pl": "Edytuj biografię",
+        "be": "Рэдагаваць біяграфію",
+        "uk": "Редагувати біографію"
+    },
+    "pending_bio_change": {
+        "en": "Enter the text in the next message to add a biography for the machinimator:",
+        "pl": "Wprowadź tekst w następnym komunikacie, aby dodać biografię machinimatora:",
+        "be": "Увядзіце тэкст у наступным паведамленні, каб дадаць біяграфію машыніматара:",
+        "uk": "Введи текст в наступному повідомленні, щоб додати біографію машиніматора:"
+    },
+    "bio_changed_message": {
+        "en": "Updated information for machinimator {author}:\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
+        "pl": "Zaktualizowane informacje dla machinimatora {author}:\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
+        "be": "Абноўленая інфармацыя для машыніматара {author}:\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
+        "uk": "Оновлена інформація про машиніматора {author}:\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
+    },
+    "add_bio": {
+        "en": "Set biography",
+        "pl": "Ustaw biografię",
+        "be": "Устанавіць біяграфію",
+        "uk": "Встановити біографію"
+    },
+    "pending_bio_add": {
+        "en": "Enter the text in the next message to add a biography for the machinimator:",
+        "pl": "Wprowadź tekst w następnym komunikacie, aby dodać biografię machinimatora:",
+        "be": "Увядзіце тэкст у наступным паведамленні, каб дадаць біяграфію машыніматара:",
+        "uk": "Введи текст в наступному повідомленні, щоб додати біографію машиніматора:"
+    },
+    "bio_added_message": {
+        "en": "Updated information for machinimator {author}:\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
+        "pl": "Zaktualizowane informacje dla machinimatora {author}:\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
+        "be": "Абноўленая інфармацыя для машыніматара {author}:\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
+        "uk": "Оновлена інформація про машиніматора {author}:\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
+    },
+    "change_link": {
+        "en": "Change link",
+        "pl": "Zmień link",
+        "be": "Змяніць спасылку",
+        "uk": "Змінити посилання"
+    },
+    "pending_link_change": {
+        "en": "Enter the text of the link to the machinimator`s channel in the next message:",
+        "pl": "Wprowadź tekst linku do kanału machinimatora w następnym komunikacie:",
+        "be": "Увядзіце тэкст спасылкі на канал машыніматара ў наступным паведамленні:",
+        "uk": "Введи текст посилання на канал трансляцій машиніматора в наступному повідомленні:"
+    },
+    "link_changed_message": {
+        "en": "Updated information for machinimator {author}:\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
+        "pl": "Zaktualizowane informacje dla machinimatora {author}:\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
+        "be": "Абноўленая інфармацыя для машыніматара {author}:\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
+        "uk": "Оновлена інформація про машиніматора {author}:\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
+    },
+    "add_link": {
+        "en": "Add link",
+        "pl": "Dodaj link",
+        "be": "Дадаць спасылку",
+        "uk": "Додати посилання"
+    },
+    "delete_this_author": {
+        "en": "Delete this page",
+        "pl": "Usuń tę stronę",
+        "be": "Выдаліць гэту старонку",
+        "uk": "Видалити цю сторінку"
+    },
+    "go_back": {
+        "en": "🔙 Go Back",
+        "pl": "🔙 Wróć",
+        "be": "🔙 Вярнуцца",
+        "uk": "🔙 Повернутися назад"
+    },
+    "unknown_command_message": {
+        "en": "I'm sorry, but I don't recognize that command. Please try a different command.",
+        "pl": "Przepraszam, ale nie rozpoznaję tej komendy. Proszę spróbuj innej komendy.",
+        "be": "Прабачце, але я не распазнаю гэтую каманду. Калі ласка, паспрабуйце іншую каманду.",
+        "uk": "Вибачте, але я не розпізнаю цю команду. Будь ласка, спробуйте іншу команду."
+    },
+    "no_permission_message": {
+        "en": "You do not have permission to perform this command.",
+        "pl": "Nie masz uprawnień do wykonania tego polecenia.",
+        "be": "У вас няма правоў для выканання гэтай каманды.",
+        "uk": "У вас немає прав для виконання цієї команди."
+    },
+    "access_control": {
+        "en": "Access Control 🔐",
+        "pl": "Kontrola dostępu 🔐",
+        "be": "Кантроль доступу 🔐",
+        "uk": "Управління доступом 🔐"
+    },
+    "access_control_panel_message": {
+        "en": "Here you can manage access to the bot.",
+        "pl": "Tutaj możesz zarządzać dostępem do bota.",
+        "be": "Тут вы можаце кіраваць доступам да бота.",
+        "uk": "Тут ви можете керувати доступом до бота."
+    },
+    "create_role": {
+        "en": "Create role",
+        "pl": "Utwórz rolę",
+        "be": "Стварыць ролю",
+        "uk": "Створити роль"
+    },
+    "create_role_message": {
+        "en": "Role «{roleName}» has been created.",
+        "pl": "Rola «{roleName}» została utworzona.",
+        "be": "Роля «{roleName}» была створана.",
+        "uk": "Роль «{roleName}» була створена."
+    },
+    "role_already_exist_message": {
+        "en": "Role «{roleName}» already exists. Choose a different name.",
+        "pl": "Rola o nazwie «{roleName}» już istnieje. Wybierz inną nazwę.",
+        "be": "Роля з назвай «{roleName}» ужо існуе. Выберыце іншую назву.",
+        "uk": "Роль з назвою «{roleName}» вже існує. Виберіть іншу назву."
+    },
+    "create_role_usage_message": {
+        "en": "Usage: \/create_role &lt;role_name&gt;",
+        "pl": "Użycie: \/create_role &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/create_role &lt;назва_ролі&gt;",
+        "uk": "Використання: \/create_role &lt;назва_ролі&gt;"
+    },
+    "delete_role": {
+        "en": "Delete role",
+        "pl": "Usuń rolę",
+        "be": "Выдаліць ролю",
+        "uk": "Видалити роль"
+    },
+    "delete_this_role": {
+        "en": "Delete role",
+        "pl": "Usuń rolę",
+        "be": "Выдаліць ролю",
+        "uk": "Видалити роль"
+    },
+    "view_roles": {
+        "en": "View roles",
+        "pl": "Zobacz role",
+        "be": "Прагледзець ролі",
+        "uk": "Переглянути ролі"
+    },
+    "assign_role_message": {
+        "en": "Role «{roleName}» has been assigned to user {userId}.",
+        "pl": "Rola «{roleName}» została przypisana do użytkownika {userId}.",
+        "be": "Роля «{roleName}» была прызначаная карыстальніку {userId}.",
+        "uk": "Роль «{roleName}» була призначена користувачу {userId}."
+    },
+    "role_already_assigned_message": {
+        "en": "Role \"{roleName}\" is already assigned to user {userId}.",
+        "pl": "Rola «{roleName}» jest już przypisana użytkownikowi {userId}.",
+        "be": "Роля «{roleName}» ужо прызначана карыстальніку {userId}.",
+        "uk": "Роль «{roleName}» вже призначена користувачу {userId}."
+    },
+    "role_assignment_failure_message": {
+        "en": "Failed to assign role «{roleName}» to user {userId}.",
+        "pl": "Nie udało się przypisać roli «{roleName}» użytkownikowi {userId}.",
+        "be": "Не атрымалася прызначыць ролю «{roleName}» карыстальніку {userId}.",
+        "uk": "Не вдалося призначити роль «{roleName}» користувачу {userId}."
+    },
+    "role_not_found_message": {
+        "en": "Role «{roleName}» not found.",
+        "pl": "Nie znaleziono roli «{roleName}».",
+        "be": "Ролю «{roleName}» не знойдзена.",
+        "uk": "Ролі «{roleName}» не знайдено."
+    },
+    "assign_role_usage_message": {
+        "en": "Usage: \/assign_role &lt;user_id&gt; &lt;role_name&gt;",
+        "pl": "Użycie: \/assign_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/assign_role &lt;user_id&gt; &lt;назва_ролі&gt;",
+        "uk": "Використання: \/assign_role &lt;user_id&gt; &lt;назва_ролі&gt;"
+    },
+    "remove_role_usage_message": {
+        "en": "Usage: \/remove_role &lt;user_id&gt; &lt;role_name&gt;",
+        "pl": "Użycie: \/remove_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/remove_role &lt;user_id&gt; &lt;назва_ролі&gt;",
+        "uk": "Використання: \/remove_role &lt;user_id&gt; &lt;назва_ролі&gt;"
+    },
+    "remove_role_message": {
+        "en": "Role «{roleName}» was successfully removed from user {userId}.",
+        "pl": "Rola «{roleName}» została pomyślnie usunięta użytkownikowi {userId}.",
+        "be": "Роля «{roleName}» была паспяхова выдалена ў карыстальніка {userId}.",
+        "uk": "Роль «{roleName}» була успішно забрана у користувача {userId}."
+    },
+    "remove_role_failed_message": {
+        "en": "Failed to remove role (does the user have it?).",
+        "pl": "Nie udało się usunąć roli (czy użytkownik ją ma?).",
+        "be": "Не ўдалося выдаліць ролю (ці ёсць яна ў карыстальніка?).",
+        "uk": "Не вдалося забрати роль (чи є вона взагалі у користувача?)."
+    },
+    "success_initialled_admin_message": {
+        "en": "You have been appointed as an administrator.",
+        "pl": "Zostałeś mianowany administratorem.",
+        "be": "Вы былі прызначаныя адміністратарам.",
+        "uk": "Ви були призначені адміністратором."
+    },
+    "already_initialled_admin_message": {
+        "en": "An administrator already exists.",
+        "pl": "Administrator już istnieje.",
+        "be": "Адміністратар ужо існуе.",
+        "uk": "Адміністратор вже існує."
+    },
+    "role_hierarchy_message": {
+        "en": "Role Hierarchy:",
+        "pl": "Hierarchia ról:",
+        "be": "Іерархія роляў:",
+        "uk": "Ієрархія ролей:"
+    },
+    "role_detail_message": {
+        "en": "Role: {role}\nParents: {parents}\nChildren: {children}\nUsers: {users}",
+        "pl": "Rola: {role}\nRodzice: {parents}\nDzieci: {children}\nUżytkownicy: {users}",
+        "be": "Роля: {role}\nБацькі: {parents}\nДзеці: {children}\nКарыстальнікі: {users}",
+        "uk": "Роль: {role}\nБатьки: {parents}\nДіти: {children}\nКористувачі: {users}"
+    },
+    "add_parent": {
+        "en": "Add Parent",
+        "pl": "Dodaj rodzica",
+        "be": "Дадаць бацькоўскую ролю",
+        "uk": "Додати батька"
+    },
+    "remove_child": {
+        "en": "Remove Child",
+        "pl": "Usuń dziecko",
+        "be": "Выдаліць даччыную ролю",
+        "uk": "Видалити дитину"
+    },
+    "assign_role_to_user": {
+        "en": "Assign Role to User",
+        "pl": "Przypisz rolę użytkownikowi",
+        "be": "Прызначыць ролю карыстальніку",
+        "uk": "Призначити роль користувачу"
+    },
+    "unassign_role_from_user": {
+        "en": "Remove Role from User",
+        "pl": "Zabierz rolę użytkownikowi",
+        "be": "Забраць ролю ў карыстальніка",
+        "uk": "Забрати роль у користувача"
+    },
+    "select_parent_message": {
+        "en": "Select parent role for {role}:",
+        "pl": "Wybierz rolę nadrzędną dla {role}:",
+        "be": "Абярыце бацькоўскую ролю для {role}:",
+        "uk": "Оберіть батьківську роль для {role}:"
+    },
+    "parent_added_message": {
+        "en": "Role {parent} is now a parent of {child}.",
+        "pl": "Rola {parent} jest teraz rolą nadrzędną dla {child}.",
+        "be": "Роля {parent} цяпер з'яўляецца бацькоўскай для {child}.",
+        "uk": "Роль {parent} тепер є батьківською для {child}."
+    },
+    "no_children_message": {
+        "en": "This role has no children.",
+        "pl": "Ta rola nie ma ról podrzędnych.",
+        "be": "Гэтая роля не мае даччыных роляў.",
+        "uk": "Ця роль не має дочірніх ролей."
+    },
+    "remove": {
+        "en": "Remove",
+        "pl": "Usuń",
+        "be": "Выдаліць",
+        "uk": "Видалити"
+    },
+    "select_child_to_remove_message": {
+        "en": "Select child of {role} to remove relationship:",
+        "pl": "Wybierz rolę podrzędną {role}, aby usunąć powiązanie:",
+        "be": "Абярыце даччыную ролю {role} для выдалення сувязі:",
+        "uk": "Оберіть дитину ролі {role} для видалення зв'язку:"
+    },
+    "child_removed_message": {
+        "en": "Relationship between {parent} and {child} removed.",
+        "pl": "Powiązanie między {parent} a {child} zostało usunięte.",
+        "be": "Сувязь паміж {parent} і {child} выдалена.",
+        "uk": "Зв'язок між {parent} та {child} видалено."
+    },
+    "confirm_yes": {
+        "en": "Yes, delete",
+        "pl": "Tak, usuń",
+        "be": "Так, выдаліць",
+        "uk": "Так, видалити"
+    },
+    "confirm_no": {
+        "en": "No, back",
+        "pl": "Nie, wróć",
+        "be": "Не, назад",
+        "uk": "Ні, назад"
+    },
+    "confirm_delete_role_message": {
+        "en": "Are you sure you want to delete role {role}? This will also remove all hierarchy links and user assignments.",
+        "pl": "Czy na pewno chcesz usunąć rolę {role}? Spowoduje to również usunięcie wszystkich powiązań w hierarchii i przypisań do użytkowników.",
+        "be": "Вы ўпэўнены, што хочаце выдаліць ролю {role}? Гэта таксама выдаліць усе іерархічныя сувязі і прызначэнні карыстальнікам.",
+        "uk": "Ви впевнені, що хочете видалити роль {role}? Це також видалить всі ієрархічні зв'язки та призначення користувачам."
+    },
+    "role_deleted_message": {
+        "en": "Role {role} deleted.",
+        "pl": "Rola {role} została usunięta.",
+        "be": "Роля {role} выдалена.",
+        "uk": "Роль {role} видалена."
+    },
+    "delete_role_failure_message": {
+        "en": "Failed to delete role.",
+        "pl": "Nie udało się usunąć roli.",
+        "be": "Не атрымалася выдаліць ролю.",
+        "uk": "Не вдалося видалити роль."
+    },
+    "enter_user_id_for_role_message": {
+        "en": "Enter User ID to assign role {role}:",
+        "pl": "Wprowadź ID użytkownika, aby przypisać rolę {role}:",
+        "be": "Увядзіце ID карыстальніка, якому хочаце прызначыць ролю {role}:",
+        "uk": "Введіть ID користувача, якому хочете призначити роль {role}:"
+    },
+    "manage_user_roles": {
+        "en": "Manage Users",
+        "pl": "Zarządzaj użytkownikami",
+        "be": "Кіраванне карыстальнікамі",
+        "uk": "Управління користувачами"
+    },
+    "enter_user_id_for_management_message": {
+        "en": "Enter the Telegram ID of the user whose roles you want to manage:",
+        "pl": "Wprowadź identyfikator Telegram użytkownika, którego rolami chcesz zarządzać:",
+        "be": "Увядзіце Telegram ID карыстальніка, ролямі якога вы хочаце кіраваць:",
+        "uk": "Введіть Telegram ID користувача, ролями якого ви хочете керувати:"
+    },
+    "user_roles_detail_message": {
+        "en": "Roles for user {userId}:\n\n{roles}",
+        "pl": "Role dla użytkownika {userId}:\n\n{roles}",
+        "be": "Ролі для карыстальніка {userId}:\n\n{roles}",
+        "uk": "Ролі користувача {userId}:\n\n{roles}"
+    },
+    "add_role": {
+        "en": "Add Role",
+        "pl": "Dodaj rolę",
+        "be": "Дадаць ролю",
+        "uk": "Додати роль"
+    },
+    "remove_role": {
+        "en": "Remove Role",
+        "pl": "Usuń rolę",
+        "be": "Выдаліць ролю",
+        "uk": "Забрати роль"
+    },
+    "select_role_to_add_message": {
+        "en": "Select a role to assign to user {userId}:",
+        "pl": "Wybierz rolę do przypisania użytkownikowi {userId}:",
+        "be": "Абярыце ролю для прызначэння карыстальніку {userId}:",
+        "uk": "Оберіть роль для призначення користувачу {userId}:"
+    },
+    "select_role_to_remove_message": {
+        "en": "Select a role to remove from user {userId}:",
+        "pl": "Wybierz rolę do usunięcia od użytkownika {userId}:",
+        "be": "Абярыце ролю для выдалення ў карыстальніка {userId}:",
+        "uk": "Оберіть роль для того, щоб забрати у користувача {userId}:"
+    },
+    "enter_user_id_to_remove_role_message": {
+        "en": "Enter User ID to remove role {role}:",
+        "pl": "Wprowadź ID użytkownika, aby zabrać rolę {role}:",
+        "be": "Увядзіце ID карыстальніка, у якога хочаце забраць ролю {role}:",
+        "uk": "Введіть ID користувача, у якого хочете забрати роль {role}:"
+    },
+    "no_parent": {
+        "en": "— No parent —",
+        "pl": "— Brak roli nadrzędnej —",
+        "be": "— Без бацькоўскай ролі —",
+        "uk": "— Без батьківської ролі —"
+    },
+    "enter_role_name_message": {
+        "en": "Enter name for the new role:",
+        "pl": "Wprowadź nazwę dla nowej roli:",
+        "be": "Увядзіце назву новай ролі:",
+        "uk": "Введіть назву нової ролі:"
+    },
+    "select_role_to_delete_message": {
+        "en": "Select role to delete:",
+        "pl": "Wybierz rolę do usunięcia:",
+        "be": "Абярыце ролю для выдалення:",
+        "uk": "Оберіть роль для видалення:"
+    },
+    "role_already_exist_text_message": {
+        "en": "Role with this name already exists.",
+        "pl": "Rola o tej nazwie już istnieje.",
+        "be": "Роля з такой назвай ужо існуе.",
+        "uk": "Роль з такою назвою вже існує."
+    },
+    "role_created_redirect_message": {
+        "en": "Role {role} created. Now you can configure its hierarchy.",
+        "pl": "Rola {role} została utworzona. Teraz możesz skonfigurować jej hierarchię.",
+        "be": "Роля {role} створана. Цяпер вы можаце наладзіць яе іерархію.",
+        "uk": "Роль {role} створена. Тепер ви можете налаштувати її ієрархію."
+    },
+    "invalid_user_id_message": {
+        "en": "Invalid User ID.",
+        "pl": "Nieprawidłowe ID użytkownika.",
+        "be": "Няправільны ID карыстальніка.",
+        "uk": "Невірний ID користувача."
+    },
+    "main_menu_command_description": {
+        "en": "Open main menu",
+        "pl": "Otwórz menu główne",
+        "be": "Адкрыць галоўнае меню",
+        "uk": "Відкрити головне меню"
+    },
+    "authors": {
+        "en": "Authors",
+        "pl": "Autorzy",
+        "be": "Аўтары",
+        "uk": "Автори"
+    },
+    "projects": {
+        "en": "Projects",
+        "pl": "Projekty",
+        "be": "Праекты",
+        "uk": "Проєкти"
+    },
+    "settings": {
+        "en": "Settings",
+        "pl": "Ustawienia",
+        "be": "Налады",
+        "uk": "Налаштування"
+    },
+    "admin_panel": {
+        "en": "Admin Panel",
+        "pl": "Panel Admina",
+        "be": "Адмін-панэль",
+        "uk": "Адмін-панель"
+    },
+    "create_public_page": {
+        "en": "➕ Create Public Page",
+        "pl": "➕ Utwórz stronę publiczną",
+        "be": "➕ Стварыць публічную старонку",
+        "uk": "➕ Створити публічну сторінку"
+    },
+    "public_page": {
+        "en": "Public Page",
+        "pl": "Strona publiczna",
+        "be": "Публічная старонка",
+        "uk": "Публічна сторінка"
+    },
+    "link_telegram": {
+        "en": "🔗 Link Telegram ID",
+        "pl": "🔗 Powiąż ID Telegram",
+        "be": "🔗 Прывязаць ID Telegram",
+        "uk": "🔗 Прив'язати Telegram ID"
+    },
+    "unlink_telegram": {
+        "en": "🔗 Unlink Telegram ID",
+        "pl": "🔗 Odłącz ID Telegram",
+        "be": "🔗 Адвязаць ID Telegram",
+        "uk": "🔗 Відв'язати Telegram ID"
+    },
+    "pending_telegram_link": {
+        "en": "Enter the Telegram ID of the user you want to link to this page:",
+        "pl": "Wprowadź ID Telegram użytkownika, którego chcesz powiązać z tą stroną:",
+        "be": "Увядзіце ID Telegram карыстальніка, якога хочаце прывязаць да гэтай старонкі:",
+        "uk": "Введи Telegram ID користувача, якого хочеш прив'язати до цієї сторінки:"
+    },
+    "telegram_already_linked": {
+        "en": "❌ This user already has a public page!",
+        "pl": "❌ Ten użytkownik ma już stronę publiczną!",
+        "be": "❌ У гэтага карыстальніка ўжо ёсць публічная старонка!",
+        "uk": "❌ Цей користувач вже має публічну сторінку!"
+    },
+    "status_updated_message": {
+        "en": "✅ Status successfully updated!",
+        "pl": "✅ Status pomyślnie zaktualizowany!",
+        "be": "✅ Статус паспяхова абноўлены!",
+        "uk": "✅ Статус успішно оновлено!"
+    },
+    "error_transition_message": {
+        "en": "❌ Error: Cannot update status. You may not have permission or the transition is invalid.",
+        "pl": "❌ Błąd: Nie można zaktualizować statusu. Możesz nie mieć uprawnień lub przejście jest nieprawidłowe.",
+        "be": "❌ Памылка: немагчыма абнавіць статус. Магчыма, у вас няма правоў, або пераход немагчымы.",
+        "uk": "❌ Помилка: неможливо оновити статус. Можливо, у вас немає прав, або перехід неможливий."
+    }
 }
