@@ -93,7 +93,7 @@
         "en": "🌟 All bot features have been moved to the Mini App!\n\nJust click the Menu button (or 'Open App') to access the news feed, search, and categories.\n\nIf you are an administrator, use the \/admin_panel command to manage content.",
         "pl": "🌟 Wszystkie funkcje bota zostały przeniesione do aplikacji!\n\nPo prostu kliknij przycisk Menu, aby uzyskać dostęp do kanału aktualności, wyszukiwania i kategorii.\n\nJeśli jesteś administratorem, użyj polecenia \/admin_panel.",
         "be": "🌟 Усе функцыі бота перанесены ў міні-праграму!\n\nПроста націсніце кнопку Меню (або 'Адкрыць праграму'), каб атрымаць доступ да стужкі навін, пошуку і катэгорый.\n\nКалі вы адміністратар, выкарыстоўвайце каманду \/admin_panel.",
-        "uk": "🌟 Весь функціонал бота тепер перенесено у Міні-Додаток (Mini App)!\n\nПросто натисніть на кнопку «Меню» (або «Відкрити додаток») у лівому нижньому куті, щоб отримати доступ до стрічки новин, пошуку та категорій.\n\nЯкщо ви адміністратор, використовуйте команду \/admin_panel для керування контентом."
+        "uk": "🌟 Весь функціонал бота тепер перенесено у мінідодаток (Mini App)!\n\nПросто натисніть на кнопку «Меню» (або «Відкрити додаток») у лівому нижньому куті, щоб отримати доступ до стрічки новин, пошуку та категорій.\n\nЯкщо ви адміністратор, використовуйте команду \/admin_panel для керування контентом."
     },
     "search_author_usage_message": {
         "en": "Usage: \/search_author &lt;query&gt;",
