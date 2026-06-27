@@ -20,6 +20,7 @@ $container = $bot->getContainer();
 $contentService = $container->get('content_service');
 $authorService = $container->get('author_service');
 $ratingService = $container->get('rating_service');
+$roleService = $container->get('role_service');
 
 $cache = new ArrayCache();
 $cacheManager = new AsyncCacheManager(
@@ -30,13 +31,13 @@ $cacheOptions = new CacheOptions(ttl: 30);
 
 $sseConnections = new \SplObjectStorage();
 
-$http = new HttpServer(function (ServerRequestInterface $request) use ($contentService, $authorService, $ratingService, $cacheManager, $cacheOptions, $sseConnections) {
+$http = new HttpServer(function (ServerRequestInterface $request) use ($contentService, $authorService, $ratingService, $roleService, $cacheManager, $cacheOptions, $sseConnections, $botToken) {
     $path = $request->getUri()->getPath();
 
     $headers = [
         'Content-Type' => 'application/json',
         'Access-Control-Allow-Origin' => '*',
-        'Access-Control-Allow-Methods' => 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
     ];
 
     if ($request->getMethod() === 'OPTIONS') {
@@ -58,9 +59,9 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
         ], $stream);
     }
 
-    $handler = function () use ($path, $request, $contentService, $authorService, $ratingService, $sseConnections) {
+    $handler = function () use ($path, $request, $contentService, $authorService, $ratingService, $roleService, $sseConnections, $botToken) {
         static $avatarCache = [];
-        return \React\Promise\resolve(null)->then(function () use ($path, $request, $contentService, $authorService, $ratingService, $sseConnections, &$avatarCache) {
+        return \React\Promise\resolve(null)->then(function () use ($path, $request, $contentService, $authorService, $ratingService, $roleService, $sseConnections, &$avatarCache, $botToken) {
             if ($path === '/api/feed') {
                 $feed = $ratingService->getTrendingContent(20);
                 return json_encode(['success' => true, 'data' => $feed]);
@@ -96,12 +97,21 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                     if (!isset($avatarCache[$uId])) {
                         $avatarCache[$uId] = null;
                         try {
-                            $photosJson = @file_get_contents("https://api.telegram.org/bot{$botToken}/getUserProfilePhotos?user_id={$uId}&limit=1");
+                            $postData = json_encode(['user_id' => $uId, 'limit' => 1]);
+                            $opts = ['http' => ['method' => 'POST', 'header' => "Content-Type: application/json\r\n", 'content' => $postData]];
+                            $context = stream_context_create($opts);
+                            $photosJson = @file_get_contents("https://api.telegram.org/bot{$botToken}/getUserProfilePhotos", false, $context);
+                            
                             if ($photosJson) {
                                 $photos = json_decode($photosJson, true);
                                 if (!empty($photos['result']['photos'][0][0]['file_id'])) {
                                     $fileId = $photos['result']['photos'][0][0]['file_id'];
-                                    $fileJson = @file_get_contents("https://api.telegram.org/bot{$botToken}/getFile?file_id={$fileId}");
+                                    
+                                    $filePostData = json_encode(['file_id' => $fileId]);
+                                    $fileOpts = ['http' => ['method' => 'POST', 'header' => "Content-Type: application/json\r\n", 'content' => $filePostData]];
+                                    $fileContext = stream_context_create($fileOpts);
+                                    
+                                    $fileJson = @file_get_contents("https://api.telegram.org/bot{$botToken}/getFile", false, $fileContext);
                                     if ($fileJson) {
                                         $fileData = json_decode($fileJson, true);
                                         if (!empty($fileData['result']['file_path'])) {
@@ -184,6 +194,55 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                 return json_encode(['success' => false, 'error' => 'Failed to edit or unauthorized']);
             }
             
+            if (preg_match('#^/api/comments/(\d+)$#', $path, $matches) && $request->getMethod() === 'DELETE') {
+                $commentId = (int) $matches[1];
+                $body = json_decode((string) $request->getBody(), true);
+                $userId = $body['user_id'] ?? 0;
+                
+                $comment = $contentService->getCommentById($commentId);
+                if (!$comment) {
+                    return json_encode(['success' => false, 'error' => 'Not found']);
+                }
+                
+                $isOwner = ((int) $comment['user_id'] === (int) $userId);
+                
+                $isModerator = false;
+                $roles = $roleService->getUserRoleNames($userId);
+                foreach ($roles as $r) {
+                    if ($roleService->doesRoleInclude($r, 'moderator')) {
+                        $isModerator = true;
+                        break;
+                    }
+                }
+                
+                if ($isOwner || $isModerator) {
+                    $contentService->deleteCommentItem($commentId);
+                    $payload = json_encode([
+                        'type' => 'DELETE_COMMENT',
+                        'comment_id' => $commentId
+                    ]);
+                    foreach ($sseConnections as $conn) {
+                        $conn->write("data: {$payload}\n\n");
+                    }
+                    return json_encode(['success' => true]);
+                }
+                
+                return json_encode(['success' => false, 'error' => 'Unauthorized']);
+            }
+            
+            if (preg_match('#^/api/user/(\d+)/roles$#', $path, $matches) && $request->getMethod() === 'GET') {
+                $userId = (int) $matches[1];
+                $roles = $roleService->getUserRoleNames($userId);
+                $isModerator = false;
+                foreach ($roles as $r) {
+                    if ($roleService->doesRoleInclude($r, 'moderator')) {
+                        $isModerator = true;
+                        break;
+                    }
+                }
+                return json_encode(['success' => true, 'data' => ['roles' => $roles, 'is_moderator' => $isModerator]]);
+            }
+
             if ($path === '/api/authors/top') {
                 $authors = $authorService->getTopAuthors();
                 return json_encode(['success' => true, 'data' => $authors]);

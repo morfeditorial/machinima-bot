@@ -135,12 +135,23 @@ class ContentService
         );
     }
 
+    public function getCommentById(int $id) : ?array
+    {
+        $result = $this->db->fetchAssociative('SELECT * FROM comments WHERE id = ?', [$id]);
+        return $result ?: null;
+    }
+
     public function getComments(int $content_id) : array
     {
         return $this->db->fetchAllAssociative(
             'SELECT * FROM comments WHERE content_id = ? ORDER BY created_at ASC',
             [$content_id]
         );
+    }
+    
+    public function deleteCommentItem(int $id) : bool
+    {
+        return (bool) $this->db->executeStatement('DELETE FROM comments WHERE id = ?', [$id]);
     }
 
     public function getAllContent() : array
