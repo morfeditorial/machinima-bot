@@ -40,7 +40,6 @@ class SearchContentCommand extends AbstractCommand
         array $args
     ) : void {
         $this->getUserStateService()->setState($user_id, [], 'awaiting_search_query');
-        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
         $keyboard = [
             'inline_keyboard' => [
@@ -50,11 +49,6 @@ class SearchContentCommand extends AbstractCommand
             ],
         ];
 
-        if (!is_null($current_panel)) {
-            $this->bot->deleteMessage($chat_id, $current_panel);
-        }
-
-        $this->getUserService()->setCurrentPanel($user_id, $message_id + 1);
-        $this->bot->pictureReply($chat_id, $this->translate('enter_search_query'), $visualsLinks[1], $keyboard);
+        $this->bot->sendMessage($chat_id, $this->translate('enter_search_query'), $keyboard);
     }
 }

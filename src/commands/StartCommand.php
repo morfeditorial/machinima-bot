@@ -53,7 +53,6 @@ class StartCommand extends AbstractCommand
         array $args
     ) : void {
         $this->getUserStateService()->clearState($user_id);
-        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
         $keyboard = [
             'inline_keyboard' => [
@@ -78,11 +77,6 @@ class StartCommand extends AbstractCommand
             ];
         }
 
-        if (!is_null($current_panel)) {
-            $this->bot->deleteMessage($chat_id, $current_panel);
-        }
-
-        $this->getUserService()->setCurrentPanel($user_id, $message_id + 1);
-        $this->bot->pictureReply($chat_id, $this->translate('welcome_message'), $visualsLinks[0], $keyboard);
+        $this->bot->sendMessage($chat_id, $this->translate('welcome_message'), $keyboard);
     }
 }
