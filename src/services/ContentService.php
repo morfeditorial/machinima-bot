@@ -160,6 +160,11 @@ class ContentService
         return $this->db->fetchAllAssociative($query, $params);
     }
 
+    public function deleteCategory(int $id) : bool
+    {
+        return (bool) $this->db->executeStatement('DELETE FROM categories WHERE id = ?', [$id]);
+    }
+
     // --- Staff Management ---
 
     public function assignStaff(int $content_id, int $author_id, string $role) : bool

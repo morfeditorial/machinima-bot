@@ -89,7 +89,7 @@ class CategoryDeleteScreen extends AbstractScreen
             } elseif ('execute' === $subAction) {
                 // Execute deletion here in the controller
                 if ($this->isGranted('moderator')) {
-                    $this->bot->getContainer()->get('content_service')->db->executeStatement('DELETE FROM categories WHERE id = ?', [$this->categoryId]);
+                    $this->bot->getContainer()->get('content_service')->deleteCategory($this->categoryId);
                 }
 
                 $this->isConfirm = false;
