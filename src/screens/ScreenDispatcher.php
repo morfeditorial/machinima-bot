@@ -31,6 +31,7 @@ class ScreenDispatcher
     private array $routes = [
         // Admin
         'admin:panel' => \morfeditorial\screens\Admin\ControlPanelScreen::class,
+        'admin:create_public_page' => \morfeditorial\screens\Admin\ControlPanelScreen::class,
 
         // Author
         'author:list' => \morfeditorial\screens\Author\AuthorListScreen::class,
