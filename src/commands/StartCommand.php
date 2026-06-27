@@ -54,29 +54,7 @@ class StartCommand extends AbstractCommand
     ) : void {
         $this->getUserStateService()->clearState($user_id);
 
-        $keyboard = [
-            'inline_keyboard' => [
-                [
-                    ['text' => $this->translate('search_content'), 'callback_data' => 'public:search'],
-                ],
-                [
-                    ['text' => $this->translate('categories'), 'callback_data' => 'public:categories'],
-                ],
-                [
-                    ['text' => $this->translate('top_authors'), 'callback_data' => 'public:top_authors'],
-                ],
-                [
-                    ['text' => $this->translate('random_content'), 'callback_data' => 'public:random'],
-                ],
-            ],
-        ];
-
-        if ($this->bot->isGranted('moderator')) {
-            $keyboard['inline_keyboard'][] = [
-                ['text' => '⚙️ Admin Panel', 'callback_data' => 'admin:panel'],
-            ];
-        }
-
-        $this->bot->sendMessage($chat_id, $this->translate('welcome_message'), $keyboard);
+        $photoUrl = $this->getContainer()->get('visuals_links')[0];
+        $this->bot->sendPhotoMessage($chat_id, $photoUrl, $this->translate('welcome_message'));
     }
 }
