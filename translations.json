@@ -756,10 +756,10 @@
         "uk": "Ієрархія ролей:"
     },
     "role_detail_message": {
-        "en": "Role: {role}\nParents: {parents}\nChildren: {children}",
-        "pl": "Rola: {role}\nRodzice: {parents}\nDzieci: {children}",
-        "be": "Роля: {role}\nБацькі: {parents}\nДзеці: {children}",
-        "uk": "Роль: {role}\nБатьки: {parents}\nДіти: {children}"
+        "en": "Role: {role}\nParents: {parents}\nChildren: {children}\nUsers: {users}",
+        "pl": "Rola: {role}\nRodzice: {parents}\nDzieci: {children}\nUżytkownicy: {users}",
+        "be": "Роля: {role}\nБацькі: {parents}\nДзеці: {children}\nКарыстальнікі: {users}",
+        "uk": "Роль: {role}\nБатьки: {parents}\nДіти: {children}\nКористувачі: {users}"
     },
     "add_parent": {
         "en": "Add Parent",

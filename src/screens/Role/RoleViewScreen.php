@@ -95,9 +95,17 @@ class RoleViewScreen extends AbstractScreen
                 $parents_text = ! empty($parents) ? implode(', ', array_column($parents, 'role_name')) : "\u{2014}";
                 $children_text = ! empty($children) ? implode(', ', array_column($children, 'role_name')) : "\u{2014}";
 
+                $users = $role_service->getUsersByRole($role_name);
+                $users_count = count($users);
+                
+                $users_text = $users_count > 0 ? implode(', ', array_slice($users, 0, 10)) : "\u{2014}";
+                if ($users_count > 10) {
+                    $users_text .= ' (та ще ' . ($users_count - 10) . ')';
+                }
+
                 $message_text = str_replace(
-                    ['{role}', '{parents}', '{children}'],
-                    [$role_name, $parents_text, $children_text],
+                    ['{role}', '{parents}', '{children}', '{users}'],
+                    [$role_name, $parents_text, $children_text, $users_text],
                     $this->translate('role_detail_message')
                 );
 
@@ -106,11 +114,6 @@ class RoleViewScreen extends AbstractScreen
                         [
                             ['text' => $this->translate('add_parent'), 'callback_data' => $this->makePayload('role', 'create', 'add_parent', $role_name)],
                             ['text' => $this->translate('remove_child'), 'callback_data' => $this->makePayload('role', 'remove', 'select_child', $role_name)],
-                        ],
-                        [
-                            ['text' => $this->translate('assign_role_to_user'), 'callback_data' => $this->makePayload('role', 'assign', 'ask_user', $role_name)],
-                            ['text' => $this->translate('unassign_role_from_user'), 'callback_data' => $this->makePayload('role', 'unassign', 'ask_user', $role_name)],
-                        ],
                         [
                             ['text' => $this->translate('delete_this_role'), 'callback_data' => $this->makePayload('role', 'delete', 'confirm', $role_name)],
                         ],

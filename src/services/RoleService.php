@@ -204,6 +204,18 @@ class RoleService
         ', [$role_name]);
     }
 
+    public function getUsersByRole(string $role_name) : array
+    {
+        $rows = $this->db->fetchAll('
+            SELECT ur.user_id
+            FROM user_roles ur
+            JOIN roles r ON ur.role_id = r.id
+            WHERE r.role_name = ?
+        ', [$role_name]);
+
+        return array_column($rows, 'user_id');
+    }
+
     public function getAllRoles() : array
     {
         return $this->db->fetchAllAssociative('SELECT * FROM roles');
