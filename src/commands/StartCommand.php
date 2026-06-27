@@ -54,7 +54,7 @@ class StartCommand extends AbstractCommand
     ) : void {
         $this->getUserStateService()->clearState($user_id);
 
-        $photoUrl = $this->getContainer()->get('visuals_links')[0];
+        $photoUrl = $this->container->get('visuals_links')[0];
         $this->bot->pictureReply($chat_id, $this->translate('welcome_message'), $photoUrl);
     }
 }
