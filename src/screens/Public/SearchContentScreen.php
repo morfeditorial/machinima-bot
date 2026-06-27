@@ -58,9 +58,6 @@ class SearchContentScreen extends AbstractScreen
         $contentService = $this->bot->getContainer()->get('content_service');
         $results = $contentService->searchContent($query);
 
-        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
-        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
-
         $keyboard = ['inline_keyboard' => []];
 
         foreach ($results as $item) {
@@ -69,18 +66,8 @@ class SearchContentScreen extends AbstractScreen
             ];
         }
 
-        $keyboard['inline_keyboard'][] = [
-            ['text' => $this->translate('go_back'), 'callback_data' => 'public:main'],
-        ];
-
         $message = empty($results) ? $this->translate('no_search_results') : $this->translate('search_results');
 
-        $this->bot->editMediaMessage(
-            $this->chatId,
-            $currentPanel,
-            $visualsLinks[1],
-            $message,
-            $keyboard
-        );
+        $this->bot->sendMessage($this->chatId, $message, $keyboard);
     }
 }
