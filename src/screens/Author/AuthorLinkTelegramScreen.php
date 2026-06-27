@@ -49,7 +49,10 @@ class AuthorLinkTelegramScreen extends AbstractScreen
 
     public function handleCallback(string $action, array $params) : void
     {
-        // Not used
+        if ('link_telegram' === $action) {
+            $this->data['author_id'] = $params[0] ?? 0;
+            $this->render();
+        }
     }
 
     public function handleMessage(string $text) : void
