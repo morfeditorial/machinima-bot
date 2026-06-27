@@ -69,8 +69,6 @@ class AuthorEditNameScreen extends AbstractScreen
 
     public function handleMessage(string $text) : void
     {
-
-
         $messageId = $this->data['message_id'];
         $this->bot->deleteMessage($this->chatId, $messageId);
 
