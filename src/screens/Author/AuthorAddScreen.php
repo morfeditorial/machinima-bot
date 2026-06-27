@@ -87,13 +87,20 @@ class AuthorAddScreen extends AbstractScreen
                     ['text' => $this->translate('add_bio'), 'callback_data' => 'author:set_about:' . $authorId],
                     ['text' => $this->translate('add_link'), 'callback_data' => 'author:add_link:' . $authorId],
                 ],
-                [
-                    ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
-                ],
-                [
-                    ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
-                ],
             ],
+        ];
+
+        if ($this->isGranted('admin')) {
+            $keyboard['inline_keyboard'][] = [
+                ['text' => $this->translate('link_telegram'), 'callback_data' => 'author:link_telegram:' . $authorId],
+            ];
+        }
+
+        $keyboard['inline_keyboard'][] = [
+            ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
+        ];
+        $keyboard['inline_keyboard'][] = [
+            ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
         ];
 
         $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
