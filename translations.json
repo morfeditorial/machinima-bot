@@ -29,12 +29,6 @@
         "be": "Выкарыстанне: \/delete_role &lt;назва_ролі&gt;",
         "uk": "Використання: \/delete_role &lt;назва_ролі&gt;"
     },
-    "admin_panel_command_description": {
-        "en": "Access the admin panel",
-        "pl": "Uzyskaj dostęp do panelu administratora",
-        "be": "Доступ да панэлі адміністратара",
-        "uk": "Отримати доступ до панелі адміністратора"
-    },
     "search_content_command_description": {
         "en": "Find content by tag",
         "pl": "Znajdź zawartość według tagu",
@@ -868,14 +862,6 @@
         "pl": "Nieprawidłowe ID użytkownika.",
         "be": "Няправільны ID карыстальніка.",
         "uk": "Невірний ID користувача."
-    },
-    "main_menu_title": {
-        "uk": "Головне Меню",
-        "en": "Main Menu"
-    },
-    "main_menu_description": {
-        "uk": "Оберіть потрібний пункт з меню нижче.",
-        "en": "Choose an option from the menu below."
     },
     "main_menu_command_description": {
         "uk": "Відкрити головне меню",
