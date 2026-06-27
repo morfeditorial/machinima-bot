@@ -534,22 +534,22 @@
         "uk": "Введи текст в наступному повідомленні, щоб змінити ім’я машиніматора:"
     },
     "name_changed_message": {
-        "en": "Updated information for machinimator {author} (formerly {oldName}):\n\n📚 Biography: {biography}\n🔗 Channel link: {link}",
-        "pl": "Zaktualizowane informacje dla machinimatora {author} (dawniej {oldName}):\n\n📚 Biografia: {biography}\n🔗 Link do kanału: {link}",
-        "be": "Абноўленая інфармацыя для машыніматара {author} (раней {oldName}):\n\n📚 Біяграфія: {biography}\n🔗 Спасылка на канал: {link}",
-        "uk": "Оновлена інформація про машиніматора {author} (раніше {oldName}):\n\n📚 Біографія: {biography}\n🔗 Посилання на канал: {link}"
+        "en": "Updated information for page {author} (formerly {oldName}):\n\n📚 Biography: {biography}\n🔗 Link: {link}",
+        "pl": "Zaktualizowane informacje dla strony {author} (dawniej {oldName}):\n\n📚 Biografia: {biography}\n🔗 Link: {link}",
+        "be": "Абноўленая інфармацыя для старонкі {author} (раней {oldName}):\n\n📚 Біяграфія: {biography}\n🔗 Спасылка: {link}",
+        "uk": "Оновлена інформація для сторінки {author} (раніше {oldName}):\n\n📚 Біографія: {biography}\n🔗 Посилання: {link}"
     },
     "make_public": {
         "en": "Make public 🔓",
         "pl": "Upublicznij 🔓",
-        "be": "Зрабіць грамадскім 🔓",
-        "uk": "Зробити публічним 🔓"
+        "be": "Зрабіць публічнай 🔓",
+        "uk": "Зробити публічною 🔓"
     },
     "make_private": {
         "en": "Make private 🔒",
         "pl": "Uprywatnij 🔒",
-        "be": "Зрабіць прыватным 🔒",
-        "uk": "Зробити приватним 🔒"
+        "be": "Зрабіць прыватнай 🔒",
+        "uk": "Зробити приватною 🔒"
     },
     "change_bio": {
         "en": "Edit biography",
