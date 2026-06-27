@@ -865,7 +865,9 @@
     },
     "main_menu_command_description": {
         "uk": "Відкрити головне меню",
-        "en": "Open main menu"
+        "en": "Open main menu",
+        "pl": "Otwórz menu główne",
+        "be": "Адкрыць галоўнае меню"
     },
     "authors": {
         "uk": "Автори",
