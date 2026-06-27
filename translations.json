@@ -138,34 +138,34 @@
         "uk": "Я успішно оновив дані бота! 🔄"
     },
     "add_author": {
-        "en": "Add Author",
-        "pl": "Dodaj autora",
-        "be": "Дадаць аўтара",
-        "uk": "Додати автора"
+        "en": "Add Public Page",
+        "pl": "Dodaj stronę publiczną",
+        "be": "Дадаць публічную старонку",
+        "uk": "Створити публічну сторінку"
     },
     "add_author_message": {
-        "en": "Enter the name of the new author:",
-        "pl": "Wprowadź imię nowego autora:",
-        "be": "Увядзіце імя новага аўтара:",
-        "uk": "Введи ім’я нового автора:"
+        "en": "Enter the name for the new public page:",
+        "pl": "Wprowadź nazwę nowej strony publicznej:",
+        "be": "Увядзіце назву для новай публічнай старонкі:",
+        "uk": "Введи назву для нової публічної сторінки:"
     },
     "author_added_message": {
-        "en": "I`ve created machinimator {author}! Choose an action:",
-        "pl": "Utworzyłem machinimatora {author}! Wybierz działanie:",
-        "be": "Я стварыў машыніматара {author}! Выберыце дзеянне:",
-        "uk": "Я створив машиніматора {author}! Вибери дію:"
+        "en": "I`ve created public page {author}! Choose an action:",
+        "pl": "Utworzyłem stronę publiczną {author}! Wybierz działanie:",
+        "be": "Я стварыў публічную старонку {author}! Выберыце дзеянне:",
+        "uk": "Я створив публічну сторінку {author}! Вибери дію:"
     },
     "delete_author": {
-        "en": "Delete Authors",
-        "pl": "Usuń autorów",
-        "be": "Выдалення аўтараў",
-        "uk": "Видалення авторів"
+        "en": "Delete Public Page",
+        "pl": "Usuń stronę publiczną",
+        "be": "Выдаліць публічную старонку",
+        "uk": "Видалити публічну сторінку"
     },
     "delete_author_message": {
-        "en": "Choose an author from the list you want to delete:",
-        "pl": "Wybierz autora z listy, którego chcesz usunąć:",
-        "be": "Выберыце аўтара з спісу, якога вы хочаце выдаліць:",
-        "uk": "Вибери автора зі списку, якого бажаєш видалити:"
+        "en": "Choose a public page from the list you want to delete:",
+        "pl": "Wybierz stronę publiczną z listy, którą chcesz usunąć:",
+        "be": "Выберыце публічную старонку са спісу, якую хочаце выдаліць:",
+        "uk": "Вибери публічну сторінку зі списку, яку ти хочеш видалити:"
     },
     "confirm_delete": {
         "en": "Yes, confirm deletion",
@@ -174,34 +174,34 @@
         "uk": "Так, підтвердити видалення"
     },
     "confirm_delete_message": {
-        "en": "Confirm whether you really want to delete the machinimator named {author}. This action cannot be undone!",
-        "pl": "Potwierdź, czy naprawdę chcesz usunąć machinimatora o imieniu {author}. Tej operacji nie można cofnąć!",
-        "be": "Пацвердзіце, ці сапраўды вы хочаце выдаліць машыніматара па імі {author}. Гэта дзеянне немагчыма адмяніць!",
-        "uk": "Підтверди, чи точно ти хочеш видалити машиніматора по імені {author}. Скасувати цю дію неможливо!"
+        "en": "Confirm whether you really want to delete the public page named {author}. This action cannot be undone!",
+        "pl": "Potwierdź, czy naprawdę chcesz usunąć stronę publiczną {author}. Tej operacji nie można cofnąć!",
+        "be": "Пацвердзіце, ці сапраўды вы хочаце выдаліць публічную старонку {author}. Гэта дзеянне немагчыма адмяніць!",
+        "uk": "Підтверди, чи точно ти хочеш видалити публічну сторінку {author}. Скасувати цю дію неможливо!"
     },
     "author_deleted_message": {
-        "en": "Machinimator named {author} has been irreversibly lost.",
-        "pl": "Machinimator o imieniu {author} został bezpowrotnie utracony.",
-        "be": "Машыніматар па імі {author} быў безваротна страчаны.",
-        "uk": "Машиніматор по імені {author} був безповоротно втрачений."
+        "en": "Public page named {author} has been irreversibly deleted.",
+        "pl": "Strona publiczna {author} została bezpowrotnie usunięta.",
+        "be": "Публічная старонка {author} была безваротна выдаленая.",
+        "uk": "Публічна сторінка {author} була безповоротно видалена."
     },
     "list_of_authors": {
-        "en": "List of Authors",
-        "pl": "Lista autorów",
-        "be": "Спіс аўтараў",
-        "uk": "Список авторів"
+        "en": "List of Public Pages",
+        "pl": "Lista Stron Publicznych",
+        "be": "Спіс публічных старонак",
+        "uk": "Список публічних сторінок"
     },
     "list_of_authors_message": {
-        "en": "As requested, here is the list of all machinimators:",
-        "pl": "Zgodnie z prośbą, oto lista wszystkich machinimatorów:",
-        "be": "Як і прасіў, вось спіс усіх машыніматараў:",
-        "uk": "Як і просив, ось список всіх машиніматорів:"
+        "en": "Here is a list of all public pages in the system:",
+        "pl": "Oto lista wszystkich stron publicznych w systemie:",
+        "be": "Вось спіс усіх публічных старонак у сістэме:",
+        "uk": "Ось перелік усіх публічних сторінок у системі:"
     },
     "empty_authors_list_message": {
-        "en": "Unfortunately, there are no machinimators right now.",
-        "pl": "Niestety, obecnie nie ma żadnych machinimatorów.",
-        "be": "На жаль, зараз няма ніводнага машыніматара.",
-        "uk": "На жаль, список машиніматорів наразі порожній."
+        "en": "No public pages have been created in the system yet.",
+        "pl": "W systemie nie utworzono jeszcze żadnych stron publicznych.",
+        "be": "У сістэме яшчэ не створана ніводнай публічнай старонкі.",
+        "uk": "У системі ще не створено жодної публічної сторінки."
     },
     "previous_page": {
         "en": "↩️ Back",
@@ -300,10 +300,10 @@
         "uk": "Додати учасника"
     },
     "select_author_for_staff_message": {
-        "en": "Select an author to add to the project staff:",
-        "pl": "Wybierz autora, którego chcesz dodać до zespołu projektu:",
-        "be": "Абярыце аўтара, якога вы хочаце дадаць у каманду праекта:",
-        "uk": "Оберіть автора, якого хочете додати до команди проєкту:"
+        "en": "Select a public page to add to the project staff:",
+        "pl": "Wybierz stronę publiczną, którą chcesz dodać do zespołu projektu:",
+        "be": "Абярыце публічную старонку для дадання ў каманду праекта:",
+        "uk": "Оберіть публічну сторінку, щоб додати до команди проєкту:"
     },
     "enter_staff_role_message": {
         "en": "Enter the role for this staff member (e.g., Director, Actor):",
@@ -498,10 +498,10 @@
         "uk": "Проєкт видалено!"
     },
     "author_not_found_message": {
-        "en": "I couldn`t find the machinimator you selected. Perhaps it was removed due to a violation… 🙁",
-        "pl": "Nie mogłem odnaleźć wybranego przez ciebie machinimatora. Być może został usunięty z powodu naruszenia… 🙁",
-        "be": "Я не знайшоў машыніматара, якога ты выбраў. Магчыма, яго выдалілі з‐за парушэння… 🙁",
-        "uk": "Я не знайшов машиніматора, якого ти вибрав. Можливо, його прибрали через порушення… 🙁"
+        "en": "I couldn`t find the public page you selected. Perhaps it was removed due to a violation… 🙁",
+        "pl": "Nie mogłem odnaleźć wybranej przez ciebie strony publicznej. Być może została usunięta z powodu naruszenia… 🙁",
+        "be": "Я не знайшоў публічную старонку, якую ты выбраў. Магчыма, яе выдалілі з‐за парушэння… 🙁",
+        "uk": "Я не знайшов публічну сторінку, яку ти вибрав. Можливо, її видалили через порушення… 🙁"
     },
     "author_info_message": {
         "en": "📝 Public Page: {author}\n\n📚 Biography: {biography}\n🔗 Link: {link}",
@@ -528,10 +528,10 @@
         "uk": "✍🏻 Змінити ім’я"
     },
     "pending_name_change": {
-        "en": "Enter the text in the next message to change the machinimator`s name:",
-        "pl": "Wprowadź tekst w następnym komunikacie, aby zmienić nazwę machinimatora:",
-        "be": "Увядзіце тэкст у наступным паведамленні, каб зменіць імя машыніматара:",
-        "uk": "Введи текст в наступному повідомленні, щоб змінити ім’я машиніматора:"
+        "en": "Enter the text in the next message to change the page`s name:",
+        "pl": "Wprowadź tekst w następnym komunikacie, aby zmienić nazwę strony publicznej:",
+        "be": "Увядзіце тэкст у наступным паведамленні, каб змяніць назву старонкі:",
+        "uk": "Введи текст в наступному повідомленні, щоб змінити назву сторінки:"
     },
     "name_changed_message": {
         "en": "Updated information for page {author} (formerly {oldName}):\n\n📚 Biography: {biography}\n🔗 Link: {link}",
@@ -612,10 +612,10 @@
         "uk": "Додати посилання"
     },
     "delete_this_author": {
-        "en": "Delete this author",
-        "pl": "Usuń tego autora",
-        "be": "Выдаліць гэтага аўтара",
-        "uk": "Видалити цього автора"
+        "en": "Delete this page",
+        "pl": "Usuń tę stronę",
+        "be": "Выдаліць гэту старонку",
+        "uk": "Видалити цю сторінку"
     },
     "go_back": {
         "en": "🔙 Go Back",
