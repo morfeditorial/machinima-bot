@@ -159,7 +159,7 @@ class ScreenDispatcher
         // Для спрощення ми поки будемо перевіряти наявність стану по мапінгу
         foreach ($this->stateMap as $stateName => $screenClass) {
             $stateData = $this->bot->getUserStateService()->getState($userId, $stateName);
-            if ($stateData) {
+            if (null !== $stateData) {
                 /** @var ScreenInterface $screen */
                 $screen = new $screenClass($this->bot, $data);
                 $screen->handleMessage($text);
