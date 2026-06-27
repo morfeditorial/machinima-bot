@@ -186,10 +186,10 @@
         "uk": "Публічна сторінка {author} була безповоротно видалена."
     },
     "list_of_authors": {
-        "en": "List of Public Pages",
-        "pl": "Lista Stron Publicznych",
-        "be": "Спіс публічных старонак",
-        "uk": "Список публічних сторінок"
+        "en": "List of Authors",
+        "pl": "Lista autorów",
+        "be": "Спіс аўтараў",
+        "uk": "Список авторів"
     },
     "list_of_authors_message": {
         "en": "Here is a list of all public pages in the system:",
