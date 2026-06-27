@@ -1018,5 +1018,41 @@
         "pl": "❌ Błąd: Nie można zaktualizować statusu. Możesz nie mieć uprawnień lub przejście jest nieprawidłowe.",
         "be": "❌ Памылка: немагчыма абнавіць статус. Магчыма, у вас няма правоў, або пераход немагчымы.",
         "uk": "❌ Помилка: неможливо оновити статус. Можливо, у вас немає прав, або перехід неможливий."
+    },
+    "search_content": {
+        "en": "🔍 Search",
+        "pl": "🔍 Szukaj",
+        "be": "🔍 Пошук",
+        "uk": "🔍 Пошук"
+    },
+    "categories": {
+        "en": "🗂 Categories",
+        "pl": "🗂 Kategorie",
+        "be": "🗂 Катэгорыі",
+        "uk": "🗂 Категорії"
+    },
+    "top_authors": {
+        "en": "🏆 Top Authors",
+        "pl": "🏆 Najlepsi autorzy",
+        "be": "🏆 Лепшыя аўтары",
+        "uk": "🏆 Топ авторів"
+    },
+    "random_content": {
+        "en": "🎲 Random Content",
+        "pl": "🎲 Losowa treść",
+        "be": "🎲 Выпадковы кантэнт",
+        "uk": "🎲 Випадковий контент"
+    },
+    "enter_search_query": {
+        "en": "Enter your search query (title or description):",
+        "uk": "Введи запит для пошуку (по назві або опису):"
+    },
+    "search_results": {
+        "en": "Here is what we found:",
+        "uk": "Ось що ми знайшли:"
+    },
+    "no_search_results": {
+        "en": "Nothing found for your query.",
+        "uk": "Нічого не знайдено за твоїм запитом."
     }
 }

@@ -54,6 +54,21 @@ class AuthorService
         );
     }
 
+    public function getTopAuthors(int $limit = 10) : array
+    {
+        return $this->db->fetchAllAssociative(
+            'SELECT a.*, COUNT(cs.content_id) as projects_count 
+             FROM authors a 
+             JOIN content_staff cs ON a.id = cs.author_id 
+             JOIN content c ON cs.content_id = c.id 
+             WHERE c.status = ? 
+             GROUP BY a.id 
+             ORDER BY projects_count DESC 
+             LIMIT ?',
+            ['published', $limit]
+        );
+    }
+
     public function getAuthorById(int $author_id) : ?array
     {
         $result = $this->db->fetchAssociative(

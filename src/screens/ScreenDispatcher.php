@@ -72,6 +72,15 @@ class ScreenDispatcher
         'category:create' => \morfeditorial\screens\Category\CategoryCreateScreen::class,
         'category:delete' => \morfeditorial\screens\Category\CategoryDeleteScreen::class,
 
+        // Public
+        'public:main' => \morfeditorial\screens\Public\MainMenuScreen::class,
+        'public:search' => \morfeditorial\screens\Public\MainMenuScreen::class,
+        'public:categories' => \morfeditorial\screens\Public\MainMenuScreen::class,
+        'public:top_authors' => \morfeditorial\screens\Public\MainMenuScreen::class,
+        'public:random' => \morfeditorial\screens\Public\MainMenuScreen::class,
+        'public:cancel' => \morfeditorial\screens\Public\SearchContentScreen::class,
+        'public:category' => \morfeditorial\screens\Public\CategoryListScreen::class,
+
         // Staff
         'staff:manage' => \morfeditorial\screens\Staff\StaffManageScreen::class,
         'staff:add' => \morfeditorial\screens\Staff\StaffAddScreen::class,

@@ -148,11 +148,11 @@ class MyBot extends tgLib
         $this->command_factory->registerCommand(new \morfeditorial\commands\HelpCommand($this)); // help
         $this->command_factory->registerCommand(new \morfeditorial\commands\UpdateCommand($this)); // update
         $this->command_factory->registerCommand(new \morfeditorial\commands\AdminPanelCommand($this)); // admin_panel
-        // $this->command_factory->registerCommand(new \morfeditorial\commands\SearchContentCommand($this)); // search_content
+        $this->command_factory->registerCommand(new \morfeditorial\commands\SearchContentCommand($this)); // search_content
         $this->command_factory->registerCommand(new \morfeditorial\commands\SearchAuthorCommand($this)); // search_author
-        // $this->command_factory->registerCommand(new \morfeditorial\commands\CategoriesCommand($this)); // categories
-        // $this->command_factory->registerCommand(new \morfeditorial\commands\TopAuthorsCommand($this)); // top_authors
-        // $this->command_factory->registerCommand(new \morfeditorial\commands\RandomContentCommand($this)); // random_content
+        $this->command_factory->registerCommand(new \morfeditorial\commands\CategoriesCommand($this)); // categories
+        $this->command_factory->registerCommand(new \morfeditorial\commands\TopAuthorsCommand($this)); // top_authors
+        $this->command_factory->registerCommand(new \morfeditorial\commands\RandomContentCommand($this)); // random_content
         $this->command_factory->registerCommand(new \morfeditorial\commands\CreateRoleCommand($this)); // create_role
         $this->command_factory->registerCommand(new \morfeditorial\commands\DeleteRoleCommand($this)); // delete_role
         $this->command_factory->registerCommand(new \morfeditorial\commands\AssignInitialAdminCommand($this)); // assign_initial_admin

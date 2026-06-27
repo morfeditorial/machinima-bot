@@ -128,6 +128,31 @@ class ContentService
         return (bool) $this->db->executeStatement('DELETE FROM content WHERE id = ?', [$id]);
     }
 
+    public function searchContent(string $query) : array
+    {
+        $likeQuery = '%' . $query . '%';
+        return $this->db->fetchAllAssociative(
+            'SELECT * FROM content WHERE (title LIKE ? OR description LIKE ?) AND status = ?',
+            [$likeQuery, $likeQuery, 'published']
+        );
+    }
+
+    public function getRandomContent() : ?array
+    {
+        $result = $this->db->fetchAllAssociative('SELECT * FROM content WHERE status = ? ORDER BY RANDOM() LIMIT 1', ['published']);
+        return $result[0] ?? null;
+    }
+
+    public function getContentByCategory(int $categoryId) : array
+    {
+        return $this->db->fetchAllAssociative(
+            'SELECT c.* FROM content c 
+             JOIN content_categories cc ON c.id = cc.content_id 
+             WHERE cc.category_id = ? AND c.status = ?',
+            [$categoryId, 'published']
+        );
+    }
+
     // --- Category Management ---
 
     public function createCategory(string $name, ?int $parent_id = null) : int
