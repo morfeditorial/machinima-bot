@@ -59,7 +59,8 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
     }
 
     $handler = function () use ($path, $request, $contentService, $authorService, $ratingService, $sseConnections) {
-        return \React\Promise\resolve(null)->then(function () use ($path, $request, $contentService, $authorService, $ratingService, $sseConnections) {
+        static $avatarCache = [];
+        return \React\Promise\resolve(null)->then(function () use ($path, $request, $contentService, $authorService, $ratingService, $sseConnections, &$avatarCache) {
             if ($path === '/api/feed') {
                 $feed = $ratingService->getTrendingContent(20);
                 return json_encode(['success' => true, 'data' => $feed]);
@@ -86,6 +87,35 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
             if (preg_match('#^/api/projects/(\d+)/comments$#', $path, $matches) && $request->getMethod() === 'GET') {
                 $projectId = (int) $matches[1];
                 $comments = $contentService->getComments($projectId);
+                
+                // Fetch avatars from Telegram API
+                global $botToken;
+                
+                foreach ($comments as &$comment) {
+                    $uId = $comment['user_id'];
+                    if (!isset($avatarCache[$uId])) {
+                        $avatarCache[$uId] = null;
+                        try {
+                            $photosJson = @file_get_contents("https://api.telegram.org/bot{$botToken}/getUserProfilePhotos?user_id={$uId}&limit=1");
+                            if ($photosJson) {
+                                $photos = json_decode($photosJson, true);
+                                if (!empty($photos['result']['photos'][0][0]['file_id'])) {
+                                    $fileId = $photos['result']['photos'][0][0]['file_id'];
+                                    $fileJson = @file_get_contents("https://api.telegram.org/bot{$botToken}/getFile?file_id={$fileId}");
+                                    if ($fileJson) {
+                                        $fileData = json_decode($fileJson, true);
+                                        if (!empty($fileData['result']['file_path'])) {
+                                            $avatarCache[$uId] = "https://api.telegram.org/file/bot{$botToken}/" . $fileData['result']['file_path'];
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (\Exception $e) {}
+                    }
+                    $comment['author_avatar'] = $avatarCache[$uId];
+                }
+                unset($comment);
+                
                 return json_encode(['success' => true, 'data' => $comments]);
             }
             
@@ -97,15 +127,23 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                 }
                 
                 $authorName = $body['author_name'] ?? 'Користувач';
-                $commentId = $contentService->addComment($projectId, $body['user_id'], $authorName, $body['text']);
+                $parentId = isset($body['parent_id']) ? (int) $body['parent_id'] : null;
+                
+                $commentId = $contentService->addComment($projectId, $body['user_id'], $authorName, $body['text'], $parentId);
+                
+                global $botToken;
+                $authorAvatar = $avatarCache[$body['user_id']] ?? null;
                 
                 $newComment = [
                     'id' => $commentId,
                     'content_id' => $projectId,
                     'user_id' => $body['user_id'],
                     'author_name' => $authorName,
+                    'author_avatar' => $authorAvatar,
                     'text' => $body['text'],
-                    'created_at' => date('Y-m-d H:i:s')
+                    'parent_id' => $parentId,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => null
                 ];
                 
                 // SSE Broadcast
@@ -119,6 +157,31 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                 }
                 
                 return json_encode(['success' => true, 'data' => $newComment]);
+            }
+
+            if (preg_match('#^/api/comments/(\d+)$#', $path, $matches) && $request->getMethod() === 'PUT') {
+                $commentId = (int) $matches[1];
+                $body = json_decode((string) $request->getBody(), true);
+                if (!$body || !isset($body['text'], $body['user_id'])) {
+                    return json_encode(['success' => false, 'error' => 'Missing data']);
+                }
+                
+                $success = $contentService->editComment($commentId, $body['user_id'], $body['text']);
+                if ($success) {
+                    // SSE Broadcast
+                    $payload = json_encode([
+                        'type' => 'EDIT_COMMENT',
+                        'comment_id' => $commentId,
+                        'text' => $body['text'],
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ]);
+                    foreach ($sseConnections as $conn) {
+                        $conn->write("data: {$payload}\n\n");
+                    }
+                    return json_encode(['success' => true]);
+                }
+                
+                return json_encode(['success' => false, 'error' => 'Failed to edit or unauthorized']);
             }
             
             if ($path === '/api/authors/top') {

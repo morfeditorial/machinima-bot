@@ -118,13 +118,21 @@ class ContentService
 
     // --- Comments ---
 
-    public function addComment(int $content_id, int $user_id, string $author_name, string $text) : int
+    public function addComment(int $content_id, int $user_id, string $author_name, string $text, ?int $parent_id = null) : int
     {
         $this->db->executeStatement(
-            'INSERT INTO comments (content_id, user_id, author_name, text) VALUES (?, ?, ?, ?)',
-            [$content_id, $user_id, $author_name, $text]
+            'INSERT INTO comments (content_id, user_id, author_name, text, parent_id) VALUES (?, ?, ?, ?, ?)',
+            [$content_id, $user_id, $author_name, $text, $parent_id]
         );
         return (int) $this->db->lastInsertId();
+    }
+    
+    public function editComment(int $comment_id, int $user_id, string $text) : bool
+    {
+        return (bool) $this->db->executeStatement(
+            'UPDATE comments SET text = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?',
+            [$text, $comment_id, $user_id]
+        );
     }
 
     public function getComments(int $content_id) : array
