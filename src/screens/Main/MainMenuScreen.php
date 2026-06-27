@@ -42,9 +42,20 @@ class MainMenuScreen extends AbstractScreen
             ]
         ];
 
-        // Тут логіка відправки чи редагування повідомлення залежно від контексту
-        // Для прикладу, використаємо уявний метод
-        // $this->bot->editMediaMessage($this->chatId, ..., $text, $keyboard);
+        if ($this->isGranted('creator')) {
+            $keyboard['inline_keyboard'][] = [
+                ['text' => '🛠 ' . $this->translate('admin_panel'), 'callback_data' => 'admin:panel']
+            ];
+        }
+
+        $current_panel = $this->bot->getUserService()->getCurrentPanel($this->userId);
+        $visuals_links = $this->bot->getContainer()->get('visuals_links');
+
+        if ($current_panel) {
+            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[0], $text, $keyboard);
+        } else {
+            $this->bot->pictureReply($this->chatId, $text, $visuals_links[0], $keyboard);
+        }
     }
 
     public function handleCallback(string $action, array $params) : void

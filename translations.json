@@ -828,10 +828,10 @@
         "uk": "Введіть ID користувача, якому хочете призначити роль {role}:"
     },
     "no_parent": {
-        "en": "\u2014 No parent \u2014",
-        "pl": "\u2014 Brak roli nadrzędnej \u2014",
-        "be": "\u2014 Без бацькоўскай ролі \u2014",
-        "uk": "\u2014 Без батьківської ролі \u2014"
+        "en": "— No parent —",
+        "pl": "— Brak roli nadrzędnej —",
+        "be": "— Без бацькоўскай ролі —",
+        "uk": "— Без батьківської ролі —"
     },
     "enter_role_name_message": {
         "en": "Enter name for the new role:",
@@ -862,5 +862,17 @@
         "pl": "Nieprawidłowe ID użytkownika.",
         "be": "Няправільны ID карыстальніка.",
         "uk": "Невірний ID користувача."
+    },
+    "main_menu_title": {
+        "uk": "Головне Меню",
+        "en": "Main Menu"
+    },
+    "main_menu_description": {
+        "uk": "Оберіть потрібний пункт з меню нижче.",
+        "en": "Choose an option from the menu below."
+    },
+    "main_menu_command_description": {
+        "uk": "Відкрити головне меню",
+        "en": "Open main menu"
     }
 }
