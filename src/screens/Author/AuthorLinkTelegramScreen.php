@@ -60,7 +60,7 @@ class AuthorLinkTelegramScreen extends AbstractScreen
         $stateData = $this->bot->getUserStateService()->getState($this->userId, 'link_telegram');
         $authorId = (int)($stateData['author_id'] ?? 0);
 
-        if (!$this->isGranted('admin')) {
+        if (!$this->isGranted('admin') || $authorId === 0) {
             $this->bot->getUserStateService()->clearState($this->userId, 'link_telegram');
             return;
         }
@@ -70,6 +70,8 @@ class AuthorLinkTelegramScreen extends AbstractScreen
         $telegramId = (int) trim($text);
         if ($telegramId <= 0) {
             $this->bot->getUserStateService()->clearState($this->userId, 'link_telegram');
+            $this->data['author_id'] = $authorId;
+            (new AuthorProfileScreen($this->bot, $this->data))->render();
             return;
         }
 
@@ -78,6 +80,8 @@ class AuthorLinkTelegramScreen extends AbstractScreen
         if ($existingAuthor !== null) {
             $this->bot->sendMessage($this->chatId, $this->translate('telegram_already_linked'));
             $this->bot->getUserStateService()->clearState($this->userId, 'link_telegram');
+            $this->data['author_id'] = $authorId;
+            (new AuthorProfileScreen($this->bot, $this->data))->render();
             return;
         }
 
