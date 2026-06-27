@@ -874,5 +874,29 @@
     "main_menu_command_description": {
         "uk": "Відкрити головне меню",
         "en": "Open main menu"
+    },
+    "authors": {
+        "uk": "Автори",
+        "en": "Authors",
+        "pl": "Autorzy",
+        "be": "Аўтары"
+    },
+    "projects": {
+        "uk": "Проєкти",
+        "en": "Projects",
+        "pl": "Projekty",
+        "be": "Праекты"
+    },
+    "settings": {
+        "uk": "Налаштування",
+        "en": "Settings",
+        "pl": "Ustawienia",
+        "be": "Налады"
+    },
+    "admin_panel": {
+        "uk": "Адмін-панель",
+        "en": "Admin Panel",
+        "pl": "Panel Admina",
+        "be": "Адмін-панэль"
     }
 }
