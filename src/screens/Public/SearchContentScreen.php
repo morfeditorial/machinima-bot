@@ -62,7 +62,7 @@ class SearchContentScreen extends AbstractScreen
 
         foreach ($results as $item) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => $item['title'], 'callback_data' => 'project:view:' . $item['id']],
+                ['text' => $item['title'], 'callback_data' => 'public:view:' . $item['id']],
             ];
         }
 

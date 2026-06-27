@@ -68,18 +68,48 @@ class MainMenuScreen extends AbstractScreen
             $screen = new $screenClass($this->bot, ["chat_id" => $this->chatId, "user_id" => $this->userId]);
             $screen->render();
         } elseif ('random' === $action) {
-            // Re-use RandomContentCommand logic
             $contentService = $this->bot->getContainer()->get('content_service');
             $randomContent = $contentService->getRandomContent();
 
             if ($randomContent) {
-                $screenClass = \morfeditorial\screens\Project\ProjectViewScreen::class;
-                $screen = new $screenClass($this->bot, ["chat_id" => $this->chatId, "user_id" => $this->userId]);
-                $screen->handleCallback('view', [(string)$randomContent['id']]);
+                $this->sendProjectMessage($randomContent, $contentService);
+            } else {
+                $this->bot->sendMessage($this->chatId, $this->translate('no_content_found'));
+            }
+        } elseif ('view' === $action) {
+            $contentService = $this->bot->getContainer()->get('content_service');
+            $projectId = (int)($params[0] ?? 0);
+            $project = $contentService->getContentById($projectId);
+
+            if ($project && 'published' === $project['status']) {
+                $this->sendProjectMessage($project, $contentService);
             } else {
                 $this->bot->sendMessage($this->chatId, $this->translate('no_content_found'));
             }
         }
+    }
+
+    private function sendProjectMessage(array $project, $contentService) : void
+    {
+        $staff = $contentService->getStaffByContentId((int)$project['id']);
+        $staff_text = "";
+        foreach ($staff as $member) {
+            $staff_text .= "\n- " . htmlspecialchars($member['author_name']) . " (" . htmlspecialchars($member['role']) . ")";
+        }
+
+        $categories = $contentService->getCategoriesByContentId((int)$project['id']);
+        $categories_names = array_column($categories, 'name');
+        $categories_text = !empty($categories_names) ? implode(', ', $categories_names) : "\u{2014}";
+
+        $message_text = "📦 <b>" . htmlspecialchars($project['title']) . "</b>\n";
+        $message_text .= "📝 " . htmlspecialchars($project['description'] ?? '') . "\n";
+        $message_text .= "🏷 Категорії: " . htmlspecialchars($categories_text) . "\n";
+        if (!empty($project['url'])) {
+            $message_text .= "🔗 Посилання: " . htmlspecialchars($project['url']) . "\n";
+        }
+        $message_text .= "\n👥 Команда:" . ($staff_text ?: " \u{2014}");
+
+        $this->bot->sendMessage($this->chatId, $message_text);
     }
 
     public function handleMessage(string $text) : void {}

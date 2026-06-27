@@ -43,9 +43,25 @@ class RandomContentCommand extends AbstractCommand
         $randomContent = $contentService->getRandomContent();
 
         if ($randomContent) {
-            $screenClass = \morfeditorial\screens\Project\ProjectViewScreen::class;
-            $screen = new $screenClass($this->bot, ['chat_id' => $chat_id, 'user_id' => $user_id]);
-            $screen->handleCallback('view', [(string)$randomContent['id']]);
+            $staff = $contentService->getStaffByContentId((int)$randomContent['id']);
+            $staff_text = "";
+            foreach ($staff as $member) {
+                $staff_text .= "\n- " . htmlspecialchars($member['author_name']) . " (" . htmlspecialchars($member['role']) . ")";
+            }
+
+            $categories = $contentService->getCategoriesByContentId((int)$randomContent['id']);
+            $categories_names = array_column($categories, 'name');
+            $categories_text = !empty($categories_names) ? implode(', ', $categories_names) : "\u{2014}";
+
+            $message_text = "📦 <b>" . htmlspecialchars($randomContent['title']) . "</b>\n";
+            $message_text .= "📝 " . htmlspecialchars($randomContent['description'] ?? '') . "\n";
+            $message_text .= "🏷 Категорії: " . htmlspecialchars($categories_text) . "\n";
+            if (!empty($randomContent['url'])) {
+                $message_text .= "🔗 Посилання: " . htmlspecialchars($randomContent['url']) . "\n";
+            }
+            $message_text .= "\n👥 Команда:" . ($staff_text ?: " \u{2014}");
+
+            $this->bot->sendMessage($chat_id, $message_text);
         } else {
             $this->bot->sendMessage($chat_id, $this->translate('no_content_found'));
         }
