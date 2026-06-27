@@ -27,11 +27,6 @@ class ControlPanelScreen extends AbstractScreen
 {
     public function render() : void
     {
-        if (!$this->isGranted('creator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
-        }
-
         $this->bot->getUserStateService()->clearState($this->userId);
 
         $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
@@ -41,26 +36,24 @@ class ControlPanelScreen extends AbstractScreen
 
         $keyboard = ['inline_keyboard' => []];
 
+        // Базові кнопки для всіх користувачів
+        $keyboard['inline_keyboard'][] = [
+            ['text' => '👤 ' . $this->translate('list_of_authors'), 'callback_data' => 'author:list:1'],
+            ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
+        ];
+
+        // Creator і вище: керування авторами
         if ($this->isGranted('moderator')) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => $this->translate('add_author'), 'callback_data' => 'author:add'],
                 ['text' => $this->translate('delete_author'), 'callback_data' => 'author:delete:page:1'],
             ];
-        }
-
-        $projectRow = [];
-        $projectRow[] = ['text' => $this->translate('manage_projects'), 'callback_data' => 'project:list'];
-        if ($this->isGranted('moderator')) {
-            $projectRow[] = ['text' => $this->translate('manage_categories'), 'callback_data' => 'category:manage'];
-        }
-        $keyboard['inline_keyboard'][] = $projectRow;
-
-        if ($this->isGranted('moderator')) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('list_of_authors'), 'callback_data' => 'author:list:1'],
+                ['text' => $this->translate('manage_categories'), 'callback_data' => 'category:manage'],
             ];
         }
 
+        // Admin: контроль ролей
         if ($this->isGranted('admin')) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => $this->translate('access_control'), 'callback_data' => 'role:control'],

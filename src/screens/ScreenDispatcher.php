@@ -32,9 +32,6 @@ class ScreenDispatcher
         // Admin
         'admin:panel' => \morfeditorial\screens\Admin\ControlPanelScreen::class,
 
-        // Main
-        'main:menu' => \morfeditorial\screens\Main\MainMenuScreen::class,
-
         // Author
         'author:list' => \morfeditorial\screens\Author\AuthorListScreen::class,
         'author:profile' => \morfeditorial\screens\Author\AuthorProfileScreen::class,

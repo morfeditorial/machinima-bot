@@ -145,7 +145,6 @@ class MyBot extends tgLib
     {
         // Register commands
         $this->command_factory->registerCommand(new \morfeditorial\commands\StartCommand($this)); // start
-        $this->command_factory->registerCommand(new \morfeditorial\commands\MainMenuCommand($this)); // menu
         $this->command_factory->registerCommand(new \morfeditorial\commands\HelpCommand($this)); // help
         $this->command_factory->registerCommand(new \morfeditorial\commands\UpdateCommand($this)); // update
         $this->command_factory->registerCommand(new \morfeditorial\commands\AdminPanelCommand($this)); // admin_panel

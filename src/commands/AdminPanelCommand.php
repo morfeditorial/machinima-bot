@@ -29,13 +29,12 @@ class AdminPanelCommand extends AbstractCommand
     public function __construct(MyBot $bot)
     {
         parent::__construct($bot);
-        $this->setAliases(['admin_panel']);
-        $this->setHiddenFromMenu(true);
+        $this->setAliases(['menu', 'admin_panel']);
     }
 
     public function getDescriptionKey() : string
     {
-        return 'admin_panel_command_description';
+        return 'main_menu_command_description';
     }
 
     public function execute(
@@ -53,12 +52,6 @@ class AdminPanelCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        if (! $this->isGranted('creator')) {
-            $this->bot->sendMessage($chat_id, $this->translate('no_permission_message'));
-
-            return;
-        }
-
         $this->getUserStateService()->clearState($user_id);
         if (! is_null($current_panel)) {
             $this->bot->deleteMessage($chat_id, $current_panel);
@@ -72,26 +65,24 @@ class AdminPanelCommand extends AbstractCommand
 
         $keyboard = ['inline_keyboard' => []];
 
+        // Базові кнопки для всіх користувачів
+        $keyboard['inline_keyboard'][] = [
+            ['text' => '👤 ' . $this->translate('list_of_authors'), 'callback_data' => 'author:list:1'],
+            ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
+        ];
+
+        // Moderator і вище: керування авторами
         if ($this->isGranted('moderator')) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => $this->translate('add_author'), 'callback_data' => 'author:add'],
                 ['text' => $this->translate('delete_author'), 'callback_data' => 'author:delete'],
             ];
-        }
-
-        $project_row = [];
-        $project_row[] = ['text' => $this->translate('manage_projects'), 'callback_data' => 'project:list'];
-        if ($this->isGranted('moderator')) {
-            $project_row[] = ['text' => $this->translate('manage_categories'), 'callback_data' => 'category:manage'];
-        }
-        $keyboard['inline_keyboard'][] = $project_row;
-
-        if ($this->isGranted('moderator')) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('list_of_authors'), 'callback_data' => 'author:list:1'],
+                ['text' => $this->translate('manage_categories'), 'callback_data' => 'category:manage'],
             ];
         }
 
+        // Admin: контроль ролей
         if ($this->isGranted('admin')) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => $this->translate('access_control'), 'callback_data' => 'role:control'],

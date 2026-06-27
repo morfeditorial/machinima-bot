@@ -27,11 +27,6 @@ class ProjectListScreen extends AbstractScreen
 {
     public function render() : void
     {
-        if (!$this->isGranted('creator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
-        }
-
         $user_service = $this->bot->getContainer()->get('user_service');
         $user_state_service = $this->bot->getContainer()->get('user_state_service');
         $content_service = $this->bot->getContainer()->get('content_service');

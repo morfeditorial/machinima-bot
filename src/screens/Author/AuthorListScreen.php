@@ -27,11 +27,6 @@ class AuthorListScreen extends AbstractScreen
 {
     public function render() : void
     {
-        if (!$this->isGranted('moderator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
-        }
-
         // Параметр сторінки приходить в $this->data['page'] (встановлюється в Диспетчері)
         $page = $this->data['page'] ?? 1;
         $this->bot->getUserService()->setCurrentPage($this->userId, 'author:list:' . $page);
