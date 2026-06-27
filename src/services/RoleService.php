@@ -134,8 +134,8 @@ class RoleService
             [$user_id, $role['id']]
         );
 
-        // Auto-create author profile for creators if it doesn't exist
-        if ('creator' === $role_name) {
+        // Auto-create author profile for any role that includes creator
+        if ($this->doesRoleInclude($role_name, 'creator')) {
             $author_exists = $this->db->fetchOne('SELECT COUNT(*) FROM authors WHERE telegram_user_id = ?', [$user_id]);
             if (0 == $author_exists) {
                 $author_name = 'Creator #' . $user_id;
@@ -147,6 +147,27 @@ class RoleService
         }
 
         return 'success';
+    }
+
+    public function doesRoleInclude(string $role_name, string $target_role, array $visited = []) : bool
+    {
+        if ($role_name === $target_role) {
+            return true;
+        }
+
+        if (in_array($role_name, $visited, true)) {
+            return false; // Cycle protection
+        }
+        $visited[] = $role_name;
+
+        $children = $this->getChildren($role_name);
+        foreach ($children as $child) {
+            if ($this->doesRoleInclude($child['role_name'], $target_role, $visited)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function removeUserRole(int $user_id, string $role_name) : bool
