@@ -109,6 +109,7 @@ class RoleViewScreen extends AbstractScreen
                         ],
                         [
                             ['text' => $this->translate('assign_role_to_user'), 'callback_data' => $this->makePayload('role', 'assign', 'ask_user', $role_name)],
+                            ['text' => $this->translate('unassign_role_from_user'), 'callback_data' => $this->makePayload('role', 'unassign', 'ask_user', $role_name)],
                         ],
                         [
                             ['text' => $this->translate('delete_this_role'), 'callback_data' => $this->makePayload('role', 'delete', 'confirm', $role_name)],

@@ -779,6 +779,12 @@
         "be": "Прызначыць ролю карыстальніку",
         "uk": "Призначити роль користувачу"
     },
+    "unassign_role_from_user": {
+        "en": "Remove Role from User",
+        "pl": "Zabierz rolę użytkownikowi",
+        "be": "Забраць ролю ў карыстальніка",
+        "uk": "Забрати роль у користувача"
+    },
     "select_parent_message": {
         "en": "Select parent role for {role}:",
         "pl": "Wybierz rolę nadrzędną dla {role}:",
@@ -850,6 +856,12 @@
         "pl": "Wprowadź ID użytkownika, aby przypisać rolę {role}:",
         "be": "Увядзіце ID карыстальніка, якому хочаце прызначыць ролю {role}:",
         "uk": "Введіть ID користувача, якому хочете призначити роль {role}:"
+    },
+    "enter_user_id_to_remove_role_message": {
+        "en": "Enter User ID to remove role {role}:",
+        "pl": "Wprowadź ID użytkownika, aby zabrać rolę {role}:",
+        "be": "Увядзіце ID карыстальніка, у якога хочаце забраць ролю {role}:",
+        "uk": "Введіть ID користувача, у якого хочете забрати роль {role}:"
     },
     "no_parent": {
         "en": "— No parent —",

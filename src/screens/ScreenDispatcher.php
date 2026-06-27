@@ -51,6 +51,7 @@ class ScreenDispatcher
         'role:delete' => \morfeditorial\screens\Role\RoleDeleteScreen::class,
         'role:view' => \morfeditorial\screens\Role\RoleViewScreen::class,
         'role:assign' => \morfeditorial\screens\Role\RoleAssignScreen::class,
+        'role:unassign' => \morfeditorial\screens\Role\RoleUnassignScreen::class,
         'role:remove' => \morfeditorial\screens\Role\RoleRemoveScreen::class,
 
         // Project
@@ -81,6 +82,7 @@ class ScreenDispatcher
 
         'awaiting_role_creation' => \morfeditorial\screens\Role\RoleCreateScreen::class,
         'awaiting_user_id_for_role' => \morfeditorial\screens\Role\RoleAssignScreen::class,
+        'awaiting_user_id_to_remove_role' => \morfeditorial\screens\Role\RoleUnassignScreen::class,
 
         'awaiting_project_title' => \morfeditorial\screens\Project\ProjectCreateScreen::class,
         'awaiting_project_description' => \morfeditorial\screens\Project\ProjectCreateScreen::class,
