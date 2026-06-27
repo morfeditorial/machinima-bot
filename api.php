@@ -92,6 +92,30 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                     $projects = $authorService->getAuthorProjects($authorId, $limit, $offset);
                     return json_encode(['success' => true, 'data' => $projects]);
                 }
+                
+                if ($path === '/api/interact' && $request->getMethod() === 'POST') {
+                    $body = (string) $request->getBody();
+                    $data = json_decode($body, true);
+                    
+                    if (!isset($data['content_id'], $data['type'])) {
+                        return json_encode(['success' => false, 'error' => 'Missing content_id or type']);
+                    }
+                    
+                    $userId = isset($data['user_id']) ? (int) $data['user_id'] : null;
+                    $contentId = (int) $data['content_id'];
+                    $type = (string) $data['type'];
+                    
+                    if ($type === 'view') {
+                        $ratingService->addView($contentId, $userId);
+                    } else {
+                        if (!$userId) {
+                            return json_encode(['success' => false, 'error' => 'User ID is required for liking/disliking']);
+                        }
+                        $ratingService->interact($userId, $contentId, $type);
+                    }
+                    
+                    return json_encode(['success' => true]);
+                }
 
                 return json_encode(['success' => false, 'error' => 'Endpoint Not Found']);
             });
