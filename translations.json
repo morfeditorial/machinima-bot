@@ -892,5 +892,11 @@
         "pl": "Panel Admina",
         "be": "Адмін-панэль",
         "uk": "Адмін-панель"
+    },
+    "my_author_profile": {
+        "en": "My Author Profile",
+        "pl": "Mój profil autora",
+        "be": "Мой профіль аўтара",
+        "uk": "Мій профіль автора"
     }
 }

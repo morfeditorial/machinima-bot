@@ -42,6 +42,14 @@ class ControlPanelScreen extends AbstractScreen
             ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
         ];
 
+        $authorService = $this->bot->getContainer()->get('author_service');
+        $myAuthorProfile = $authorService->getAuthorByTelegramId($this->userId);
+        if ($myAuthorProfile) {
+            $keyboard['inline_keyboard'][] = [
+                ['text' => '👤 ' . $this->translate('my_author_profile'), 'callback_data' => 'author:profile:' . $myAuthorProfile['id']],
+            ];
+        }
+
         // Creator і вище: керування авторами
         if ($this->isGranted('moderator')) {
             $keyboard['inline_keyboard'][] = [

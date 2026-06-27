@@ -27,14 +27,16 @@ class AuthorProfileScreen extends AbstractScreen
 {
     public function render() : void
     {
-        if (!$this->isGranted('moderator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
-        }
-
         $authorId = (int)$this->data['author_id'];
         $authorService = $this->bot->getContainer()->get('author_service');
         $author = $authorService->getAuthorById($authorId);
+
+        $isOwnProfile = $author && (int) $author['telegram_user_id'] === $this->userId;
+
+        if (!$this->isGranted('moderator') && !$isOwnProfile) {
+            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            return;
+        }
 
         $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
@@ -53,13 +55,17 @@ class AuthorProfileScreen extends AbstractScreen
                         ['text' => ($author['biography'] ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'author:set_about:' . $authorId],
                         ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'author:add_link:' . $authorId],
                     ],
-                    [
-                        ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
-                    ],
-                    [
-                        ['text' => $this->translate('go_back'), 'callback_data' => $currentPage ? $currentPage : 'admin:panel'],
-                    ],
                 ],
+            ];
+
+            if ($this->isGranted('moderator')) {
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
+                ];
+            }
+
+            $keyboard['inline_keyboard'][] = [
+                ['text' => $this->translate('go_back'), 'callback_data' => $currentPage ? $currentPage : 'admin:panel'],
             ];
 
             $text = str_replace(
@@ -98,14 +104,16 @@ class AuthorProfileScreen extends AbstractScreen
             $this->data['author_id'] = $params[0] ?? 0;
             $this->render();
         } elseif ('set_private' === $action) {
-            if (!$this->isGranted('moderator')) {
-                $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-                return;
-            }
-
             $authorId = (int)($params[0] ?? 0);
             $authorService = $this->bot->getContainer()->get('author_service');
             $author = $authorService->getAuthorById($authorId);
+
+            $isOwnProfile = $author && (int) $author['telegram_user_id'] === $this->userId;
+
+            if (!$this->isGranted('moderator') && !$isOwnProfile) {
+                $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+                return;
+            }
 
             if (false !== $author) {
                 $isPrivate = $authorService->isPrivate($authorId);

@@ -57,7 +57,8 @@ class DatabaseStorage implements StorageInterface
                 biography TEXT DEFAULT NULL,
                 channel_link TEXT DEFAULT NULL,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                state TEXT
+                state TEXT,
+                telegram_user_id INTEGER DEFAULT NULL
             )
         ");
 

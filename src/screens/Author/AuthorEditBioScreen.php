@@ -27,14 +27,16 @@ class AuthorEditBioScreen extends AbstractScreen
 {
     public function render() : void
     {
-        if (!$this->isGranted('moderator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
-        }
-
         $authorId = (int)$this->data['author_id'];
         $authorService = $this->bot->getContainer()->get('author_service');
         $author = $authorService->getAuthorById($authorId);
+
+        $isOwnProfile = $author && (int) $author['telegram_user_id'] === $this->userId;
+
+        if (!$this->isGranted('moderator') && !$isOwnProfile) {
+            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            return;
+        }
 
         $this->bot->getUserStateService()->setState($this->userId, ['author_id' => $authorId], 'set_author_about');
 
@@ -65,10 +67,7 @@ class AuthorEditBioScreen extends AbstractScreen
 
     public function handleMessage(string $text) : void
     {
-        if (!$this->isGranted('moderator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
-        }
+
 
         $messageId = $this->data['message_id'];
         $this->bot->deleteMessage($this->chatId, $messageId);
@@ -80,6 +79,13 @@ class AuthorEditBioScreen extends AbstractScreen
         $authorId = $state['author_id'];
         $authorService = $this->bot->getContainer()->get('author_service');
         $author = $authorService->getAuthorById($authorId);
+
+        $isOwnProfile = $author && (int) $author['telegram_user_id'] === $this->userId;
+
+        if (!$this->isGranted('moderator') && !$isOwnProfile) {
+            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            return;
+        }
 
         $authorService->setBiography($authorId, $text);
         $authorStatus = $authorService->isPrivate($authorId);
@@ -97,13 +103,17 @@ class AuthorEditBioScreen extends AbstractScreen
                     ['text' => $this->translate('change_bio'), 'callback_data' => 'author:edit_bio:' . $authorId],
                     ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'author:edit_link:' . $authorId],
                 ],
-                [
-                    ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
-                ],
-                [
-                    ['text' => $this->translate('go_back'), 'callback_data' => $backCallback],
-                ],
             ],
+        ];
+
+        if ($this->isGranted('moderator')) {
+            $keyboard['inline_keyboard'][] = [
+                ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
+            ];
+        }
+
+        $keyboard['inline_keyboard'][] = [
+            ['text' => $this->translate('go_back'), 'callback_data' => $backCallback],
         ];
 
         $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);

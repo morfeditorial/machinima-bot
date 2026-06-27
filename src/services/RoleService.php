@@ -134,6 +134,18 @@ class RoleService
             [$user_id, $role['id']]
         );
 
+        // Auto-create author profile for creators if it doesn't exist
+        if ('creator' === $role_name) {
+            $author_exists = $this->db->fetchOne('SELECT COUNT(*) FROM authors WHERE telegram_user_id = ?', [$user_id]);
+            if (0 == $author_exists) {
+                $author_name = 'Creator #' . $user_id;
+                $this->db->executeStatement(
+                    'INSERT INTO authors (name, state, telegram_user_id) VALUES (?, ?, ?)',
+                    [$author_name, 'private', $user_id]
+                );
+            }
+        }
+
         return 'success';
     }
 

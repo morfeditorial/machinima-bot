@@ -36,11 +36,11 @@ class AuthorService
         $this->db = $storage->getConnection();
     }
 
-    public function createAuthor(string $name) : int
+    public function createAuthor(string $name, ?int $telegram_user_id = null) : int
     {
         $this->db->executeStatement(
-            'INSERT INTO authors (name, state) VALUES (?, ?)',
-            [trim($name), self::STATE_PRIVATE]
+            'INSERT INTO authors (name, state, telegram_user_id) VALUES (?, ?, ?)',
+            [trim($name), self::STATE_PRIVATE, $telegram_user_id]
         );
 
         return (int) $this->db->lastInsertId();
@@ -133,5 +133,15 @@ class AuthorService
     public function countAuthors() : int
     {
         return (int) $this->db->fetchOne('SELECT COUNT(*) FROM authors');
+    }
+
+    public function getAuthorByTelegramId(int $telegram_user_id) : ?array
+    {
+        $result = $this->db->fetchAssociative(
+            'SELECT * FROM authors WHERE telegram_user_id = ?',
+            [$telegram_user_id]
+        );
+
+        return $result ?: null;
     }
 }
