@@ -138,10 +138,10 @@
         "uk": "Я успішно оновив дані бота! 🔄"
     },
     "add_author": {
-        "en": "Add Public Page",
-        "pl": "Dodaj stronę publiczną",
-        "be": "Дадаць публічную старонку",
-        "uk": "Створити публічну сторінку"
+        "en": "Add Author",
+        "pl": "Dodaj autora",
+        "be": "Дадаць аўтара",
+        "uk": "Додати автора"
     },
     "add_author_message": {
         "en": "Enter the name for the new public page:",
@@ -156,10 +156,10 @@
         "uk": "Я створив публічну сторінку {author}! Вибери дію:"
     },
     "delete_author": {
-        "en": "Delete Public Page",
-        "pl": "Usuń stronę publiczną",
-        "be": "Выдаліць публічную старонку",
-        "uk": "Видалити публічну сторінку"
+        "en": "Delete Authors",
+        "pl": "Usuń autorów",
+        "be": "Выдалення аўтараў",
+        "uk": "Видалення авторів"
     },
     "delete_author_message": {
         "en": "Choose a public page from the list you want to delete:",
