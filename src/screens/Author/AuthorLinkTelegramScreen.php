@@ -86,6 +86,6 @@ class AuthorLinkTelegramScreen extends AbstractScreen
         $this->bot->getUserStateService()->clearState($this->userId);
 
         $this->data['author_id'] = $authorId;
-        (new AuthorProfileScreen($this->bot, $this->userId, $this->chatId, $this->data))->render();
+        (new AuthorProfileScreen($this->bot, $this->data))->render();
     }
 }
