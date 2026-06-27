@@ -870,10 +870,10 @@
         "uk": "Введіть Telegram ID користувача, ролями якого ви хочете керувати:"
     },
     "user_roles_detail_message": {
-        "en": "Roles for user {userId}:\n\n<b>{roles}</b>",
-        "pl": "Role dla użytkownika {userId}:\n\n<b>{roles}</b>",
-        "be": "Ролі для карыстальніка {userId}:\n\n<b>{roles}</b>",
-        "uk": "Ролі користувача {userId}:\n\n<b>{roles}</b>"
+        "en": "Roles for user {userId}:\n\n{roles}",
+        "pl": "Role dla użytkownika {userId}:\n\n{roles}",
+        "be": "Ролі для карыстальніка {userId}:\n\n{roles}",
+        "uk": "Ролі користувача {userId}:\n\n{roles}"
     },
     "add_role": {
         "en": "Add Role",
