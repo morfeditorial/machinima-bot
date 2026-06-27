@@ -102,9 +102,42 @@ class ContentService
         return $result ?: null;
     }
 
+    public function getProjectById(int $id) : ?array
+    {
+        $result = $this->db->fetchAssociative(
+            'SELECT c.*, a.name as author_name, a.id as author_profile_id 
+             FROM content c 
+             LEFT JOIN content_staff cs ON c.id = cs.content_id 
+             LEFT JOIN authors a ON cs.author_id = a.id 
+             WHERE c.id = ? GROUP BY c.id',
+            [$id]
+        );
+
+        return $result ?: null;
+    }
+
+    // --- Comments ---
+
+    public function addComment(int $content_id, int $user_id, string $author_name, string $text) : int
+    {
+        $this->db->executeStatement(
+            'INSERT INTO comments (content_id, user_id, author_name, text) VALUES (?, ?, ?, ?)',
+            [$content_id, $user_id, $author_name, $text]
+        );
+        return (int) $this->db->lastInsertId();
+    }
+
+    public function getComments(int $content_id) : array
+    {
+        return $this->db->fetchAllAssociative(
+            'SELECT * FROM comments WHERE content_id = ? ORDER BY created_at ASC',
+            [$content_id]
+        );
+    }
+
     public function getAllContent() : array
     {
-        return $this->db->fetchAllAssociative('SELECT * FROM content ORDER BY created_at DESC');
+        return $this->db->fetchAllAssociative('SELECT c.*, a.name as author_name, a.id as author_profile_id FROM content c LEFT JOIN content_staff cs ON c.id = cs.content_id LEFT JOIN authors a ON cs.author_id = a.id GROUP BY c.id ORDER BY c.created_at DESC');
     }
 
     public function getProjectsByOwner(int $user_id) : array
@@ -146,9 +179,12 @@ class ContentService
     public function getCategoryProjects(int $category_id, int $limit = 10, int $offset = 0) : array
     {
         return $this->db->fetchAllAssociative(
-            'SELECT c.* FROM content c 
+            'SELECT c.*, a.name as author_name, a.id as author_profile_id FROM content c 
              JOIN content_categories cc ON c.id = cc.content_id 
+             LEFT JOIN content_staff cs ON c.id = cs.content_id
+             LEFT JOIN authors a ON cs.author_id = a.id
              WHERE cc.category_id = ? AND c.status = ?
+             GROUP BY c.id
              ORDER BY c.trending_score DESC 
              LIMIT ? OFFSET ?',
             [$category_id, 'published', $limit, $offset]
