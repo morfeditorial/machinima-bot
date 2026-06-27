@@ -690,10 +690,10 @@
         "uk": "Роль «{roleName}» була призначена користувачу {userId}."
     },
     "role_already_assigned_message": {
-        "uk": "Роль «{roleName}» вже призначена користувачу {userId}.",
         "en": "Role \"{roleName}\" is already assigned to user {userId}.",
         "pl": "Rola «{roleName}» jest już przypisana użytkownikowi {userId}.",
-        "be": "Роля «{roleName}» ужо прызначана карыстальніку {userId}."
+        "be": "Роля «{roleName}» ужо прызначана карыстальніку {userId}.",
+        "uk": "Роль «{roleName}» вже призначена користувачу {userId}."
     },
     "role_assignment_failure_message": {
         "en": "Failed to assign role «{roleName}» to user {userId}.",
@@ -864,33 +864,33 @@
         "uk": "Невірний ID користувача."
     },
     "main_menu_command_description": {
-        "uk": "Відкрити головне меню",
         "en": "Open main menu",
         "pl": "Otwórz menu główne",
-        "be": "Адкрыць галоўнае меню"
+        "be": "Адкрыць галоўнае меню",
+        "uk": "Відкрити головне меню"
     },
     "authors": {
-        "uk": "Автори",
         "en": "Authors",
         "pl": "Autorzy",
-        "be": "Аўтары"
+        "be": "Аўтары",
+        "uk": "Автори"
     },
     "projects": {
-        "uk": "Проєкти",
         "en": "Projects",
         "pl": "Projekty",
-        "be": "Праекты"
+        "be": "Праекты",
+        "uk": "Проєкти"
     },
     "settings": {
-        "uk": "Налаштування",
         "en": "Settings",
         "pl": "Ustawienia",
-        "be": "Налады"
+        "be": "Налады",
+        "uk": "Налаштування"
     },
     "admin_panel": {
-        "uk": "Адмін-панель",
         "en": "Admin Panel",
         "pl": "Panel Admina",
-        "be": "Адмін-панэль"
+        "be": "Адмін-панэль",
+        "uk": "Адмін-панель"
     }
 }
