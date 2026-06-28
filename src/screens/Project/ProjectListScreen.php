@@ -21,28 +21,37 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Project;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class ProjectListScreen extends AbstractScreen
+class ProjectListScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $user_state_service = $this->bot->getContainer()->get('user_state_service');
-        $content_service = $this->bot->getContainer()->get('content_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
+        $action = $update['callback_query']['data'] ?? '';
+        return strpos($action, 'project:list') === 0;
+    }
 
-        $user_state_service->clearState($this->userId);
-        $current_panel = $user_service->getCurrentPanel($this->userId);
+    public function handle(array $update): void
+    {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
 
-        $payload = $this->data['payload'] ?? '';
-        $parsed = $this->parsePayload($payload);
+        $user_service = $this->getUserService();
+        $user_state_service = $this->getUserStateService();
+        $content_service = $this->container->get('content_service');
+        $visuals_links = $this->getVisualsLinks();
+
+        $user_state_service->clearState($userId);
+        $current_panel = $user_service->getCurrentPanel($userId);
+
+        $parsed = $this->parsePayload($action);
         $page = isset($parsed['params'][0]) ? (int)$parsed['params'][0] : 1;
         if ($page < 1) {
             $page = 1;
         }
 
-        $user_service->setCurrentPage($this->userId, $this->makePayload('project', 'list', (string)$page));
+        $user_service->setCurrentPage($userId, $this->makePayload('project', 'list', (string)$page));
 
         $all_projects = $content_service->getAllContent();
         $projects_per_page = 5;
@@ -75,19 +84,15 @@ class ProjectListScreen extends AbstractScreen
             ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
         ];
 
-        $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('manage_projects'), $keyboard);
-    }
-
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('list' === $action) {
-            $this->data['payload'] = $this->makePayload('project', 'list', $params[0] ?? '1');
-            $this->render();
+        if ($current_panel) {
+            $this->client->request('editMessageMedia', [
+                'chat_id' => $chatId,
+                'message_id' => $current_panel,
+                'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('manage_projects'), 'parse_mode' => 'HTML'],
+                'reply_markup' => $keyboard
+            ]);
+        } else {
+            $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate('manage_projects'), null, null, null, false, $keyboard);
         }
-    }
-
-    public function handleMessage(string $text) : void
-    {
-        // Не чекаємо тексту
     }
 }
