@@ -52,7 +52,8 @@ abstract class AbstractScreen implements ScreenInterface
      */
     protected function isGranted(string $role) : bool
     {
-        return $this->bot->isGranted($role);
+        $symfony_role = 'ROLE_' . strtoupper($role);
+        return $this->bot->isGranted($symfony_role);
     }
 
     /**
