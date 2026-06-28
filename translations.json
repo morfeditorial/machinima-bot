@@ -65,12 +65,6 @@
         "be": "Стварыць новую ролю",
         "uk": "Створити нову роль"
     },
-    "assign_initial_admin_command_description": {
-        "en": "Assign the first admin role to the initiator",
-        "pl": "Przypisz pierwszą rolę administratora inicjatorowi",
-        "be": "Прызначыць першую ролю адміністратара ініцыятару",
-        "uk": "Призначити першу роль адміністратора ініціатору"
-    },
     "assign_role_command_description": {
         "en": "Assign a role to a user",
         "pl": "Przypisz rolę użytkownikowi",
@@ -748,18 +742,6 @@
         "pl": "Nie udało się usunąć roli (czy użytkownik ją ma?).",
         "be": "Не ўдалося выдаліць ролю (ці ёсць яна ў карыстальніка?).",
         "uk": "Не вдалося забрати роль (чи є вона взагалі у користувача?)."
-    },
-    "success_initialled_admin_message": {
-        "en": "You have been appointed as an administrator.",
-        "pl": "Zostałeś mianowany administratorem.",
-        "be": "Вы былі прызначаныя адміністратарам.",
-        "uk": "Ви були призначені адміністратором."
-    },
-    "already_initialled_admin_message": {
-        "en": "An administrator already exists.",
-        "pl": "Administrator już istnieje.",
-        "be": "Адміністратар ужо існуе.",
-        "uk": "Адміністратор вже існує."
     },
     "role_hierarchy_message": {
         "en": "Role Hierarchy:",
