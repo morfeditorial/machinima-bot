@@ -21,25 +21,35 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Role;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class RoleControlScreen extends AbstractScreen
+class RoleControlScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(string $action): bool
     {
-        if (! $this->isGranted('admin')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+        return str_starts_with($action, 'role:control');
+    }
+
+    public function handle(string $action, array $update): void
+    {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? 0;
+        $messageId = $update['callback_query']['message']['message_id'] ?? 0;
+
+        if (!$chatId || !$userId) {
             return;
         }
 
-        $user_state_service = $this->bot->getContainer()->get('user_state_service');
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
+        if (!$this->isGranted('admin')) {
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+            return;
+        }
 
-        $user_state_service->clearState($this->userId);
-        $current_page = $user_service->getCurrentPage($this->userId);
-        if (! is_null($current_page)) {
-            $user_service->resetCurrentPage($this->userId);
+        $this->getUserStateService()->clearState($userId);
+
+        $current_page = $this->getUserService()->getCurrentPage($userId);
+        if (!is_null($current_page)) {
+            $this->getUserService()->resetCurrentPage($userId);
         }
 
         $keyboard = [
@@ -58,16 +68,30 @@ class RoleControlScreen extends AbstractScreen
             ],
         ];
 
-        $current_panel = $user_service->getCurrentPanel($this->userId);
-        $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('access_control_panel_message'), $keyboard);
-    }
+        $current_panel = $this->getUserService()->getCurrentPanel($userId);
+        
+        if ($current_panel) {
+            $this->client->request('editMessageMedia', [
+                'chat_id' => $chatId,
+                'message_id' => $current_panel,
+                'media' => [
+                    'type' => 'photo',
+                    'media' => $this->getVisualsLinks()[1],
+                    'caption' => $this->translate('access_control_panel_message'),
+                    'parse_mode' => 'HTML',
+                ],
+                'reply_markup' => $keyboard
+            ]);
+        } else {
+            $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], [
+                'caption' => $this->translate('access_control_panel_message'),
+                'reply_markup' => $keyboard
+            ]);
+        }
 
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('control' === $action) {
-            $this->render();
+        // Прибираємо стан "завантаження" з інлайн кнопки
+        if (isset($update['callback_query']['id'])) {
+            $this->client->answerCallbackQuery($update['callback_query']['id']);
         }
     }
-
-    public function handleMessage(string $text) : void {}
 }
