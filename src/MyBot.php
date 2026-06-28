@@ -176,11 +176,17 @@ class MyBot extends tgLib
 
     private function setupUserToken(int $user_id) : void
     {
-        $role_names = $this->container->get('role_service')->getUserRoleNames($user_id);
-        $symfony_roles = array_map(fn($r) => 'ROLE_' . strtoupper($r), $role_names);
+        $em = $this->container->get('doctrine.orm.entity_manager');
+        $user = $em->getRepository(\App\Entity\User::class)->find($user_id);
         
-        $bot_user = new \Symfony\Component\Security\Core\User\InMemoryUser((string)$user_id, null, $symfony_roles);
-        $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken($bot_user, 'main', $symfony_roles);
+        if (!$user) {
+            $user = new \Symfony\Component\Security\Core\User\InMemoryUser((string)$user_id, null, ['ROLE_USER']);
+            $roles = ['ROLE_USER'];
+        } else {
+            $roles = $user->getRoles();
+        }
+        
+        $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken($user, 'main', $roles);
         $this->container->get('token_storage')->setToken($token);
     }
 
