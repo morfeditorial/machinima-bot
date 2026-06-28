@@ -21,37 +21,32 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\AbstractCommand;
-use morfeditorial\MyBot;
+use morfeditorial\BaseMachinimaCommand;
+use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
 
-class HelpCommand extends AbstractCommand
+class HelpCommand extends BaseMachinimaCommand
 {
-    public function __construct(MyBot $bot)
+    public function __construct(TelegramClient $client)
     {
-        parent::__construct($bot);
+        parent::__construct($client);
         $this->setAliases(['help']);
     }
 
-    public function getDescriptionKey() : string
+    public function getCommand(): string
+    {
+        return 'help';
+    }
+
+    public function getDescriptionKey(): string
     {
         return 'help_command_description';
     }
 
-    public function execute(
-        string $message,
-        int $message_id,
-        string $chat_type,
-        int $chat_id,
-        int $user_id,
-        $payload,
-        ?int $reply_message_id,
-        ?int $reply_author,
-        string $first_name,
-        $current_panel,
-        $current_page,
-        string $cmd,
-        array $args
-    ) : void {
-        $this->bot->sendMessage($chat_id, $this->translate('help_message'));
+    public function handle(array $update): void
+    {
+        $chatId = $update['message']['chat']['id'] ?? 0;
+        if (!$chatId) return;
+
+        $this->client->sendMessage($chatId, $this->translate('help_message'));
     }
 }

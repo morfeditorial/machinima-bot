@@ -21,51 +21,56 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\AbstractCommand;
-use morfeditorial\MyBot;
+use morfeditorial\BaseMachinimaCommand;
+use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
 
-class UpdateCommand extends AbstractCommand
+class UpdateCommand extends BaseMachinimaCommand
 {
-    public function __construct(MyBot $bot)
+    public function __construct(TelegramClient $client)
     {
-        parent::__construct($bot);
+        parent::__construct($client);
         $this->setAliases(['update']);
         $this->setHiddenFromMenu(true);
     }
 
-    public function getDescriptionKey() : string
+    public function getCommand(): string
+    {
+        return 'update';
+    }
+
+    public function getDescriptionKey(): string
     {
         return 'update_command_description';
     }
 
-    public function execute(
-        string $message,
-        int $message_id,
-        string $chat_type,
-        int $chat_id,
-        int $user_id,
-        $payload,
-        ?int $reply_message_id,
-        ?int $reply_author,
-        string $first_name,
-        $current_panel,
-        $current_page,
-        string $cmd,
-        array $args
-    ) : void {
-        if (! $this->isGranted('admin')) {
-            $this->bot->sendMessage($chat_id, $this->translate("no_permission_message"));
+    public function handle(array $update): void
+    {
+        $chatId = $update['message']['chat']['id'] ?? 0;
+        if (!$chatId) return;
+
+        if (!$this->isGranted('admin')) {
+            $this->client->sendMessage($chatId, $this->translate("no_permission_message"));
             return;
         }
 
         $translator = $this->getTranslator();
 
         foreach ($translator->getAvailableLocales() as $locale) {
-            $this->bot->setMyName($translator->translateForLocale("bot_name", $locale), $locale);
-            $this->bot->setMyDescription($translator->translateForLocale("bot_description", $locale), $locale);
-            $this->bot->setMyShortDescription($translator->translateForLocale("bot_short_description", $locale), $locale);
+            // Using generic request for advanced Telegram bot API methods
+            $this->client->request('setMyName', [
+                'name' => $translator->translateForLocale("bot_name", $locale),
+                'language_code' => $locale
+            ]);
+            $this->client->request('setMyDescription', [
+                'description' => $translator->translateForLocale("bot_description", $locale),
+                'language_code' => $locale
+            ]);
+            $this->client->request('setMyShortDescription', [
+                'short_description' => $translator->translateForLocale("bot_short_description", $locale),
+                'language_code' => $locale
+            ]);
         }
 
-        $this->bot->sendMessage($chat_id, $this->translate("update_message"));
+        $this->client->sendMessage($chatId, $this->translate("update_message"));
     }
 }

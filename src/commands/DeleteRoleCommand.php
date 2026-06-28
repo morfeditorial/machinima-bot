@@ -21,62 +21,55 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\AbstractCommand;
-use morfeditorial\MyBot;
+use morfeditorial\BaseMachinimaCommand;
+use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
 
-class DeleteRoleCommand extends AbstractCommand
+class DeleteRoleCommand extends BaseMachinimaCommand
 {
-    public function __construct(MyBot $bot)
+    public function __construct(TelegramClient $client)
     {
-        parent::__construct($bot);
+        parent::__construct($client);
         $this->setAliases(['delete_role']);
         $this->setHiddenFromMenu(true);
     }
 
-    public function getDescriptionKey() : string
+    public function getCommand(): string
+    {
+        return 'delete_role';
+    }
+
+    public function getDescriptionKey(): string
     {
         return 'delete_role_command_description';
     }
 
-    public function execute(
-        string $message,
-        int $message_id,
-        string $chat_type,
-        int $chat_id,
-        int $user_id,
-        $payload,
-        ?int $reply_message_id,
-        ?int $reply_author,
-        string $first_name,
-        $current_panel,
-        $current_page,
-        string $cmd,
-        array $args
-    ) : void {
-        if (! $this->isGranted('admin')) {
-            $this->bot->sendMessage($chat_id, $this->translate('no_permission_message'));
+    public function handle(array $update): void
+    {
+        $chatId = $update['message']['chat']['id'] ?? 0;
+        if (!$chatId) return;
 
+        if (!$this->isGranted('admin')) {
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
+        $args = $this->getArgs($update);
         if (count($args) < 1) {
-            $this->bot->sendMessage($chat_id, $this->translate('delete_role_usage_message'));
-
+            $this->client->sendMessage($chatId, $this->translate('delete_role_usage_message'));
             return;
         }
 
         $role_name = $args[0];
 
-        if (! $this->getRoleService()->getRoleByName($role_name)) {
-            $this->bot->sendMessage($chat_id, str_replace('{roleName}', htmlspecialchars($role_name), $this->translate('role_not_found_message')));
-
+        if (!$this->getRoleService()->getRoleByName($role_name)) {
+            $this->client->sendMessage($chatId, str_replace('{roleName}', htmlspecialchars($role_name), $this->translate('role_not_found_message')));
             return;
         }
 
         if ($this->getRoleService()->deleteRole($role_name)) {
-            $this->bot->sendMessage($chat_id, str_replace(['{role}'], [htmlspecialchars($role_name)], $this->translate('role_deleted_message')));
+            $this->client->sendMessage($chatId, str_replace(['{role}'], [htmlspecialchars($role_name)], $this->translate('role_deleted_message')));
         } else {
-            $this->bot->sendMessage($chat_id, $this->translate('delete_role_failure_message'));
+            $this->client->sendMessage($chatId, $this->translate('delete_role_failure_message'));
         }
     }
 }

@@ -21,67 +21,60 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\AbstractCommand;
-use morfeditorial\MyBot;
+use morfeditorial\BaseMachinimaCommand;
+use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
 
-class AssignRoleCommand extends AbstractCommand
+class AssignRoleCommand extends BaseMachinimaCommand
 {
-    public function __construct(MyBot $bot)
+    public function __construct(TelegramClient $client)
     {
-        parent::__construct($bot);
+        parent::__construct($client);
         $this->setAliases(['assign_role']);
         $this->setHiddenFromMenu(true);
     }
 
-    public function getDescriptionKey() : string
+    public function getCommand(): string
+    {
+        return 'assign_role';
+    }
+
+    public function getDescriptionKey(): string
     {
         return 'assign_role_command_description';
     }
 
-    public function execute(
-        string $message,
-        int $message_id,
-        string $chat_type,
-        int $chat_id,
-        int $user_id,
-        $payload,
-        ?int $reply_message_id,
-        ?int $reply_author,
-        string $first_name,
-        $current_panel,
-        $current_page,
-        string $cmd,
-        array $args
-    ) : void {
-        if (! $this->isGranted('admin')) {
-            $this->bot->sendMessage($chat_id, $this->translate('no_permission_message'));
+    public function handle(array $update): void
+    {
+        $chatId = $update['message']['chat']['id'] ?? 0;
+        if (!$chatId) return;
 
+        if (!$this->isGranted('admin')) {
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
+        $args = $this->getArgs($update);
         if (count($args) < 2) {
-            $this->bot->sendMessage($chat_id, $this->translate('assign_role_usage_message'));
-
+            $this->client->sendMessage($chatId, $this->translate('assign_role_usage_message'));
             return;
         }
 
         $target_user_id = intval($args[0]);
         $role_name = $args[1];
 
-        if (! $this->getRoleService()->getRoleByName($role_name)) {
-            $this->bot->sendMessage($chat_id, str_replace('{roleName}', htmlspecialchars($role_name), $this->translate('role_not_found_message')));
-
+        if (!$this->getRoleService()->getRoleByName($role_name)) {
+            $this->client->sendMessage($chatId, str_replace('{roleName}', htmlspecialchars($role_name), $this->translate('role_not_found_message')));
             return;
         }
 
         $result = $this->getRoleService()->assignRole($target_user_id, $role_name);
 
         if ('success' === $result) {
-            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('assign_role_message')));
+            $this->client->sendMessage($chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('assign_role_message')));
         } elseif ('already_assigned' === $result) {
-            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_already_assigned_message')));
+            $this->client->sendMessage($chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_already_assigned_message')));
         } else {
-            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_assignment_failure_message')));
+            $this->client->sendMessage($chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_assignment_failure_message')));
         }
     }
 }

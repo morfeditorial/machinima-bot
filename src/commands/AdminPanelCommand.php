@@ -21,57 +21,56 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\AbstractCommand;
-use morfeditorial\MyBot;
+use morfeditorial\BaseMachinimaCommand;
+use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
 
-class AdminPanelCommand extends AbstractCommand
+class AdminPanelCommand extends BaseMachinimaCommand
 {
-    public function __construct(MyBot $bot)
+    public function __construct(TelegramClient $client)
     {
-        parent::__construct($bot);
+        parent::__construct($client);
         $this->setAliases(['menu', 'admin_panel']);
     }
 
-    public function getDescriptionKey() : string
+    public function getCommand(): string
+    {
+        return 'admin_panel';
+    }
+
+    public function getDescriptionKey(): string
     {
         return 'main_menu_command_description';
     }
 
-    public function execute(
-        string $message,
-        int $message_id,
-        string $chat_type,
-        int $chat_id,
-        int $user_id,
-        $payload,
-        ?int $reply_message_id,
-        ?int $reply_author,
-        string $first_name,
-        $current_panel,
-        $current_page,
-        string $cmd,
-        array $args
-    ) : void {
-        $this->getUserStateService()->clearState($user_id);
-        if (! is_null($current_panel)) {
-            $this->bot->deleteMessage($chat_id, $current_panel);
+    public function handle(array $update): void
+    {
+        $chatId = $update['message']['chat']['id'] ?? 0;
+        $userId = $update['message']['from']['id'] ?? 0;
+        $messageId = $update['message']['message_id'] ?? 0;
+
+        if (!$chatId || !$userId) return;
+
+        $this->getUserStateService()->clearState($userId);
+
+        $current_panel = $this->getUserService()->getCurrentPanel($userId);
+        if (!is_null($current_panel)) {
+            $this->client->deleteMessage($chatId, $current_panel);
         }
 
-        $this->getUserService()->setCurrentPanel($user_id, $message_id + 1);
+        $this->getUserService()->setCurrentPanel($userId, $messageId + 1);
 
-        if (! is_null($current_page)) {
-            $this->getUserService()->resetCurrentPage($user_id);
+        $current_page = $this->getUserService()->getCurrentPage($userId);
+        if (!is_null($current_page)) {
+            $this->getUserService()->resetCurrentPage($userId);
         }
 
         $keyboard = ['inline_keyboard' => []];
 
-        // Базові кнопки для всіх користувачів
         $keyboard['inline_keyboard'][] = [
             ['text' => '👤 ' . $this->translate('list_of_authors'), 'callback_data' => 'author:list:1'],
             ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
         ];
 
-        // Moderator і вище: керування авторами
         if ($this->isGranted('moderator')) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => $this->translate('add_author'), 'callback_data' => 'author:add'],
@@ -82,13 +81,15 @@ class AdminPanelCommand extends AbstractCommand
             ];
         }
 
-        // Admin: контроль ролей
         if ($this->isGranted('admin')) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => $this->translate('access_control'), 'callback_data' => 'role:control'],
             ];
         }
 
-        $this->bot->pictureReply($chat_id, $this->translate('admin_panel_message'), $this->getVisualsLinks()[1], $keyboard);
+        $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], [
+            'caption' => $this->translate('admin_panel_message'),
+            'reply_markup' => json_encode($keyboard)
+        ]);
     }
 }

@@ -21,47 +21,41 @@ declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\AbstractCommand;
-use morfeditorial\MyBot;
+use morfeditorial\BaseMachinimaCommand;
+use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
 
-class RemoveRoleCommand extends AbstractCommand
+class RemoveRoleCommand extends BaseMachinimaCommand
 {
-    public function __construct(MyBot $bot)
+    public function __construct(TelegramClient $client)
     {
-        parent::__construct($bot);
+        parent::__construct($client);
         $this->setAliases(['remove_role']);
         $this->setHiddenFromMenu(true);
     }
 
-    public function getDescriptionKey() : string
+    public function getCommand(): string
+    {
+        return 'remove_role';
+    }
+
+    public function getDescriptionKey(): string
     {
         return 'remove_role_command_description';
     }
 
-    public function execute(
-        string $message,
-        int $message_id,
-        string $chat_type,
-        int $chat_id,
-        int $user_id,
-        $payload,
-        ?int $reply_message_id,
-        ?int $reply_author,
-        string $first_name,
-        $current_panel,
-        $current_page,
-        string $cmd,
-        array $args
-    ) : void {
-        if (! $this->isGranted('admin')) {
-            $this->bot->sendMessage($chat_id, $this->translate('no_permission_message'));
+    public function handle(array $update): void
+    {
+        $chatId = $update['message']['chat']['id'] ?? 0;
+        if (!$chatId) return;
 
+        if (!$this->isGranted('admin')) {
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
+        $args = $this->getArgs($update);
         if (count($args) < 2) {
-            $this->bot->sendMessage($chat_id, $this->translate('remove_role_usage_message'));
-
+            $this->client->sendMessage($chatId, $this->translate('remove_role_usage_message'));
             return;
         }
 
@@ -71,9 +65,9 @@ class RemoveRoleCommand extends AbstractCommand
         $result = $this->getRoleService()->removeUserRole($target_user_id, $role_name);
 
         if ($result) {
-            $this->bot->sendMessage($chat_id, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('remove_role_message')));
+            $this->client->sendMessage($chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('remove_role_message')));
         } else {
-            $this->bot->sendMessage($chat_id, $this->translate('remove_role_failed_message'));
+            $this->client->sendMessage($chatId, $this->translate('remove_role_failed_message'));
         }
     }
 }
