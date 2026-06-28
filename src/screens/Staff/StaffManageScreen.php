@@ -51,10 +51,10 @@ class StaffManageScreen extends AbstractScreen
         }
 
         $keyboard['inline_keyboard'][] = [
-            ['text' => $this->translate('add_staff_member'), 'callback_data' => $this->makePayload('staff', 'add', 'select_author', $this->projectId)],
+            ['text' => $this->translate('add_staff_member'), 'callback_data' => $this->makePayload('staff', 'add', 'select_author', (string)$this->projectId)],
         ];
         $keyboard['inline_keyboard'][] = [
-            ['text' => $this->translate('go_back'), 'callback_data' => 'view_project:' . $this->projectId],
+            ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('project', 'view', (string)$this->projectId)],
         ];
 
         $user_service = $this->bot->getContainer()->get('user_service');
