@@ -21,51 +21,61 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Author;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
+use morfeditorial\utils\KeyboardHelper;
 
-class AuthorListScreen extends AbstractScreen
+class AuthorListScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
-        // Параметр сторінки приходить в $this->data['page'] (встановлюється в Диспетчері)
-        $page = $this->data['page'] ?? 1;
-        $this->bot->getUserService()->setCurrentPage($this->userId, 'author:list:' . $page);
-
-        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
-        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
-
-        $keyboard = \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
-            $this->bot->getContainer()->get('bot_translator'),
-            $this->bot->getContainer()->get('author_service'),
-            $page,
-            3,
-            1,
-            'author:profile:',
-            'author:list:'
-        );
-
-        $authors = $this->bot->getContainer()->get('author_service')->getAllAuthors();
-        $messageText = empty($authors) ? $this->translate('empty_authors_list_message') : $this->translate('list_of_authors_message');
-
-        $this->bot->editMediaMessage(
-            $this->chatId,
-            $currentPanel,
-            $visualsLinks[9],
-            $messageText,
-            $keyboard
-        );
-    }
-
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('list' === $action) {
-            $this->data['page'] = (int)($params[0] ?? 1);
-            $this->render();
+        $action = $update['callback_query']['data'] ?? '';
+        $payload = $this->parsePayload($action);
+        
+        if ($payload['domain'] === 'author' && $payload['action'] === 'list') {
+            return true;
         }
+
+        return false;
     }
 
-    public function handleMessage(string $text) : void
+    public function handle(array $update): void
     {
-        // Не чекаємо на текст
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        
+        $payload = $this->parsePayload($action);
+
+        if ($payload['domain'] === 'author' && $payload['action'] === 'list') {
+            $page = (int)($payload['params'][0] ?? 1);
+            $this->getUserService()->setCurrentPage($userId, 'author:list:' . $page);
+
+            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
+            $visualsLinks = $this->getVisualsLinks();
+
+            $keyboard = KeyboardHelper::generateAuthorsKeyboard(
+                $this->getTranslator(),
+                $this->getAuthorService(),
+                $page,
+                3,
+                1,
+                'author:profile:',
+                'author:list:'
+            );
+
+            $authors = $this->getAuthorService()->getAllAuthors();
+            $messageText = empty($authors) ? $this->translate('empty_authors_list_message') : $this->translate('list_of_authors_message');
+
+            if ($currentPanel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $currentPanel,
+                    'media' => ['type' => 'photo', 'media' => $visualsLinks[9], 'caption' => $messageText, 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visualsLinks[9], $messageText, null, $keyboard);
+            }
+        }
     }
 }
