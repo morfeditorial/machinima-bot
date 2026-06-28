@@ -3,7 +3,7 @@
 /*
  *
  *    _______   _______    _______   _______
- *   /       \\/       \\//       \//       \
+ *   /       \/       \//       \//       \
  *  /        //        ///        //      __/
  * /         /         /        _/        _/
  * \__/__/__/\________/\____/___/\_______/
@@ -21,81 +21,115 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Role;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class RoleUnassignScreen extends AbstractScreen
+class RoleUnassignScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
-        $role_name = $this->data['role_name'] ?? '';
-        if (empty($role_name)) {
-            return;
+        $action = $update['callback_query']['data'] ?? '';
+        if (str_starts_with($action, 'role:unassign')) {
+            return true;
         }
 
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        $current_panel = $user_service->getCurrentPanel($this->userId);
+        $userId = $update['message']['from']['id'] ?? 0;
+        if ($userId) {
+            $state = $this->getUserStateService()->getState($userId, 'awaiting_user_id_to_remove_role');
+            if ($state) {
+                return true;
+            }
+        }
 
-        $keyboard = [
-            'inline_keyboard' => [
-                [
-                    ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'view', 'show', $role_name)],
-                ],
-            ],
-        ];
-
-        $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{role}', $role_name, $this->translate('enter_user_id_to_remove_role_message')), $keyboard);
+        return false;
     }
 
-    public function handleCallback(string $action, array $params) : void
+    public function handle(array $update): void
     {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        $text = $update['message']['text'] ?? '';
+
         if (! $this->isGranted('admin')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $user_state_service = $this->bot->getContainer()->get('user_state_service');
+        $user_state_service = $this->getUserStateService();
+        $user_service = $this->getUserService();
+        $visuals_links = $this->getVisualsLinks();
+        $current_panel = $user_service->getCurrentPanel($userId);
 
-        if ('unassign' === $action) {
-            $subAction = $params[0] ?? '';
+        if ($action && str_starts_with($action, 'role:unassign')) {
+            $parsed = $this->parsePayload($action);
+            $subAction = $parsed['params'][0] ?? '';
+
             if ('ask_user' === $subAction) {
-                $role_name = $params[1] ?? '';
-                $user_state_service->setState($this->userId, ['role_name' => $role_name], 'awaiting_user_id_to_remove_role');
+                $role_name = $parsed['params'][1] ?? '';
+                $user_state_service->setState($userId, ['role_name' => $role_name], 'awaiting_user_id_to_remove_role');
 
-                $this->data['role_name'] = $role_name;
-                $this->render();
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'view', 'show', $role_name)],
+                        ],
+                    ],
+                ];
+
+                $caption = str_replace('{role}', $role_name, $this->translate('enter_user_id_to_remove_role_message'));
+
+                if ($current_panel) {
+                    $this->client->request('editMessageMedia', [
+                        'chat_id' => $chatId,
+                        'message_id' => $current_panel,
+                        'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
+                        'reply_markup' => $keyboard
+                    ]);
+                } else {
+                    $this->client->sendPhoto($chatId, $visuals_links[1], [
+                        'caption' => $caption,
+                        'parse_mode' => 'HTML',
+                        'reply_markup' => $keyboard
+                    ]);
+                }
             }
+            return;
         }
-    }
 
-    public function handleMessage(string $text) : void
-    {
-        $user_state_service = $this->bot->getContainer()->get('user_state_service');
-        $state_data = $user_state_service->getState($this->userId, 'awaiting_user_id_to_remove_role');
+        if ($text) {
+            $state_data = $user_state_service->getState($userId, 'awaiting_user_id_to_remove_role');
+            if ($state_data) {
+                $role_service = $this->getRoleService();
+                $target_user_id = (int) $text;
 
-        if ($state_data) {
-            $role_service = $this->bot->getContainer()->get('role_service');
-            $target_user_id = (int) $text;
+                if ($target_user_id <= 0) {
+                    $this->client->sendMessage($chatId, $this->translate('invalid_user_id_message'));
+                    return;
+                }
 
-            if ($target_user_id <= 0) {
-                $this->bot->sendMessage($this->chatId, $this->translate('invalid_user_id_message'));
-                return;
+                $role_name = $state_data['role_name'] ?? '';
+                $result = $role_service->removeUserRole($target_user_id, $role_name);
+
+                if ($result) {
+                    $this->client->sendMessage($chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('remove_role_message')));
+                } else {
+                    $this->client->sendMessage($chatId, $this->translate('remove_role_failed_message'));
+                }
+
+                $user_state_service->clearState($userId, 'awaiting_user_id_to_remove_role');
+
+                // Return to view screen
+                $viewScreen = new RoleViewScreen();
+                $viewScreen->setDependencies($this->container, $this->security);
+                $viewScreen->setClient($this->client);
+                $fakeUpdate = $update;
+                $fakeUpdate['callback_query'] = [
+                    'data' => "role:view:show:{$role_name}",
+                    'message' => ['chat' => ['id' => $chatId]],
+                    'from' => ['id' => $userId]
+                ];
+                $viewScreen->handle($fakeUpdate);
             }
-
-            $role_name = $state_data['role_name'] ?? '';
-            $result = $role_service->removeUserRole($target_user_id, $role_name);
-
-            if ($result) {
-                $this->bot->sendMessage($this->chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('remove_role_message')));
-            } else {
-                $this->bot->sendMessage($this->chatId, $this->translate('remove_role_failed_message'));
-            }
-
-            $user_state_service->clearState($this->userId, 'awaiting_user_id_to_remove_role');
-
-            // Повернути панель назад до перегляду ролі
-            $view_screen = new \morfeditorial\screens\Role\RoleViewScreen($this->bot, $this->data);
-            $view_screen->handleCallback('view', ['show', $role_name]);
         }
     }
 }
