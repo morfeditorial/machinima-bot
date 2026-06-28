@@ -21,31 +21,83 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Author;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class AuthorProfileScreen extends AbstractScreen
+class AuthorProfileScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
-        $this->bot->getUserStateService()->clearState($this->userId);
+        $action = $update['callback_query']['data'] ?? '';
+        $payload = $this->parsePayload($action);
+        
+        if ($payload['domain'] === 'author' && in_array($payload['action'], ['profile', 'set_private', 'unlink_telegram'])) {
+            return true;
+        }
 
-        $authorId = (int)$this->data['author_id'];
-        $authorService = $this->bot->getContainer()->get('author_service');
+        return false;
+    }
+
+    public function handle(array $update): void
+    {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        
+        $payload = $this->parsePayload($action);
+        $route = $payload['action'];
+        $params = $payload['params'];
+
+        if ($route === 'profile') {
+            $authorId = (int)($params[0] ?? 0);
+            $this->renderProfile($chatId, $userId, $authorId);
+        } elseif ($route === 'set_private') {
+            $authorId = (int)($params[0] ?? 0);
+            $authorService = $this->getAuthorService();
+            $author = $authorService->getAuthorById($authorId);
+
+            $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
+
+            if (!$this->isGranted('moderator') && !$isOwnProfile) {
+                $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+                return;
+            }
+
+            if (null !== $author) {
+                $isPrivate = $authorService->isPrivate($authorId);
+                $authorService->setPrivate($authorId, !$isPrivate);
+                $this->renderProfile($chatId, $userId, $authorId);
+            }
+        } elseif ($route === 'unlink_telegram') {
+            if (!$this->isGranted('admin')) {
+                return;
+            }
+            $authorId = (int)($params[0] ?? 0);
+            $authorService = $this->getAuthorService();
+            $authorService->setTelegramId($authorId, null);
+            $this->renderProfile($chatId, $userId, $authorId);
+        }
+    }
+
+    private function renderProfile(int $chatId, int $userId, int $authorId): void
+    {
+        $this->getUserStateService()->clearState($userId);
+
+        $authorService = $this->getAuthorService();
         $author = $authorService->getAuthorById($authorId);
 
-        $isOwnProfile = $author && (int) $author['telegram_user_id'] === $this->userId;
+        $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
 
         if (!$this->isGranted('moderator') && !$isOwnProfile) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
-        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+        $currentPanel = $this->getUserService()->getCurrentPanel($userId);
+        $visualsLinks = $this->getVisualsLinks();
 
         if (null !== $author) {
             $authorStatus = $authorService->isPrivate($authorId);
-            $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
+            $currentPage = $this->getUserService()->getCurrentPage($userId);
 
             $keyboard = [
                 'inline_keyboard' => [
@@ -54,8 +106,8 @@ class AuthorProfileScreen extends AbstractScreen
                         ['text' => ($authorStatus ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'author:set_private:' . $authorId],
                     ],
                     [
-                        ['text' => ($author['biography'] ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'author:set_about:' . $authorId],
-                        ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'author:add_link:' . $authorId],
+                        ['text' => ($author['biography'] ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'author:edit_bio:' . $authorId],
+                        ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'author:edit_link:' . $authorId],
                     ],
                 ],
             ];
@@ -92,13 +144,16 @@ class AuthorProfileScreen extends AbstractScreen
                 $this->translate('author_info_message')
             );
 
-            $this->bot->editMediaMessage(
-                $this->chatId,
-                $currentPanel,
-                $visualsLinks[11],
-                $text,
-                $keyboard
-            );
+            if ($currentPanel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $currentPanel,
+                    'media' => ['type' => 'photo', 'media' => $visualsLinks[11], 'caption' => $text, 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visualsLinks[11], $text, null, $keyboard);
+            }
             return;
         }
 
@@ -109,47 +164,16 @@ class AuthorProfileScreen extends AbstractScreen
                 ],
             ],
         ];
-        $this->bot->editMediaMessage($this->chatId, $currentPanel, $visualsLinks[1], $this->translate('author_not_found_message'), $keyboard);
-    }
 
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('profile' === $action) {
-            $this->data['author_id'] = $params[0] ?? 0;
-            $this->render();
-        } elseif ('set_private' === $action) {
-            $authorId = (int)($params[0] ?? 0);
-            $authorService = $this->bot->getContainer()->get('author_service');
-            $author = $authorService->getAuthorById($authorId);
-
-            $isOwnProfile = $author && (int) $author['telegram_user_id'] === $this->userId;
-
-            if (!$this->isGranted('moderator') && !$isOwnProfile) {
-                $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-                return;
-            }
-
-            if (null !== $author) {
-                $isPrivate = $authorService->isPrivate($authorId);
-                $authorService->setPrivate($authorId, !$isPrivate);
-
-                $this->data['author_id'] = $authorId;
-                $this->render();
-            }
-        } elseif ('unlink_telegram' === $action) {
-            if (!$this->isGranted('admin')) {
-                return;
-            }
-            $authorId = (int)($params[0] ?? 0);
-            $authorService = $this->bot->getContainer()->get('author_service');
-            $authorService->setTelegramId($authorId, null);
-            $this->data['author_id'] = $authorId;
-            $this->render();
+        if ($currentPanel) {
+            $this->client->request('editMessageMedia', [
+                'chat_id' => $chatId,
+                'message_id' => $currentPanel,
+                'media' => ['type' => 'photo', 'media' => $visualsLinks[1], 'caption' => $this->translate('author_not_found_message'), 'parse_mode' => 'HTML'],
+                'reply_markup' => $keyboard
+            ]);
+        } else {
+            $this->client->sendPhoto($chatId, $visualsLinks[1], $this->translate('author_not_found_message'), null, $keyboard);
         }
-    }
-
-    public function handleMessage(string $text) : void
-    {
-        // Не чекаємо тексту
     }
 }
