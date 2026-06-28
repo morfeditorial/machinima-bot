@@ -31,8 +31,9 @@ $cacheManager = new AsyncCacheManager(
 $cacheOptions = new CacheOptions(ttl: 30);
 
 $sseConnections = new \SplObjectStorage();
+$browser = new \React\Http\Browser();
 
-$http = new HttpServer(function (ServerRequestInterface $request) use ($contentService, $authorService, $ratingService, $roleService, $notificationService, $cacheManager, $cacheOptions, $sseConnections, $botToken) {
+$http = new HttpServer(function (ServerRequestInterface $request) use ($contentService, $authorService, $ratingService, $roleService, $notificationService, $cacheManager, $cacheOptions, $sseConnections, $browser, $botToken) {
     $path = $request->getUri()->getPath();
 
     $headers = [
@@ -60,9 +61,9 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
         ], $stream);
     }
 
-    $handler = function () use ($path, $request, $contentService, $authorService, $ratingService, $roleService, $notificationService, $sseConnections, $botToken) {
+    $handler = function () use ($path, $request, $contentService, $authorService, $ratingService, $roleService, $notificationService, $sseConnections, $browser, $botToken) {
         static $avatarCache = [];
-        return \React\Promise\resolve(null)->then(function () use ($path, $request, $contentService, $authorService, $ratingService, $roleService, $notificationService, $sseConnections, &$avatarCache, $botToken) {
+        return \React\Promise\resolve(null)->then(function () use ($path, $request, $contentService, $authorService, $ratingService, $roleService, $notificationService, $sseConnections, &$avatarCache, $browser, $botToken) {
             if ($path === '/api/feed') {
                 $feed = $ratingService->getTrendingContent(20);
                 return json_encode(['success' => true, 'data' => $feed]);
@@ -172,6 +173,16 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                     $project = $contentService->getContentById($projectId);
                     $notifiedUsers = []; // Track who we notified to avoid double notifications
                     
+                    $sendTgMsg = function($targetId, $msg) use ($browser, $botToken, $projectId) {
+                        $browser->post("https://api.telegram.org/bot{$botToken}/sendMessage", [
+                            'Content-Type' => 'application/json'
+                        ], json_encode([
+                            'chat_id' => $targetId,
+                            'text' => "🔔 <b>Нове сповіщення</b>\n\n" . $msg . "\n\n<i>Відкрийте Mini App, щоб переглянути.</i>",
+                            'parse_mode' => 'HTML'
+                        ]))->catch(function(\Exception $e) {});
+                    };
+
                     // 1. Notify Parent Comment Author (if it's a reply)
                     if ($parentId) {
                         $parentComment = $contentService->getCommentById($parentId);
@@ -179,13 +190,15 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                             $targetUserId = (int) $parentComment['user_id'];
                             if ($targetUserId !== (int) $body['user_id']) {
                                 $shortText = mb_substr($body['text'], 0, 50) . (mb_strlen($body['text']) > 50 ? '...' : '');
-                                $notif = $notificationService->notify($targetUserId, 'new_comment', $projectId, "Відповідь на ваш коментар: {$shortText}");
+                                $notifMsg = "Відповідь на ваш коментар: {$shortText}";
+                                $notif = $notificationService->notify($targetUserId, 'new_comment', $projectId, $notifMsg);
                                 $notifiedUsers[] = $targetUserId;
                                 
                                 $notifPayload = json_encode(['type' => 'NEW_NOTIFICATION', 'notification' => $notif]);
                                 foreach ($sseConnections as $conn) {
                                     $conn->write("data: {$notifPayload}\n\n");
                                 }
+                                $sendTgMsg($targetUserId, $notifMsg);
                             }
                         }
                     }
@@ -202,13 +215,15 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                                     // Don't notify the staff member if they are the one commenting, OR if we already notified them
                                     if ($targetUserId !== (int) $body['user_id'] && !in_array($targetUserId, $notifiedUsers, true)) {
                                         $shortText = mb_substr($body['text'], 0, 50) . (mb_strlen($body['text']) > 50 ? '...' : '');
-                                        $notif = $notificationService->notify($targetUserId, 'new_comment', $projectId, "Новий коментар до вашого проєкту: {$shortText}");
+                                        $notifMsg = "Новий коментар до вашого проєкту: {$shortText}";
+                                        $notif = $notificationService->notify($targetUserId, 'new_comment', $projectId, $notifMsg);
                                         $notifiedUsers[] = $targetUserId;
                                         
                                         $notifPayload = json_encode(['type' => 'NEW_NOTIFICATION', 'notification' => $notif]);
                                         foreach ($sseConnections as $conn) {
                                             $conn->write("data: {$notifPayload}\n\n");
                                         }
+                                        $sendTgMsg($targetUserId, $notifMsg);
                                     }
                                 }
                             }
