@@ -82,7 +82,8 @@ abstract class AbstractCommand implements CommandInterface
 
     public function isGranted(string $role_name) : bool
     {
-        return $this->bot->isGranted($role_name);
+        $symfony_role = 'ROLE_' . strtoupper($role_name);
+        return $this->bot->isGranted($symfony_role);
     }
 
     public function getSearch()
