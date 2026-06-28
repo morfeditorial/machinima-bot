@@ -25,12 +25,13 @@ use morfeditorial\BaseMachinimaScreen;
 
 class RoleControlScreen extends BaseMachinimaScreen
 {
-    public function supports(string $action): bool
+    public function supports(array $update): bool
     {
+        $action = $update['callback_query']['data'] ?? '';
         return str_starts_with($action, 'role:control');
     }
 
-    public function handle(string $action, array $update): void
+    public function handle(array $update): void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? 0;
