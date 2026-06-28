@@ -173,7 +173,7 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($bot, $co
                     $project = $contentService->getContentById($projectId);
                     $notifiedUsers = []; // Track who we notified to avoid double notifications
                     
-                    $sendTgMsg = function($targetId, $msgStr, $projectId, $commentId) use ($browser, $bot, $botToken) {
+                    $sendTgMsg = function($targetId, $msgStr) use ($browser, $bot, $botToken) {
                         $header = $bot->translate('bot_notification_header', $targetId);
                         $footer = $bot->translate('bot_notification_footer', $targetId);
                         
@@ -181,7 +181,7 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($bot, $co
                             'Content-Type' => 'application/json'
                         ], json_encode([
                             'chat_id' => $targetId,
-                            'text' => $header . sprintf($msgStr, $projectId, $commentId) . $footer,
+                            'text' => $header . $msgStr . $footer,
                             'parse_mode' => 'HTML'
                         ]))->catch(function(\Exception $e) {});
                     };
@@ -194,7 +194,7 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($bot, $co
                             if ($targetUserId !== (int) $body['user_id']) {
                                 $shortText = mb_substr($body['text'], 0, 50) . (mb_strlen($body['text']) > 50 ? '...' : '');
                                 $notifMsgTpl = $bot->translate('bot_comment_reply', $targetUserId);
-                                $notifMsgStr = sprintf($notifMsgTpl, $shortText, $projectId, $commentId);
+                                $notifMsgStr = str_replace(['{shortText}', '{projectId}', '{commentId}'], [$shortText, $projectId, $commentId], $notifMsgTpl);
                                 
                                 $notif = $notificationService->notify($targetUserId, 'new_comment', $projectId, "Відповідь на ваш коментар: {$shortText}");
                                 $notifiedUsers[] = $targetUserId;
@@ -203,7 +203,7 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($bot, $co
                                 foreach ($sseConnections as $conn) {
                                     $conn->write("data: {$notifPayload}\n\n");
                                 }
-                                $sendTgMsg($targetUserId, sprintf($notifMsgTpl, $shortText, '%d', '%d'), $projectId, $commentId);
+                                $sendTgMsg($targetUserId, $notifMsgStr);
                             }
                         }
                     }
@@ -222,6 +222,7 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($bot, $co
                                         $shortText = mb_substr($body['text'], 0, 50) . (mb_strlen($body['text']) > 50 ? '...' : '');
                                         
                                         $notifMsgTpl = $bot->translate('bot_new_comment', $targetUserId);
+                                        $notifMsgStr = str_replace(['{shortText}', '{projectId}', '{commentId}'], [$shortText, $projectId, $commentId], $notifMsgTpl);
                                         
                                         $notif = $notificationService->notify($targetUserId, 'new_comment', $projectId, "Новий коментар до вашого проєкту: {$shortText}");
                                         $notifiedUsers[] = $targetUserId;
@@ -230,7 +231,7 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($bot, $co
                                         foreach ($sseConnections as $conn) {
                                             $conn->write("data: {$notifPayload}\n\n");
                                         }
-                                        $sendTgMsg($targetUserId, sprintf($notifMsgTpl, $shortText, '%d', '%d'), $projectId, $commentId);
+                                        $sendTgMsg($targetUserId, $notifMsgStr);
                                     }
                                 }
                             }

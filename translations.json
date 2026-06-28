@@ -1044,16 +1044,16 @@
         "uk": "\n\n<i>Відкрийте Mini App, щоб переглянути. Або просто дайте відповідь (Reply) на це повідомлення, щоб написати свій коментар!</i>"
     },
     "bot_new_comment": {
-        "en": "New comment on your project: %s\n\n#reply_%d_%d",
-        "pl": "Nowy komentarz do twojego projektu: %s\n\n#reply_%d_%d",
-        "be": "Новы каментар да вашага праекта: %s\n\n#reply_%d_%d",
-        "uk": "Новий коментар до вашого проєкту: %s\n\n#reply_%d_%d"
+        "en": "New comment on your project: {shortText}\n\n#reply-{projectId}-{commentId}",
+        "pl": "Nowy komentarz do twojego projektu: {shortText}\n\n#reply-{projectId}-{commentId}",
+        "be": "Новы каментар да вашага праекта: {shortText}\n\n#reply-{projectId}-{commentId}",
+        "uk": "Новий коментар до вашого проєкту: {shortText}\n\n#reply-{projectId}-{commentId}"
     },
     "bot_comment_reply": {
-        "en": "Reply to your comment: %s\n\n#reply_%d_%d",
-        "pl": "Odpowiedź na twój komentarz: %s\n\n#reply_%d_%d",
-        "be": "Адказ на ваш каментар: %s\n\n#reply_%d_%d",
-        "uk": "Відповідь на ваш коментар: %s\n\n#reply_%d_%d"
+        "en": "Reply to your comment: {shortText}\n\n#reply-{projectId}-{commentId}",
+        "pl": "Odpowiedź na twój komentarz: {shortText}\n\n#reply-{projectId}-{commentId}",
+        "be": "Адказ на ваш каментар: {shortText}\n\n#reply-{projectId}-{commentId}",
+        "uk": "Відповідь на ваш коментар: {shortText}\n\n#reply-{projectId}-{commentId}"
     },
     "reply_added_success": {
         "en": "✅ Reply added!",

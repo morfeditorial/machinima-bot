@@ -212,7 +212,7 @@ class MyBot extends tgLib
             $this->executeCommand($command_data, $message_data);
         } else {
             $replyText = $message_data['reply_text'] ?? '';
-            if ($replyText && preg_match('/#reply_(\d+)_(\d+)/', $replyText, $matches)) {
+            if ($replyText && preg_match('/#reply-(\d+)-(\d+)/', $replyText, $matches)) {
                 $projectId = (int)$matches[1];
                 $parentId = (int)$matches[2];
                 $text = $message_data['message'] ?? '';
