@@ -1,39 +1,27 @@
 <?php
 
-/*
- *
- *    _______   _______    _______   _______
- *   /       \\/       \\//       \//       \
- *  /        //        ///        //      __/
- * /         /         /        _/        _/
- * \__/__/__/\________/\____/___/\_______/
- *
- * This program is licensed under the CSSM Unlimited License v2.0.
- * Copyright (c) 2024 Serhii Cherneha
- *
- * @author CSSM Group
- * @link https://cssm.pp.ua/
- *
- *
- */
-
 declare(strict_types=1);
 
 namespace morfeditorial\services;
 
-use Doctrine\DBAL\Connection;
-use morfeditorial\storage\StorageInterface;
-use Symfony\Component\Workflow\Workflow;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
+use App\Entity\Content;
+use App\Entity\Comment;
+use App\Entity\Category;
+use App\Entity\ContentStaff;
+use App\Entity\User;
+use App\Entity\Author;
 
 class ContentService
 {
-    private Connection $db;
+    private \Doctrine\DBAL\Connection $db;
 
     public function __construct(
-        private StorageInterface $storage,
-        private Workflow $workflow
+        private EntityManagerInterface $em,
+        private WorkflowInterface $workflow
     ) {
-        $this->db = $storage->getConnection();
+        $this->db = $em->getConnection();
     }
 
     public function applyTransition(int $content_id, string $transition) : bool
@@ -54,51 +42,52 @@ class ContentService
         return false;
     }
 
-    // --- Content CRUD ---
-
     public function createContent(array $data) : int
     {
-        $this->db->executeStatement(
-            'INSERT INTO content (title, type, description, url, release_date, status, cover_file_id, created_by) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [
-                $data['title'],
-                $data['type'],
-                $data['description'] ?? null,
-                $data['url'] ?? null,
-                $data['release_date'] ?? null,
-                $data['status'] ?? 'draft',
-                $data['cover_file_id'] ?? null,
-                $data['created_by'],
-            ]
-        );
+        $content = new Content();
+        $content->setTitle($data['title']);
+        $content->setType($data['type']);
+        $content->setDescription($data['description'] ?? null);
+        $content->setUrl($data['url'] ?? null);
+        $content->setReleaseDate($data['release_date'] ?? null);
+        $content->setStatus($data['status'] ?? 'draft');
+        $content->setCoverFileId($data['cover_file_id'] ?? null);
 
-        return (int) $this->db->lastInsertId();
+        $user = $this->em->getRepository(User::class)->find($data['created_by']);
+        if (!$user) {
+            $user = new User();
+            $user->setId((int)$data['created_by']);
+            $this->em->persist($user);
+        }
+        $content->setCreatedBy($user);
+
+        $this->em->persist($content);
+        $this->em->flush();
+
+        return $content->getId();
     }
 
     public function updateContent(int $id, array $data) : bool
     {
-        $fields = [];
-        $params = [];
-        foreach ($data as $key => $value) {
-            if ('id' === $key) {
-                continue;
-            }
-            $fields[] = "{$key} = ?";
-            $params[] = $value;
-        }
-        $params[] = $id;
+        $content = $this->em->getRepository(Content::class)->find($id);
+        if (!$content) return false;
 
-        return (bool) $this->db->executeStatement(
-            'UPDATE content SET ' . implode(', ', $fields) . ', updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-            $params
-        );
+        if (array_key_exists('title', $data)) $content->setTitle($data['title']);
+        if (array_key_exists('type', $data)) $content->setType($data['type']);
+        if (array_key_exists('description', $data)) $content->setDescription($data['description']);
+        if (array_key_exists('url', $data)) $content->setUrl($data['url']);
+        if (array_key_exists('release_date', $data)) $content->setReleaseDate($data['release_date']);
+        if (array_key_exists('status', $data)) $content->setStatus($data['status']);
+        if (array_key_exists('cover_file_id', $data)) $content->setCoverFileId($data['cover_file_id']);
+        
+        $content->setUpdatedAt(date('Y-m-d H:i:s'));
+        $this->em->flush();
+        return true;
     }
 
     public function getContentById(int $id) : ?array
     {
         $result = $this->db->fetchAssociative('SELECT * FROM content WHERE id = ?', [$id]);
-
         return $result ?: null;
     }
 
@@ -112,27 +101,46 @@ class ContentService
              WHERE c.id = ? GROUP BY c.id',
             [$id]
         );
-
         return $result ?: null;
     }
 
-    // --- Comments ---
-
     public function addComment(int $content_id, int $user_id, string $author_name, string $text, ?int $parent_id = null) : int
     {
-        $this->db->executeStatement(
-            'INSERT INTO comments (content_id, user_id, author_name, text, parent_id) VALUES (?, ?, ?, ?, ?)',
-            [$content_id, $user_id, $author_name, $text, $parent_id]
-        );
-        return (int) $this->db->lastInsertId();
+        $comment = new Comment();
+        
+        $content = $this->em->getRepository(Content::class)->find($content_id);
+        $user = $this->em->getRepository(User::class)->find($user_id);
+        if (!$user) {
+            $user = new User();
+            $user->setId($user_id);
+            $this->em->persist($user);
+        }
+        
+        $comment->setContent($content);
+        $comment->setUser($user);
+        $comment->setAuthorName($author_name);
+        $comment->setText($text);
+        
+        if ($parent_id) {
+            $parent = $this->em->getRepository(Comment::class)->find($parent_id);
+            $comment->setParent($parent);
+        }
+
+        $this->em->persist($comment);
+        $this->em->flush();
+
+        return $comment->getId();
     }
     
     public function editComment(int $comment_id, int $user_id, string $text) : bool
     {
-        return (bool) $this->db->executeStatement(
-            'UPDATE comments SET text = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?',
-            [$text, $comment_id, $user_id]
-        );
+        $comment = $this->em->getRepository(Comment::class)->findOneBy(['id' => $comment_id, 'user' => $user_id]);
+        if (!$comment) return false;
+
+        $comment->setText($text);
+        $comment->setUpdatedAt(date('Y-m-d H:i:s'));
+        $this->em->flush();
+        return true;
     }
 
     public function getCommentById(int $id) : ?array
@@ -151,7 +159,12 @@ class ContentService
     
     public function deleteCommentItem(int $id) : bool
     {
-        return (bool) $this->db->executeStatement('DELETE FROM comments WHERE id = ?', [$id]);
+        $comment = $this->em->getRepository(Comment::class)->find($id);
+        if (!$comment) return false;
+
+        $this->em->remove($comment);
+        $this->em->flush();
+        return true;
     }
 
     public function getAllContent() : array
@@ -171,13 +184,17 @@ class ContentService
         }
 
         $project = $this->getContentById($project_id);
-
         return $project && (int) $project['created_by'] === $user_id;
     }
 
     public function deleteContent(int $id) : bool
     {
-        return (bool) $this->db->executeStatement('DELETE FROM content WHERE id = ?', [$id]);
+        $content = $this->em->getRepository(Content::class)->find($id);
+        if (!$content) return false;
+
+        $this->em->remove($content);
+        $this->em->flush();
+        return true;
     }
 
     public function searchContent(string $query) : array
@@ -210,22 +227,23 @@ class ContentService
         );
     }
 
-    // --- Category Management ---
-
     public function createCategory(string $name, ?int $parent_id = null) : int
     {
-        $this->db->executeStatement(
-            'INSERT INTO categories (name, parent_id) VALUES (?, ?)',
-            [$name, $parent_id]
-        );
+        $category = new Category();
+        $category->setName($name);
+        if ($parent_id) {
+            $parent = $this->em->getRepository(Category::class)->find($parent_id);
+            if ($parent) $category->setParent($parent);
+        }
 
-        return (int) $this->db->lastInsertId();
+        $this->em->persist($category);
+        $this->em->flush();
+        return $category->getId();
     }
 
     public function getCategoryById(int $id) : ?array
     {
         $result = $this->db->fetchAssociative('SELECT * FROM categories WHERE id = ?', [$id]);
-
         return $result ?: null;
     }
 
@@ -238,31 +256,57 @@ class ContentService
     {
         $query = 'SELECT * FROM categories WHERE parent_id ' . (null === $parent_id ? 'IS NULL' : '= ?');
         $params = null === $parent_id ? [] : [$parent_id];
-
         return $this->db->fetchAllAssociative($query, $params);
     }
 
     public function deleteCategory(int $id) : bool
     {
-        return (bool) $this->db->executeStatement('DELETE FROM categories WHERE id = ?', [$id]);
-    }
+        $category = $this->em->getRepository(Category::class)->find($id);
+        if (!$category) return false;
 
-    // --- Staff Management ---
+        $this->em->remove($category);
+        $this->em->flush();
+        return true;
+    }
 
     public function assignStaff(int $content_id, int $author_id, string $role) : bool
     {
-        return (bool) $this->db->executeStatement(
-            'INSERT OR IGNORE INTO content_staff (content_id, author_id, role) VALUES (?, ?, ?)',
-            [$content_id, $author_id, $role]
-        );
+        $content = $this->em->getRepository(Content::class)->find($content_id);
+        $author = $this->em->getRepository(Author::class)->find($author_id);
+        if (!$content || !$author) return false;
+
+        $existing = $this->em->getRepository(ContentStaff::class)->findOneBy([
+            'content' => $content,
+            'author' => $author,
+            'role' => $role
+        ]);
+
+        if (!$existing) {
+            $staff = new ContentStaff();
+            $staff->setContent($content);
+            $staff->setAuthor($author);
+            $staff->setRole($role);
+            $this->em->persist($staff);
+            $this->em->flush();
+        }
+
+        return true;
     }
 
     public function removeStaff(int $content_id, int $author_id, string $role) : bool
     {
-        return (bool) $this->db->executeStatement(
-            'DELETE FROM content_staff WHERE content_id = ? AND author_id = ? AND role = ?',
-            [$content_id, $author_id, $role]
-        );
+        $staff = $this->em->getRepository(ContentStaff::class)->findOneBy([
+            'content' => $content_id,
+            'author' => $author_id,
+            'role' => $role
+        ]);
+
+        if ($staff) {
+            $this->em->remove($staff);
+            $this->em->flush();
+        }
+
+        return true;
     }
 
     public function getStaffByContentId(int $content_id) : array
@@ -276,8 +320,6 @@ class ContentService
         );
     }
 
-    // --- Content Category Assignment ---
-
     public function getCategoriesByContentId(int $content_id) : array
     {
         return $this->db->fetchAllAssociative(
@@ -290,17 +332,29 @@ class ContentService
 
     public function assignCategory(int $content_id, int $category_id) : bool
     {
-        return (bool) $this->db->executeStatement(
-            'INSERT OR IGNORE INTO content_categories (content_id, category_id) VALUES (?, ?)',
-            [$content_id, $category_id]
-        );
+        $content = $this->em->getRepository(Content::class)->find($content_id);
+        $category = $this->em->getRepository(Category::class)->find($category_id);
+        if (!$content || !$category) return false;
+
+        if (!$content->getCategories()->contains($category)) {
+            $content->addCategory($category);
+            $this->em->flush();
+        }
+
+        return true;
     }
 
     public function removeCategory(int $content_id, int $category_id) : bool
     {
-        return (bool) $this->db->executeStatement(
-            'DELETE FROM content_categories WHERE content_id = ? AND category_id = ?',
-            [$content_id, $category_id]
-        );
+        $content = $this->em->getRepository(Content::class)->find($content_id);
+        $category = $this->em->getRepository(Category::class)->find($category_id);
+        if (!$content || !$category) return false;
+
+        if ($content->getCategories()->contains($category)) {
+            $content->removeCategory($category);
+            $this->em->flush();
+        }
+
+        return true;
     }
 }
