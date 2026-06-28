@@ -1,78 +1,61 @@
 <?php
 
-/*
- *
- *    _______   _______    _______   _______
- *   /       \\/       \\//       \//       \
- *  /        //        ///        //      __/
- * /         /         /        _/        _/
- * \__/__/__/\________/\____/___/\_______/
- *
- * This program is licensed under the CSSM Unlimited License v2.0.
- * Copyright (c) 2024 Serhii Cherneha
- *
- * @author CSSM Group
- * @link https://cssm.pp.ua/
- *
- *
- */
-
 declare(strict_types=1);
 
 namespace morfeditorial\services;
 
-use morfeditorial\storage\StorageInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\User;
 
 class UserService
 {
-    private $db;
-
-    public function __construct(private StorageInterface $storage)
+    public function __construct(private EntityManagerInterface $em)
     {
-        $this->db = $storage->getConnection();
+    }
+
+    private function getUserOrCreate(int $user_id): User
+    {
+        $user = $this->em->getRepository(User::class)->find($user_id);
+        if (!$user) {
+            $user = new User();
+            $user->setId($user_id);
+            $this->em->persist($user);
+        }
+        return $user;
     }
 
     public function setCurrentPanel(int $user_id, int $message_id) : void
     {
-        $this->db->executeStatement(
-            'INSERT OR REPLACE INTO user_data (user_id, current_panel) VALUES (?, ?)',
-            [$user_id, $message_id]
-        );
+        $user = $this->getUserOrCreate($user_id);
+        $user->setCurrentPanel($message_id);
+        $this->em->flush();
     }
 
     public function getCurrentPanel(int $user_id) : ?int
     {
-        $result = $this->db->fetchOne(
-            'SELECT current_panel FROM user_data WHERE user_id = ?',
-            [$user_id]
-        );
-
-        return false !== $result ? (int) $result : null;
+        $user = $this->em->getRepository(User::class)->find($user_id);
+        return $user ? $user->getCurrentPanel() : null;
     }
 
     public function setCurrentPage(int $user_id, string $page) : void
     {
-        $this->db->executeStatement(
-            'UPDATE user_data SET current_page = ? WHERE user_id = ?',
-            [$page, $user_id]
-        );
+        $user = $this->getUserOrCreate($user_id);
+        $user->setCurrentPage($page);
+        $this->em->flush();
     }
 
     public function getCurrentPage(int $user_id) : ?string
     {
-        $result = $this->db->fetchOne(
-            'SELECT current_page FROM user_data WHERE user_id = ?',
-            [$user_id]
-        );
-
-        return false !== $result ? (string) $result : null;
+        $user = $this->em->getRepository(User::class)->find($user_id);
+        return $user ? $user->getCurrentPage() : null;
     }
 
     public function resetCurrentPage(int $user_id) : void
     {
-        $this->db->executeStatement(
-            'UPDATE user_data SET current_page = NULL WHERE user_id = ?',
-            [$user_id]
-        );
+        $user = $this->em->getRepository(User::class)->find($user_id);
+        if ($user) {
+            $user->setCurrentPage(null);
+            $this->em->flush();
+        }
     }
 }
