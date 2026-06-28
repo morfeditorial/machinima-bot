@@ -21,77 +21,112 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Category;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class CategoryCreateScreen extends AbstractScreen
+class CategoryCreateScreen extends BaseMachinimaScreen
 {
-    private ?int $parentId = null;
-
-    public function setParentId(?int $parentId) : self
+    public function supports(array $update): bool
     {
-        $this->parentId = $parentId;
-        return $this;
+        $action = $update['callback_query']['data'] ?? '';
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+
+        if (str_starts_with($action, 'category:create')) {
+            return true;
+        }
+
+        if (isset($update['message']['text'])) {
+            $state = $this->getUserStateService()->getState($userId, 'awaiting_category_name');
+            if ($state) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public function render() : void
+    public function handle(array $update): void
     {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        $text = $update['message']['text'] ?? '';
+
         if (! $this->isGranted('moderator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $user_state_service = $this->bot->getContainer()->get('user_state_service');
-        $user_state_service->setState($this->userId, ['parent_id' => $this->parentId], 'awaiting_category_name');
+        if (str_starts_with($action, 'category:create')) {
+            $payload = $this->parsePayload($action);
+            $subAction = $payload['params'][0] ?? '';
+            $parentId = isset($payload['params'][1]) ? (int) $payload['params'][1] : null;
 
-        $back_callback = $this->parentId ? $this->makePayload('category', 'manage', $this->parentId) : $this->makePayload('category', 'manage');
+            $this->getUserStateService()->setState($userId, ['parent_id' => $parentId], 'awaiting_category_name');
 
-        $keyboard = [
-            'inline_keyboard' => [
-                [
-                    ['text' => $this->translate('go_back'), 'callback_data' => $back_callback],
+            $back_callback = $parentId ? $this->makePayload('category', 'manage', (string)$parentId) : $this->makePayload('category', 'manage');
+
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => $back_callback],
+                    ],
                 ],
-            ],
-        ];
+            ];
 
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        $current_panel = $user_service->getCurrentPanel($this->userId);
+            $current_panel = $this->getUserService()->getCurrentPanel($userId);
 
-        $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('enter_category_name_message'), $keyboard);
-    }
-
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('create' === $action) {
-            $subAction = $params[0] ?? '';
-            $this->parentId = isset($params[1]) ? (int) $params[1] : null;
-            $this->render();
-        }
-    }
-
-    public function handleMessage(string $text) : void
-    {
-        $user_state_service = $this->bot->getContainer()->get('user_state_service');
-        $state_data = $user_state_service->getState($this->userId, 'awaiting_category_name');
-
-        if ($state_data) {
-            $message_id = $this->data['message_id'] ?? null;
-            if ($message_id) {
-                $this->bot->deleteMessage($this->chatId, $message_id);
+            if ($current_panel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $current_panel,
+                    'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('enter_category_name_message'), 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('enter_category_name_message'), $keyboard);
             }
 
-            $content_service = $this->bot->getContainer()->get('content_service');
-            $parent_id = $state_data['parent_id'] ?? null;
-            $name = $text;
+            if (isset($update['callback_query']['id'])) {
+                $this->client->answerCallbackQuery($update['callback_query']['id']);
+            }
+        } elseif ($text !== '') {
+            $state_data = $this->getUserStateService()->getState($userId, 'awaiting_category_name');
 
-            $content_service->createCategory($name, $parent_id);
+            if ($state_data) {
+                $message_id = $update['message']['message_id'] ?? null;
+                if ($message_id) {
+                    $this->client->request('deleteMessage', ['chat_id' => $chatId, 'message_id' => $message_id]);
+                }
 
-            $this->bot->sendMessage($this->chatId, str_replace('{name}', htmlspecialchars($name), $this->translate('category_added_message')));
-            $user_state_service->clearState($this->userId);
+                $content_service = $this->container->get('content_service');
+                $parent_id = $state_data['parent_id'] ?? null;
+                $name = $text;
 
-            // Transition to CategoryManageScreen
-            $screen = new CategoryManageScreen($this->bot, $this->data);
-            $screen->setParentId($parent_id)->render();
+                $content_service->createCategory($name, $parent_id);
+
+                $this->client->sendMessage($chatId, str_replace('{name}', htmlspecialchars($name), $this->translate('category_added_message')));
+                $this->getUserStateService()->clearState($userId, 'awaiting_category_name');
+                
+                $back_callback = $parent_id ? $this->makePayload('category', 'manage', (string)$parent_id) : $this->makePayload('category', 'manage');
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => $back_callback],
+                        ],
+                    ],
+                ];
+
+                if (isset($current_panel) && $current_panel) {
+                    $this->client->request('editMessageMedia', [
+                        'chat_id' => $chatId,
+                        'message_id' => $current_panel,
+                        'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('category_added_message'), 'parse_mode' => 'HTML'],
+                        'reply_markup' => $keyboard
+                    ]);
+                } else {
+                    $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('category_added_message'), $keyboard);
+                }
+            }
         }
     }
 }
