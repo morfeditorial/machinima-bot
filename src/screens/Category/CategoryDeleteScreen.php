@@ -21,49 +21,60 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Category;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class CategoryDeleteScreen extends AbstractScreen
+class CategoryDeleteScreen extends BaseMachinimaScreen
 {
-    private int $categoryId;
-    private bool $isConfirm = false;
-
-    public function setCategoryId(int $categoryId) : self
+    public function supports(array $update): bool
     {
-        $this->categoryId = $categoryId;
-        return $this;
+        $action = $update['callback_query']['data'] ?? '';
+        return str_starts_with($action, 'category:delete');
     }
 
-    public function setConfirm(bool $isConfirm) : self
+    public function handle(array $update): void
     {
-        $this->isConfirm = $isConfirm;
-        return $this;
-    }
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
 
-    public function render() : void
-    {
         if (! $this->isGranted('moderator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        $current_panel = $user_service->getCurrentPanel($this->userId);
+        $payload = $this->parsePayload($action);
+        $subAction = $payload['params'][0] ?? '';
+        $categoryId = isset($payload['params'][1]) ? (int) $payload['params'][1] : 0;
 
-        if ($this->isConfirm) {
+        $current_panel = $this->getUserService()->getCurrentPanel($userId);
+
+        if ('confirm' === $subAction) {
             $keyboard = [
                 'inline_keyboard' => [
                     [
-                        ['text' => $this->translate('confirm_yes'), 'callback_data' => $this->makePayload('category', 'delete', 'execute', $this->categoryId)],
+                        ['text' => $this->translate('confirm_yes'), 'callback_data' => $this->makePayload('category', 'delete', 'execute', (string)$categoryId)],
                     ],
                     [
                         ['text' => $this->translate('confirm_no'), 'callback_data' => $this->makePayload('category', 'manage')],
                     ],
                 ],
             ];
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{name}', 'ID ' . $this->categoryId, $this->translate('confirm_delete_category_message')), $keyboard);
-        } else {
+
+            $text = str_replace('{name}', 'ID ' . $categoryId, $this->translate('confirm_delete_category_message'));
+
+            if ($current_panel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $current_panel,
+                    'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $text, 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $text, $keyboard);
+            }
+        } elseif ('execute' === $subAction) {
+            $this->container->get('content_service')->deleteCategory($categoryId);
+
             $keyboard = [
                 'inline_keyboard' => [
                     [
@@ -71,35 +82,21 @@ class CategoryDeleteScreen extends AbstractScreen
                     ],
                 ],
             ];
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('category_deleted_message'), $keyboard);
-        }
-    }
 
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('delete' === $action) {
-            $subAction = $params[0] ?? '';
-            $categoryId = isset($params[1]) ? (int) $params[1] : 0;
-
-            $this->categoryId = $categoryId;
-
-            if ('confirm' === $subAction) {
-                $this->isConfirm = true;
-                $this->render();
-            } elseif ('execute' === $subAction) {
-                // Execute deletion here in the controller
-                if ($this->isGranted('moderator')) {
-                    $this->bot->getContainer()->get('content_service')->deleteCategory($this->categoryId);
-                }
-
-                $this->isConfirm = false;
-                $this->render();
+            if ($current_panel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $current_panel,
+                    'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('category_deleted_message'), 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('category_deleted_message'), $keyboard);
             }
         }
-    }
 
-    public function handleMessage(string $text) : void
-    {
-        // Not used
+        if (isset($update['callback_query']['id'])) {
+            $this->client->answerCallbackQuery($update['callback_query']['id']);
+        }
     }
 }
