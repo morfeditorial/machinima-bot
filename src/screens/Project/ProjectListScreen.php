@@ -85,14 +85,18 @@ class ProjectListScreen extends BaseMachinimaScreen
         ];
 
         if ($current_panel) {
-            $this->client->request('editMessageMedia', [
-                'chat_id' => $chatId,
-                'message_id' => $current_panel,
-                'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('manage_projects'), 'parse_mode' => 'HTML'],
-                'reply_markup' => $keyboard
-            ]);
+            try {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $current_panel,
+                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('manage_projects'), 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } catch (\Throwable $e) {
+                $this->client->sendPhoto($chatId, $visuals_links[1], ['caption' => $this->translate('manage_projects'), 'parse_mode' => 'HTML', 'reply_markup' => $keyboard]);
+            }
         } else {
-            $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate('manage_projects'), null, null, null, false, $keyboard);
+            $this->client->sendPhoto($chatId, $visuals_links[1], ['caption' => $this->translate('manage_projects'), 'parse_mode' => 'HTML', 'reply_markup' => $keyboard]);
         }
     }
 }

@@ -67,14 +67,18 @@ class AuthorListScreen extends BaseMachinimaScreen
             $messageText = empty($authors) ? $this->translate('empty_authors_list_message') : $this->translate('list_of_authors_message');
 
             if ($currentPanel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $currentPanel,
-                    'media' => ['type' => 'photo', 'media' => $visualsLinks[9], 'caption' => $messageText, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
+                try {
+                    $this->client->request('editMessageMedia', [
+                        'chat_id' => $chatId,
+                        'message_id' => $currentPanel,
+                        'media' => ['type' => 'photo', 'media' => $visualsLinks[9], 'caption' => $messageText, 'parse_mode' => 'HTML'],
+                        'reply_markup' => $keyboard
+                    ]);
+                } catch (\Throwable $e) {
+                    $this->client->sendPhoto($chatId, $visualsLinks[9], ['caption' => $messageText, 'parse_mode' => 'HTML', 'reply_markup' => $keyboard]);
+                }
             } else {
-                $this->client->sendPhoto($chatId, $visualsLinks[9], $messageText, null, $keyboard);
+                $this->client->sendPhoto($chatId, $visualsLinks[9], ['caption' => $messageText, 'parse_mode' => 'HTML', 'reply_markup' => $keyboard]);
             }
         }
     }
