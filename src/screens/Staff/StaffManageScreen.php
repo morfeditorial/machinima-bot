@@ -21,59 +21,62 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Staff;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class StaffManageScreen extends AbstractScreen
+class StaffManageScreen extends BaseMachinimaScreen
 {
-    private int $projectId;
-
-    public function setProjectId(int $projectId) : self
+    public function supports(array $update): bool
     {
-        $this->projectId = $projectId;
-        return $this;
+        $action = $update['callback_query']['data'] ?? '';
+        return str_starts_with($action, 'staff:manage');
     }
 
-    public function render() : void
+    public function handle(array $update): void
     {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+
         if (! $this->isGranted('creator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $content_service = $this->bot->getContainer()->get('content_service');
-        $staff = $content_service->getStaffByContentId($this->projectId);
+        $payload = $this->parsePayload($action);
+        $projectId = isset($payload['params'][0]) ? (int) $payload['params'][0] : 0;
+
+        $content_service = $this->container->get('content_service');
+        $staff = $content_service->getStaffByContentId($projectId);
 
         $keyboard = ['inline_keyboard' => []];
         foreach ($staff as $member) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => "❌ " . $member['author_name'] . " (" . $member['role'] . ")", 'callback_data' => $this->makePayload('staff', 'remove', 'confirm', $this->projectId, $member['author_id'], base64_encode($member['role']))],
+                ['text' => "❌ " . $member['author_name'] . " (" . $member['role'] . ")", 'callback_data' => $this->makePayload('staff', 'remove', 'confirm', (string)$projectId, (string)$member['author_id'], base64_encode($member['role']))],
             ];
         }
 
         $keyboard['inline_keyboard'][] = [
-            ['text' => $this->translate('add_staff_member'), 'callback_data' => $this->makePayload('staff', 'add', 'select_author', (string)$this->projectId)],
+            ['text' => $this->translate('add_staff_member'), 'callback_data' => $this->makePayload('staff', 'add', 'select_author', (string)$projectId)],
         ];
         $keyboard['inline_keyboard'][] = [
-            ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('project', 'view', (string)$this->projectId)],
+            ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('project', 'view', (string)$projectId)],
         ];
 
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        $current_panel = $user_service->getCurrentPanel($this->userId);
+        $current_panel = $this->getUserService()->getCurrentPanel($userId);
 
-        $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('manage_staff'), $keyboard);
-    }
-
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('manage' === $action) {
-            $this->projectId = isset($params[0]) ? (int) $params[0] : 0;
-            $this->render();
+        if ($current_panel) {
+            $this->client->request('editMessageMedia', [
+                'chat_id' => $chatId,
+                'message_id' => $current_panel,
+                'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('manage_staff'), 'parse_mode' => 'HTML'],
+                'reply_markup' => $keyboard
+            ]);
+        } else {
+            $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('manage_staff'), $keyboard);
         }
-    }
 
-    public function handleMessage(string $text) : void
-    {
-        // Not used
+        if (isset($update['callback_query']['id'])) {
+            $this->client->answerCallbackQuery($update['callback_query']['id']);
+        }
     }
 }
