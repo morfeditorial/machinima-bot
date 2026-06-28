@@ -8,10 +8,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Service\Attribute\Required;
 use Morfeditorial\TelegramBotBundle\Command\AbstractCommand as BundleAbstractCommand;
-use morfeditorial\services\AuthorService;
-use morfeditorial\services\RoleService;
-use morfeditorial\services\UserService;
-use morfeditorial\services\UserStateService;
+use morfeditorial\contracts\AuthorServiceInterface;
+use morfeditorial\contracts\RoleServiceInterface;
+use morfeditorial\contracts\UserServiceInterface;
+use morfeditorial\contracts\UserStateServiceInterface;
 
 abstract class BaseMachinimaCommand extends BundleAbstractCommand
 {
@@ -42,22 +42,22 @@ abstract class BaseMachinimaCommand extends BundleAbstractCommand
         return $this->getTranslator()->translate($key);
     }
 
-    public function getAuthorService(): AuthorService
+    public function getAuthorService(): AuthorServiceInterface
     {
         return $this->container->get('author_service');
     }
 
-    public function getUserService(): UserService
+    public function getUserService(): UserServiceInterface
     {
         return $this->container->get('user_service');
     }
 
-    public function getUserStateService(): UserStateService
+    public function getUserStateService(): UserStateServiceInterface
     {
         return $this->container->get('user_state_service');
     }
 
-    public function getRoleService(): RoleService
+    public function getRoleService(): RoleServiceInterface
     {
         return $this->container->get('role_service');
     }
