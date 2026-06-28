@@ -1,89 +1,71 @@
 <?php
 
-/*
- *
- *    _______   _______    _______   _______
- *   /       \\/       \\//       \//       \
- *  /        //        ///        //      __/
- * /         /         /        _/        _/
- * \__/__/__/\________/\____/___/\_______/
- *
- * This program is licensed under the CSSM Unlimited License v2.0.
- * Copyright (c) 2024 Serhii Cherneha
- *
- * @author CSSM Group
- * @link https://cssm.pp.ua/
- *
- *
- */
-
 declare(strict_types=1);
 
 namespace morfeditorial\services;
 
-use Doctrine\DBAL\Connection;
-use morfeditorial\storage\StorageInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Role;
+use App\Entity\User;
+use App\Entity\Author;
 
 class RoleService
 {
-    private Connection $db;
-
-    public function __construct(private StorageInterface $storage)
+    public function __construct(private EntityManagerInterface $em)
     {
-        $this->db = $storage->getConnection();
     }
 
     public function createRole(string $role_name) : bool
     {
-        return (bool) $this->db->executeStatement(
-            'INSERT INTO roles (role_name) VALUES (?)',
-            [$role_name]
-        );
+        $existing = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $role_name]);
+        if ($existing) {
+            return false;
+        }
+
+        $role = new Role();
+        $role->setRoleName($role_name);
+        $this->em->persist($role);
+        $this->em->flush();
+        return true;
     }
 
     public function addParentChild(string $parent_role_name, string $child_role_name) : bool
     {
-        $parent = $this->getRoleByName($parent_role_name);
-        $child = $this->getRoleByName($child_role_name);
+        $parent = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $parent_role_name]);
+        $child = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $child_role_name]);
 
         if (! $parent || ! $child) {
             return false;
         }
 
-        return (bool) $this->db->executeStatement(
-            'INSERT OR IGNORE INTO role_hierarchy (parent_role_id, child_role_id) VALUES (?, ?)',
-            [$parent['id'], $child['id']]
-        );
+        $parent->addChild($child);
+        $this->em->flush();
+        return true;
     }
 
     public function removeParentChild(string $parent_role_name, string $child_role_name) : bool
     {
-        $parent = $this->getRoleByName($parent_role_name);
-        $child = $this->getRoleByName($child_role_name);
+        $parent = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $parent_role_name]);
+        $child = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $child_role_name]);
 
         if (! $parent || ! $child) {
             return false;
         }
 
-        return (bool) $this->db->executeStatement(
-            'DELETE FROM role_hierarchy WHERE parent_role_id = ? AND child_role_id = ?',
-            [$parent['id'], $child['id']]
-        );
+        $parent->removeChild($child);
+        $this->em->flush();
+        return true;
     }
 
     public function getRoleHierarchy() : array
     {
-        $rows = $this->db->fetchAllAssociative('
-            SELECT p.role_name AS parent, c.role_name AS child
-            FROM role_hierarchy rh
-            JOIN roles p ON rh.parent_role_id = p.id
-            JOIN roles c ON rh.child_role_id = c.id
-        ');
-
+        $roles = $this->em->getRepository(Role::class)->findAll();
         $hierarchy = [];
 
-        foreach ($rows as $row) {
-            $hierarchy['ROLE_' . $row['parent']][] = 'ROLE_' . $row['child'];
+        foreach ($roles as $parent) {
+            foreach ($parent->getChildren() as $child) {
+                $hierarchy['ROLE_' . $parent->getRoleName()][] = 'ROLE_' . $child->getRoleName();
+            }
         }
 
         return $hierarchy;
@@ -91,61 +73,65 @@ class RoleService
 
     public function deleteRole(string $role_name) : bool
     {
-        $role = $this->getRoleByName($role_name);
-
+        $role = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $role_name]);
         if (! $role) {
             return false;
         }
 
-        $this->db->executeStatement(
-            'DELETE FROM role_hierarchy WHERE parent_role_id = ? OR child_role_id = ?',
-            [$role['id'], $role['id']]
-        );
+        // Remove from hierarchy (parents and children)
+        $allRoles = $this->em->getRepository(Role::class)->findAll();
+        foreach ($allRoles as $r) {
+            if ($r->getChildren()->contains($role)) {
+                $r->removeChild($role);
+            }
+        }
 
-        $this->db->executeStatement(
-            'DELETE FROM user_roles WHERE role_id = ?',
-            [$role['id']]
-        );
+        // Also users having this role
+        $users = $this->em->getRepository(User::class)->findAll();
+        foreach ($users as $user) {
+            if ($user->getUserRoles()->contains($role)) {
+                $user->removeRole($role);
+            }
+        }
 
-        return (bool) $this->db->executeStatement(
-            'DELETE FROM roles WHERE role_name = ?',
-            [$role_name]
-        );
+        $this->em->remove($role);
+        $this->em->flush();
+
+        return true;
     }
 
     public function assignRole(int $user_id, string $role_name) : string
     {
-        $role = $this->getRoleByName($role_name);
+        $role = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $role_name]);
         if (! $role) {
             return 'role_not_found';
         }
 
-        $exists = $this->db->fetchOne(
-            'SELECT COUNT(*) FROM user_roles WHERE user_id = ? AND role_id = ?',
-            [$user_id, $role['id']]
-        );
+        $user = $this->em->getRepository(User::class)->find($user_id);
+        if (! $user) {
+            $user = new User();
+            $user->setId($user_id);
+            $this->em->persist($user);
+        }
 
-        if ($exists > 0) {
+        if ($user->getUserRoles()->contains($role)) {
             return 'already_assigned';
         }
 
-        $this->db->executeStatement(
-            'INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)',
-            [$user_id, $role['id']]
-        );
-
-        // Auto-create author profile for any role that includes creator
+        $user->addRole($role);
+        
         if ($this->doesRoleInclude($role_name, 'creator')) {
-            $author_exists = $this->db->fetchOne('SELECT COUNT(*) FROM authors WHERE telegram_user_id = ?', [$user_id]);
-            if (0 == $author_exists) {
-                $author_name = 'Creator #' . $user_id;
-                $this->db->executeStatement(
-                    'INSERT INTO authors (name, state, telegram_user_id) VALUES (?, ?, ?)',
-                    [$author_name, 'private', $user_id]
-                );
+            $author = $this->em->getRepository(Author::class)->findOneBy(['telegramUserId' => $user_id]);
+            if (!$author) {
+                $author = new Author();
+                $author->setName('Creator #' . $user_id);
+                $author->setState('private');
+                $author->setTelegramUserId($user_id);
+                $this->em->persist($author);
             }
         }
 
+        $this->em->flush();
         return 'success';
     }
 
@@ -156,7 +142,7 @@ class RoleService
         }
 
         if (in_array($role_name, $visited, true)) {
-            return false; // Cycle protection
+            return false;
         }
         $visited[] = $role_name;
 
@@ -172,53 +158,53 @@ class RoleService
 
     public function removeUserRole(int $user_id, string $role_name) : bool
     {
-        $role = $this->getRoleByName($role_name);
-        if (! $role) {
+        $role = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $role_name]);
+        $user = $this->em->getRepository(User::class)->find($user_id);
+
+        if (! $role || ! $user) {
             return false;
         }
 
-        return (bool) $this->db->executeStatement(
-            'DELETE FROM user_roles WHERE user_id = ? AND role_id = ?',
-            [$user_id, $role['id']]
-        );
+        $user->removeRole($role);
+        $this->em->flush();
+        return true;
     }
 
     public function getUserRoleNames(int $user_id) : array
     {
-        $rows = $this->db->fetchAllAssociative('
-            SELECT r.role_name FROM user_roles ur
-            JOIN roles r ON ur.role_id = r.id
-            WHERE ur.user_id = ?
-        ', [$user_id]);
-
-        return array_map(fn (array $row) : string => $row['role_name'], $rows);
+        $user = $this->em->getRepository(User::class)->find($user_id);
+        if (!$user) {
+            return [];
+        }
+        return array_map(fn(Role $r) => $r->getRoleName(), $user->getUserRoles()->toArray());
     }
 
     public function getUsersCountByRole(string $role_name) : int
     {
-        return (int) $this->db->fetchOne('
-            SELECT COUNT(ur.user_id) AS user_count
-            FROM user_roles ur
-            JOIN roles r ON ur.role_id = r.id
-            WHERE r.role_name = ?
-        ', [$role_name]);
+        return count($this->getUsersByRole($role_name));
     }
 
     public function getUsersByRole(string $role_name) : array
     {
-        $rows = $this->db->fetchAll('
-            SELECT ur.user_id
-            FROM user_roles ur
-            JOIN roles r ON ur.role_id = r.id
-            WHERE r.role_name = ?
-        ', [$role_name]);
+        $role = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $role_name]);
+        if (!$role) {
+            return [];
+        }
 
-        return array_column($rows, 'user_id');
+        $users = $this->em->getRepository(User::class)->findAll();
+        $userIds = [];
+        foreach ($users as $user) {
+            if ($user->getUserRoles()->contains($role)) {
+                $userIds[] = $user->getId();
+            }
+        }
+        return $userIds;
     }
 
     public function getAllRoles() : array
     {
-        return $this->db->fetchAllAssociative('SELECT * FROM roles');
+        $roles = $this->em->getRepository(Role::class)->findAll();
+        return array_map(fn(Role $r) => ['id' => $r->getId(), 'role_name' => $r->getRoleName()], $roles);
     }
 
     public function getAllRolesSorted() : array
@@ -244,7 +230,7 @@ class RoleService
     private function calculateRoleDepth(string $role_name, array $visited = []) : int
     {
         if (in_array($role_name, $visited, true)) {
-            return 999; // Cycle protection
+            return 999;
         }
 
         $parents = $this->getParents($role_name);
@@ -263,46 +249,42 @@ class RoleService
 
     public function getRoleByName(string $role_name) : ?array
     {
-        $result = $this->db->fetchAssociative(
-            'SELECT * FROM roles WHERE role_name = ?',
-            [$role_name]
-        );
-
-        return false !== $result ? $result : null;
+        $role = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $role_name]);
+        if (!$role) {
+            return null;
+        }
+        return ['id' => $role->getId(), 'role_name' => $role->getRoleName()];
     }
 
     public function getRolesCount() : int
     {
-        return (int) $this->db->fetchOne('SELECT COUNT(*) FROM roles');
+        return $this->em->getRepository(Role::class)->count([]);
     }
 
     public function getChildren(string $role_name) : array
     {
-        $role = $this->getRoleByName($role_name);
-
+        $role = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $role_name]);
         if (! $role) {
             return [];
         }
 
-        return $this->db->fetchAllAssociative('
-            SELECT r.id, r.role_name FROM role_hierarchy rh
-            JOIN roles r ON rh.child_role_id = r.id
-            WHERE rh.parent_role_id = ?
-        ', [$role['id']]);
+        return array_map(fn(Role $r) => ['id' => $r->getId(), 'role_name' => $r->getRoleName()], $role->getChildren()->toArray());
     }
 
     public function getParents(string $role_name) : array
     {
-        $role = $this->getRoleByName($role_name);
-
-        if (! $role) {
+        $child = $this->em->getRepository(Role::class)->findOneBy(['roleName' => $role_name]);
+        if (! $child) {
             return [];
         }
 
-        return $this->db->fetchAllAssociative('
-            SELECT r.id, r.role_name FROM role_hierarchy rh
-            JOIN roles r ON rh.parent_role_id = r.id
-            WHERE rh.child_role_id = ?
-        ', [$role['id']]);
+        $allRoles = $this->em->getRepository(Role::class)->findAll();
+        $parents = [];
+        foreach ($allRoles as $r) {
+            if ($r->getChildren()->contains($child)) {
+                $parents[] = ['id' => $r->getId(), 'role_name' => $r->getRoleName()];
+            }
+        }
+        return $parents;
     }
 }
