@@ -40,110 +40,11 @@ class MyBot extends tgLib
 
     private ContainerInterface $container;
 
-    public function __construct($token)
+    public function __construct($token, ContainerInterface $container)
     {
         parent::__construct($token);
-
-        $translations = json_decode(file_get_contents(self::TRANSLATIONS_FILE), true);
-
-        $container_builder = new ContainerBuilder();
-
-        $container_builder->register('translator', Translator::class)
-            ->setArguments([$translations, 'en'])
-            ->setPublic(true);
-
-        $container_builder->register('fuzzy_search', FuzzySearch::class)
-            ->setAutowired(true)
-            ->setPublic(true);
-
-        $container_builder->register('storage', \morfeditorial\storage\DatabaseStorage::class)
-            ->setArgument('$connection_params', [
-                'driver' => $_ENV['DB_DRIVER'] ?? 'pdo_sqlite',
-                'path' => $_ENV['DB_PATH'] ?? self::DATABASE_FILE,
-                'host' => $_ENV['DB_HOST'] ?? null,
-                'port' => isset($_ENV['DB_PORT']) && '' !== $_ENV['DB_PORT'] ? (int) $_ENV['DB_PORT'] : null,
-                'dbname' => $_ENV['DB_NAME'] ?? null,
-                'user' => $_ENV['DB_USER'] ?? null,
-                'password' => $_ENV['DB_PASSWORD'] ?? null,
-            ])
-            ->setPublic(true);
-        $container_builder->setAlias(\morfeditorial\storage\StorageInterface::class, 'storage');
-
-        $container_builder->register('author_service', \morfeditorial\services\AuthorService::class)
-            ->setAutowired(true)
-            ->setPublic(true);
-        $container_builder->register('user_service', \morfeditorial\services\UserService::class)
-            ->setAutowired(true)
-            ->setPublic(true);
-        $container_builder->register('user_state_service', \morfeditorial\services\UserStateService::class)
-            ->setAutowired(true)
-            ->setPublic(true);
-        $container_builder->register('role_service', \morfeditorial\services\RoleService::class)
-            ->setAutowired(true)
-            ->setPublic(true);
-        $container_builder->setAlias(\morfeditorial\services\RoleService::class, 'role_service');
-
-        $container_builder->register('content_service', \morfeditorial\services\ContentService::class)
-            ->setAutowired(true)
-            ->setPublic(true);
-        $container_builder->setAlias(\morfeditorial\services\ContentService::class, 'content_service');
-
-        $container_builder->register('notification_service', \morfeditorial\services\NotificationService::class)
-            ->setAutowired(true)
-            ->setPublic(true);
-        $container_builder->setAlias(\morfeditorial\services\NotificationService::class, 'notification_service');
-
-        $container_builder->register('rating_service', \morfeditorial\services\RatingService::class)
-            ->setAutowired(true)
-            ->setPublic(true);
-        $container_builder->setAlias(\morfeditorial\services\RatingService::class, 'rating_service');
-
-        $container_builder->register('content_workflow_definition', \Symfony\Component\Workflow\Definition::class)
-            ->setFactory([self::class, 'createContentWorkflowDefinition']);
-
-        $container_builder->register('content_workflow', \Symfony\Component\Workflow\Workflow::class)
-            ->setArguments([
-                new Reference('content_workflow_definition'),
-                new \Symfony\Component\Workflow\MarkingStore\MethodMarkingStore(true, 'status'),
-            ])
-            ->setPublic(true);
-        $container_builder->setAlias(\Symfony\Component\Workflow\Workflow::class, 'content_workflow');
-
-        $container_builder->register('token_storage', \Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage::class)
-            ->setPublic(true);
-        $container_builder->register('role_hierarchy_voter', \morfeditorial\security\RoleHierarchyVoter::class)
-            ->setAutowired(true)
-            ->setPublic(true);
-        $container_builder->register('access_decision_manager', \Symfony\Component\Security\Core\Authorization\AccessDecisionManager::class)
-            ->setArgument('$voters', [new Reference('role_hierarchy_voter')])
-            ->setPublic(true);
-        $container_builder->register('authorization_checker', \Symfony\Component\Security\Core\Authorization\AuthorizationChecker::class)
-            ->setArguments([
-                new Reference('token_storage'),
-                new Reference('access_decision_manager'),
-            ])
-            ->setPublic(true);
-
-        $container_builder->register('visuals_links', \ArrayObject::class)
-            ->setArguments([[
-                'https://i.ibb.co/mC7sv0W/01.png', // WELCOME_TO_MORF
-                'https://i.ibb.co/ygqgFMV/02.png', // WELCOME_ADMIN_PANEL
-                'https://i.ibb.co/1KysC55/03.png', // NEW_MACHINIMATOR_ADDED
-                'https://i.ibb.co/64vFVfS/04.png', // AUTHOR_NAME_CHANGE
-                'https://i.ibb.co/TLDzmVf/05.png', // ADD_MACHINIMATOR_BIO
-                'https://i.ibb.co/85LB6PW/06.png', // EDIT_MACHINIMATOR_BIO
-                'https://i.ibb.co/fDbmdMM/07.png', // SUCCESSFUL_NAME_CHANGE
-                'https://i.ibb.co/tqMNGtX/08.png', // BIOGRAPHY_ADDED
-                'https://i.ibb.co/xF1QQXk/09.png', // BIOGRAPHY_EDITED
-                'https://i.ibb.co/LPYBSBX/10.png', // LIST_ALL_MACHINIMATORS
-                'https://i.ibb.co/Fn2HJJQ/11.png', // CREATE_NEW_MACHINIMATOR
-                'https://i.ibb.co/TYPWsLQ/12.png', // AUTHOR_INFO_MANAGEMENT
-            ]])
-            ->setPublic(true);
-
-        $container_builder->compile();
-
-        $this->container = $container_builder;
+        
+        $this->container = $container;
 
         $this->command_factory = new CommandFactory($this, $this->container);
         $this->initializeCommands();
