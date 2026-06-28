@@ -21,70 +21,89 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Project;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class ProjectEditScreen extends AbstractScreen
+class ProjectEditScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
-        if (!$this->isGranted('creator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
+        $action = $update['callback_query']['data'] ?? '';
+        if (strpos($action, 'project:edit') === 0) {
+            return true;
         }
 
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $content_service = $this->bot->getContainer()->get('content_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
-
-        $current_panel = $user_service->getCurrentPanel($this->userId);
-        $project_id = $this->data['project_id'] ?? 0;
-
-        $project = $content_service->getContentById($project_id);
-        if ($project) {
-            $keyboard = [
-                'inline_keyboard' => [
-                    [
-                        ['text' => $this->translate('edit_title'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'title')],
-                        ['text' => $this->translate('edit_type'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'type')],
-                    ],
-                    [
-                        ['text' => $this->translate('edit_description'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'description')],
-                        ['text' => $this->translate('edit_url'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'url')],
-                    ],
-                    [
-                        ['text' => $this->translate('edit_cover'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'cover')],
-                    ],
-                    [
-                        ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('project', 'view', (string)$project_id)],
-                    ],
-                ],
-            ];
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $project['cover_file_id'] ?? $visuals_links[1], $this->translate('edit_project'), $keyboard);
+        $userId = $update['message']['from']['id'] ?? 0;
+        if ($userId) {
+            $state = $this->getUserStateService()->getState($userId, 'editing_project_field');
+            if ($state) {
+                return true;
+            }
         }
+
+        return false;
     }
 
-    public function handleCallback(string $action, array $params) : void
+    public function handle(array $update): void
     {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        $text = $update['message']['text'] ?? '';
+        $message_id = $update['message']['message_id'] ?? null;
+        $photo = $update['message']['photo'] ?? null;
+        $callbackQueryId = $update['callback_query']['id'] ?? '';
+
         if (!$this->isGranted('creator')) {
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $user_state_service = $this->bot->getContainer()->get('user_state_service');
-        $content_service = $this->bot->getContainer()->get('content_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
+        $user_service = $this->getUserService();
+        $user_state_service = $this->getUserStateService();
+        $content_service = $this->container->get('content_service');
+        $visuals_links = $this->getVisualsLinks();
+        $current_panel = $user_service->getCurrentPanel($userId);
 
-        $current_panel = $user_service->getCurrentPanel($this->userId);
-
-        if ('edit' === $action) {
-            $project_id = isset($params[0]) ? (int)$params[0] : 0;
-            $sub_action = isset($params[1]) ? $params[1] : null;
+        if (strpos($action, 'project:edit') === 0) {
+            $parsed = $this->parsePayload($action);
+            $project_id = isset($parsed['params'][0]) ? (int)$parsed['params'][0] : 0;
+            $sub_action = isset($parsed['params'][1]) ? $parsed['params'][1] : null;
 
             if (null === $sub_action) {
-                $this->data['project_id'] = $project_id;
-                $this->render();
+                $project = $content_service->getContentById($project_id);
+                if ($project) {
+                    $keyboard = [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => $this->translate('edit_title'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'title')],
+                                ['text' => $this->translate('edit_type'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'type')],
+                            ],
+                            [
+                                ['text' => $this->translate('edit_description'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'description')],
+                                ['text' => $this->translate('edit_url'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'url')],
+                            ],
+                            [
+                                ['text' => $this->translate('edit_cover'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id, 'field', 'cover')],
+                            ],
+                            [
+                                ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('project', 'view', (string)$project_id)],
+                            ],
+                        ],
+                    ];
+                    $cover = $project['cover_file_id'] ?: $visuals_links[1];
+                    if ($current_panel) {
+                        $this->client->request('editMessageMedia', [
+                            'chat_id' => $chatId,
+                            'message_id' => $current_panel,
+                            'media' => ['type' => 'photo', 'media' => $cover, 'caption' => $this->translate('edit_project'), 'parse_mode' => 'HTML'],
+                            'reply_markup' => $keyboard
+                        ]);
+                    } else {
+                        $this->client->sendPhoto($chatId, $cover, $this->translate('edit_project'), null, null, null, false, $keyboard);
+                    }
+                }
             } elseif ('field' === $sub_action) {
-                $field = $params[2] ?? '';
+                $field = $parsed['params'][2] ?? '';
                 if ('type' === $field) {
                     $keyboard = [
                         'inline_keyboard' => [
@@ -100,9 +119,18 @@ class ProjectEditScreen extends AbstractScreen
                             ],
                         ],
                     ];
-                    $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('select_project_type_message'), $keyboard);
+                    if ($current_panel) {
+                        $this->client->request('editMessageMedia', [
+                            'chat_id' => $chatId,
+                            'message_id' => $current_panel,
+                            'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('select_project_type_message'), 'parse_mode' => 'HTML'],
+                            'reply_markup' => $keyboard
+                        ]);
+                    } else {
+                        $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate('select_project_type_message'), null, null, null, false, $keyboard);
+                    }
                 } else {
-                    $user_state_service->setState($this->userId, ['project_id' => $project_id, 'field' => $field], 'editing_project_field');
+                    $user_state_service->setState($userId, ['project_id' => $project_id, 'field' => $field], 'editing_project_field');
                     $msg_key = 'cover' === $field ? 'upload_project_cover_message' : 'enter_new_value_message';
                     $keyboard = [
                         'inline_keyboard' => [
@@ -111,52 +139,59 @@ class ProjectEditScreen extends AbstractScreen
                             ],
                         ],
                     ];
-                    $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate($msg_key), $keyboard);
+                    if ($current_panel) {
+                        $this->client->request('editMessageMedia', [
+                            'chat_id' => $chatId,
+                            'message_id' => $current_panel,
+                            'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate($msg_key), 'parse_mode' => 'HTML'],
+                            'reply_markup' => $keyboard
+                        ]);
+                    } else {
+                        $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate($msg_key), null, null, null, false, $keyboard);
+                    }
                 }
             } elseif ('set_type' === $sub_action) {
-                $type = $params[2] ?? '';
+                $type = $parsed['params'][2] ?? '';
                 $content_service->updateContent($project_id, ['type' => $type]);
-                $this->bot->callbackAnswer($this->data['callback_query_id'] ?? '', $this->translate('project_updated_message'));
+                if ($callbackQueryId) {
+                    $this->client->request('answerCallbackQuery', [
+                        'callback_query_id' => $callbackQueryId,
+                        'text' => $this->translate('project_updated_message')
+                    ]);
+                }
 
-                $this->data['project_id'] = $project_id;
-                $this->render();
+                $updateCopy = $update;
+                $updateCopy['callback_query']['data'] = $this->makePayload('project', 'edit', (string)$project_id);
+                $this->handle($updateCopy);
             }
-        }
-    }
-
-    public function handleMessage(string $text) : void
-    {
-        if (!$this->isGranted('creator')) {
-            return;
-        }
-
-        $user_state_service = $this->bot->getContainer()->get('user_state_service');
-        $content_service = $this->bot->getContainer()->get('content_service');
-
-        $message_id = $this->data['message_id'] ?? null;
-
-        if ($state_data = $user_state_service->getState($this->userId, 'editing_project_field')) {
-            $this->bot->deleteMessage($this->chatId, $message_id);
-            $user_state_service->clearState($this->userId, 'editing_project_field');
+        } elseif ($state_data = $user_state_service->getState($userId, 'editing_project_field')) {
+            if ($message_id) {
+                $this->client->request('deleteMessage', ['chat_id' => $chatId, 'message_id' => $message_id]);
+            }
+            $user_state_service->clearState($userId, 'editing_project_field');
 
             $project_id = $state_data['project_id'];
             $field = $state_data['field'];
             $value = $text;
 
             if ('cover' === $field) {
-                $photo = $this->data['photo'] ?? null;
                 if ($photo) {
                     $value = end($photo)['file_id'];
                 } else {
-                    return; // Ignore if no photo is sent when expecting one
+                    return; // Ignore if no photo is sent
                 }
             }
 
             $content_service->updateContent($project_id, [$field => $value]);
-            $this->bot->sendMessage($this->chatId, $this->translate('project_updated_message'));
+            $this->client->sendMessage($chatId, $this->translate('project_updated_message'));
 
-            $this->data['project_id'] = $project_id;
-            $this->render();
+            $updateCopy = $update;
+            $updateCopy['callback_query'] = [
+                'data' => $this->makePayload('project', 'edit', (string)$project_id),
+                'message' => ['chat' => ['id' => $chatId]],
+                'from' => ['id' => $userId]
+            ];
+            $this->handle($updateCopy);
         }
     }
 }
