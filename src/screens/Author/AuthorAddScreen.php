@@ -21,97 +21,124 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Author;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class AuthorAddScreen extends AbstractScreen
+class AuthorAddScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
-        if (!$this->isGranted('moderator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
+        $action = $update['callback_query']['data'] ?? '';
+        $payload = $this->parsePayload($action);
+        if ($payload['domain'] === 'author' && $payload['action'] === 'add') {
+            return true;
         }
 
-        $this->bot->getUserStateService()->setState($this->userId, 'awaiting_author_name_creation');
-        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
-        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $state = $this->getUserStateService()->getState($userId);
+        if (isset($update['message']) && $state === 'awaiting_author_name_creation') {
+            return true;
+        }
 
-        $keyboard = [
-            'inline_keyboard' => [
-                [
-                    ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
-                ],
-            ],
-        ];
-
-        $this->bot->editMediaMessage(
-            $this->chatId,
-            $currentPanel,
-            $visualsLinks[10],
-            $this->translate('add_author_message'),
-            $keyboard
-        );
+        return false;
     }
 
-    public function handleCallback(string $action, array $params) : void
+    public function handle(array $update): void
     {
-        if ('add' === $action) {
-            $this->render();
-        }
-    }
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        $text = $update['message']['text'] ?? '';
 
-    public function handleMessage(string $text) : void
-    {
-        if (!$this->isGranted('moderator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
-        }
+        $payload = $this->parsePayload($action);
 
-        $messageId = $this->data['message_id'];
-        $this->bot->deleteMessage($this->chatId, $messageId);
+        if ($payload['domain'] === 'author' && $payload['action'] === 'add') {
+            if (!$this->isGranted('moderator')) {
+                $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+                return;
+            }
 
-        $userStateService = $this->bot->getUserStateService();
-        $userStateService->clearState($this->userId, 'default');
+            $this->getUserStateService()->setState($userId, 'awaiting_author_name_creation');
+            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
+            $visualsLinks = $this->getVisualsLinks();
 
-        $authorService = $this->bot->getContainer()->get('author_service');
-        $authorId = $authorService->createAuthor($text);
-        $authorStatus = $authorService->isPrivate($authorId);
-
-        $keyboard = [
-            'inline_keyboard' => [
-                [
-                    ['text' => $this->translate('change_name'), 'callback_data' => 'author:change_name:' . $authorId],
-                    ['text' => ($authorStatus ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'author:set_private:' . $authorId],
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
+                    ],
                 ],
-                [
-                    ['text' => $this->translate('add_bio'), 'callback_data' => 'author:set_about:' . $authorId],
-                    ['text' => $this->translate('add_link'), 'callback_data' => 'author:add_link:' . $authorId],
-                ],
-            ],
-        ];
-
-        if ($this->isGranted('admin')) {
-            $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('link_telegram'), 'callback_data' => 'author:link_telegram:' . $authorId],
             ];
+
+            if ($currentPanel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $currentPanel,
+                    'media' => ['type' => 'photo', 'media' => $visualsLinks[10], 'caption' => $this->translate('add_author_message'), 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visualsLinks[10], $this->translate('add_author_message'), null, $keyboard);
+            }
+            return;
         }
 
-        $keyboard['inline_keyboard'][] = [
-            ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
-        ];
-        $keyboard['inline_keyboard'][] = [
-            ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
-        ];
+        if (isset($update['message'])) {
+            if (!$this->isGranted('moderator')) {
+                $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+                return;
+            }
 
-        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
-        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+            $messageId = $update['message']['message_id'] ?? 0;
+            if ($messageId) {
+                $this->client->deleteMessage($chatId, $messageId);
+            }
 
-        $this->bot->editMediaMessage(
-            $this->chatId,
-            $currentPanel,
-            $visualsLinks[2],
-            str_replace('{author}', htmlspecialchars($text), $this->translate('author_added_message')),
-            $keyboard
-        );
+            $userStateService = $this->getUserStateService();
+            $userStateService->clearState($userId, 'default');
+
+            $authorService = $this->getAuthorService();
+            $authorId = $authorService->createAuthor($text);
+            $authorStatus = $authorService->isPrivate($authorId);
+
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('change_name'), 'callback_data' => 'author:change_name:' . $authorId],
+                        ['text' => ($authorStatus ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'author:set_private:' . $authorId],
+                    ],
+                    [
+                        ['text' => $this->translate('add_bio'), 'callback_data' => 'author:set_about:' . $authorId],
+                        ['text' => $this->translate('add_link'), 'callback_data' => 'author:add_link:' . $authorId],
+                    ],
+                ],
+            ];
+
+            if ($this->isGranted('admin')) {
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('link_telegram'), 'callback_data' => 'author:link_telegram:' . $authorId],
+                ];
+            }
+
+            $keyboard['inline_keyboard'][] = [
+                ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
+            ];
+            $keyboard['inline_keyboard'][] = [
+                ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
+            ];
+
+            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
+            $visualsLinks = $this->getVisualsLinks();
+
+            if ($currentPanel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $currentPanel,
+                    'media' => ['type' => 'photo', 'media' => $visualsLinks[2], 'caption' => str_replace('{author}', htmlspecialchars($text), $this->translate('author_added_message')), 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visualsLinks[2], str_replace('{author}', htmlspecialchars($text), $this->translate('author_added_message')), null, $keyboard);
+            }
+        }
     }
 }
