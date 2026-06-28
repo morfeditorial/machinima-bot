@@ -52,7 +52,7 @@ abstract class AbstractCommand implements CommandInterface
 
     public function getTranslator()
     {
-        return $this->container->get('translator');
+        return $this->container->get('bot_translator');
     }
 
     public function translate(string $key)

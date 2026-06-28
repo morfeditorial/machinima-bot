@@ -78,7 +78,7 @@ class MyBot extends tgLib
             $this->setupUserToken($message_data['user_id']);
         }
 
-        $this->container->get('translator')->setUserLocale($message_data['language_code'] ?? 'en');
+        $this->container->get('bot_translator')->setUserLocale($message_data['language_code'] ?? 'en');
 
         if (null !== $message || null !== $photo) {
             $this->processMessage($message_data, $message);
@@ -247,6 +247,6 @@ class MyBot extends tgLib
 
     public function translate(string $key)
     {
-        return $this->container->get('translator')->translate($key);
+        return $this->container->get('bot_translator')->translate($key);
     }
 }

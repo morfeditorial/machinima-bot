@@ -74,7 +74,7 @@ class StaffAddScreen extends AbstractScreen
         } else {
             // Select author
             $keyboard = \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
-                $this->bot->getContainer()->get('translator'),
+                $this->bot->getContainer()->get('bot_translator'),
                 $this->bot->getContainer()->get('author_service'),
                 $this->page,
                 3,

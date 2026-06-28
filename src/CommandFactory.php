@@ -46,7 +46,7 @@ class CommandFactory
 
     public function initializeCommands() : void
     {
-        $translator = $this->container->get('translator');
+        $translator = $this->container->get('bot_translator');
 
         foreach ($translator->getAvailableLocales() as $locale) {
             $commands = [];

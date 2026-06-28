@@ -35,7 +35,7 @@ class AuthorListScreen extends AbstractScreen
         $visualsLinks = $this->bot->getContainer()->get('visuals_links');
 
         $keyboard = \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
-            $this->bot->getContainer()->get('translator'),
+            $this->bot->getContainer()->get('bot_translator'),
             $this->bot->getContainer()->get('author_service'),
             $page,
             3,

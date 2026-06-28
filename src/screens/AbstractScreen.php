@@ -44,7 +44,7 @@ abstract class AbstractScreen implements ScreenInterface
      */
     protected function translate(string $key, array $params = []) : string
     {
-        return $this->bot->getContainer()->get('translator')->translate($key, $params);
+        return $this->bot->getContainer()->get('bot_translator')->translate($key, $params);
     }
 
     /**
