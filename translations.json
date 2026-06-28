@@ -24,40 +24,10 @@
         "uk": "Видалити роль"
     },
     "delete_role_usage_message": {
-        "en": "Usage: \/delete_role &lt;role_name&gt;",
-        "pl": "Użycie: \/delete_role &lt;nazwa_roli&gt;",
-        "be": "Выкарыстанне: \/delete_role &lt;назва_ролі&gt;",
-        "uk": "Використання: \/delete_role &lt;назва_ролі&gt;"
-    },
-    "search_content_command_description": {
-        "en": "Find content by tag",
-        "pl": "Znajdź zawartość według tagu",
-        "be": "Знайдзіце кантэнт па тэгу",
-        "uk": "Знайти контент за тегами"
-    },
-    "search_author_command_description": {
-        "en": "Find information about the author",
-        "pl": "Znajdź informacje o autorze",
-        "be": "Знайдзіце звесткі пра аўтара",
-        "uk": "Знайти інформацію про автора"
-    },
-    "categories_command_description": {
-        "en": "View available categories",
-        "pl": "Zobacz dostępne kategorie",
-        "be": "Прагляд даступных катэгорый",
-        "uk": "Переглянути доступні категорії"
-    },
-    "top_authors_command_description": {
-        "en": "View the most popular authors",
-        "pl": "Zobacz najpopularniejszych autorów",
-        "be": "Прагляд самых папулярных аўтараў",
-        "uk": "Переглянути найпопулярніших авторів"
-    },
-    "random_content_command_description": {
-        "en": "Get random content",
-        "pl": "Zdobądź losową zawartość",
-        "be": "Атрымаць выпадковы кантэнт",
-        "uk": "Отримати випадковий контент"
+        "en": "Usage: /delete_role &lt;role_name&gt;",
+        "pl": "Użycie: /delete_role &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: /delete_role &lt;назва_ролі&gt;",
+        "uk": "Використання: /delete_role &lt;назва_ролі&gt;"
     },
     "create_role_command_description": {
         "en": "Create a new role",
@@ -78,34 +48,16 @@
         "uk": "Забрати роль у користувача"
     },
     "welcome_message": {
-        "en": "Hello, I'm Pai! 👋🏻\n\nMy mission is to centralize Ukrainian machinimators. We now have our own convenient app! Open it via the bot menu to find interesting projects, short films, and series based on <b>Minecraft<\/b>.\n\n📚 Send \/help if you have any questions.",
-        "pl": "Cześć, jestem Pai! 👋🏻\n\nMoje zadanie to scentralizować ukraińskich machinimatorów. Mamy teraz własną wygodną aplikację! Otwórz ją przez menu bota, aby znaleźć interesujące projekty oparte na <b>Minecraft<\/b>.\n\n📚 Wyślij \/help w razie pytań.",
-        "be": "Прывітанне, я Пай! 👋🏻\n\nМая мэта — цэнтралізаваць украінскіх машыніматараў. Цяпер у нас ёсць уласная зручная праграма! Адкрыйце яе праз меню бота, каб знайсці цікавыя праекты на аснове <b>Minecraft<\/b>.\n\n📚 Калі ў вас ёсць пытанні, дашліце \/help.",
-        "uk": "Привіт, я чат-бот на ім’я Пай! 👋🏻\n\nМоє покликання — централізувати українських машиніматорів в одному списку. Відтепер ми маємо власний зручний додаток! Відкрийте його через меню бота, щоб знаходити цікаві проєкти, короткометражні фільми і серіали, зняті на основі <b>Minecraft<\/b>.\n\n📚 Якщо у вас виникли питання, введіть команду \/help"
+        "en": "Hello, I'm Pai! 👋🏻\n\nMy mission is to centralize Ukrainian machinimators. We now have our own convenient app! Open it via the bot menu to find interesting projects, short films, and series based on <b>Minecraft</b>.\n\n📚 Send /help if you have any questions.",
+        "pl": "Cześć, jestem Pai! 👋🏻\n\nMoje zadanie to scentralizować ukraińskich machinimatorów. Mamy teraz własną wygodną aplikację! Otwórz ją przez menu bota, aby znaleźć interesujące projekty oparte na <b>Minecraft</b>.\n\n📚 Wyślij /help w razie pytań.",
+        "be": "Прывітанне, я Пай! 👋🏻\n\nМая мэта — цэнтралізаваць украінскіх машыніматараў. Цяпер у нас ёсць уласная зручная праграма! Адкрыйце яе праз меню бота, каб знайсці цікавыя праекты на аснове <b>Minecraft</b>.\n\n📚 Калі ў вас ёсць пытанні, дашліце /help.",
+        "uk": "Привіт, я чат-бот на ім’я Пай! 👋🏻\n\nМоє покликання — централізувати українських машиніматорів в одному списку. Відтепер ми маємо власний зручний додаток! Відкрийте його через меню бота, щоб знаходити цікаві проєкти, короткометражні фільми і серіали, зняті на основі <b>Minecraft</b>.\n\n📚 Якщо у вас виникли питання, введіть команду /help"
     },
     "help_message": {
-        "en": "🌟 All bot features have been moved to the Mini App!\n\nJust click the Menu button (or 'Open App') to access the news feed, search, and categories.\n\nIf you are an administrator, use the \/admin_panel command to manage content.",
-        "pl": "🌟 Wszystkie funkcje bota zostały przeniesione do aplikacji!\n\nPo prostu kliknij przycisk Menu, aby uzyskać dostęp do kanału aktualności, wyszukiwania i kategorii.\n\nJeśli jesteś administratorem, użyj polecenia \/admin_panel.",
-        "be": "🌟 Усе функцыі бота перанесены ў міні-праграму!\n\nПроста націсніце кнопку Меню (або 'Адкрыць праграму'), каб атрымаць доступ да стужкі навін, пошуку і катэгорый.\n\nКалі вы адміністратар, выкарыстоўвайце каманду \/admin_panel.",
-        "uk": "🌟 Весь функціонал бота тепер перенесено у мінідодаток (Mini App)!\n\nПросто натисніть на кнопку «Меню» (або «Відкрити додаток») у лівому нижньому куті, щоб отримати доступ до стрічки новин, пошуку та категорій.\n\nЯкщо ви адміністратор, використовуйте команду \/admin_panel для керування контентом."
-    },
-    "search_author_usage_message": {
-        "en": "Usage: \/search_author &lt;query&gt;",
-        "pl": "Użycie: \/search_author &lt;zapytanie&gt;",
-        "be": "Выкарыстанне: \/search_author &lt;запыт&gt;",
-        "uk": "Використання: \/search_author &lt;запит&gt;"
-    },
-    "no_search_results_message": {
-        "en": "📑 I found nothing for the search query «<code>{searchQuery}<\/code>». Try again, changing your query.",
-        "pl": "📑 Nie znalazłem niczego dla zapytania «<code>{searchQuery}<\/code>». Spróbuj ponownie, zmieniając zapytanie.",
-        "be": "📑 Нічога не знойдзена па запыце «<code>{searchQuery}<\/code>». Паспрабуйце яшчэ раз, змяняючы запыт.",
-        "uk": "📑 За пошуковим запитом «<code>{searchQuery}<\/code>» я нічого не знайшов. Спробуй ще раз, змінивши запит."
-    },
-    "search_author_message": {
-        "en": "📑 I found several authors ({count}) for your query: «<code>{searchQuery}<\/code>». You can review them by pressing the buttons below:",
-        "pl": "📑 Znalazłem kilku autorów ({count}) dla twojego zapytania: «<code>{searchQuery}<\/code>». Możesz je przejrzeć, naciskając przyciski poniżej:",
-        "be": "📑 Знойдзена некалькі аўтараў ({count}) па вашым запыце: «<code>{searchQuery}<\/code>». Вы можаце праглядзець іх, націскаючы кнопкі ніжэй:",
-        "uk": "📑 Я знайшов кілька авторів ({count}) за твоїм запитом: «<code>{searchQuery}<\/code>». Ти можеш оглянути їх, натискаючи кнопки знизу:"
+        "en": "🌟 All bot features have been moved to the Mini App!\n\nJust click the Menu button (or 'Open App') to access the news feed, search, and categories.\n\nIf you are an administrator, use the /admin_panel command to manage content.",
+        "pl": "🌟 Wszystkie funkcje bota zostały przeniesione do aplikacji!\n\nPo prostu kliknij przycisk Menu, aby uzyskać dostęp do kanału aktualności, wyszukiwania i kategorii.\n\nJeśli jesteś administratorem, użyj polecenia /admin_panel.",
+        "be": "🌟 Усе функцыі бота перанесены ў міні-праграму!\n\nПроста націсніце кнопку Меню (або 'Адкрыць праграму'), каб атрымаць доступ да стужкі навін, пошуку і катэгорый.\n\nКалі вы адміністратар, выкарыстоўвайце каманду /admin_panel.",
+        "uk": "🌟 Весь функціонал бота тепер перенесено у мінідодаток (Mini App)!\n\nПросто натисніть на кнопку «Меню» (або «Відкрити додаток») у лівому нижньому куті, щоб отримати доступ до стрічки новин, пошуку та категорій.\n\nЯкщо ви адміністратор, використовуйте команду /admin_panel для керування контентом."
     },
     "bot_name": {
         "en": "Morf — centralized chatbot",
@@ -672,10 +624,10 @@
         "uk": "Роль з назвою «{roleName}» вже існує. Виберіть іншу назву."
     },
     "create_role_usage_message": {
-        "en": "Usage: \/create_role &lt;role_name&gt;",
-        "pl": "Użycie: \/create_role &lt;nazwa_roli&gt;",
-        "be": "Выкарыстанне: \/create_role &lt;назва_ролі&gt;",
-        "uk": "Використання: \/create_role &lt;назва_ролі&gt;"
+        "en": "Usage: /create_role &lt;role_name&gt;",
+        "pl": "Użycie: /create_role &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: /create_role &lt;назва_ролі&gt;",
+        "uk": "Використання: /create_role &lt;назва_ролі&gt;"
     },
     "delete_role": {
         "en": "Delete role",
@@ -720,16 +672,16 @@
         "uk": "Ролі «{roleName}» не знайдено."
     },
     "assign_role_usage_message": {
-        "en": "Usage: \/assign_role &lt;user_id&gt; &lt;role_name&gt;",
-        "pl": "Użycie: \/assign_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
-        "be": "Выкарыстанне: \/assign_role &lt;user_id&gt; &lt;назва_ролі&gt;",
-        "uk": "Використання: \/assign_role &lt;user_id&gt; &lt;назва_ролі&gt;"
+        "en": "Usage: /assign_role &lt;user_id&gt; &lt;role_name&gt;",
+        "pl": "Użycie: /assign_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: /assign_role &lt;user_id&gt; &lt;назва_ролі&gt;",
+        "uk": "Використання: /assign_role &lt;user_id&gt; &lt;назва_ролі&gt;"
     },
     "remove_role_usage_message": {
-        "en": "Usage: \/remove_role &lt;user_id&gt; &lt;role_name&gt;",
-        "pl": "Użycie: \/remove_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
-        "be": "Выкарыстанне: \/remove_role &lt;user_id&gt; &lt;назва_ролі&gt;",
-        "uk": "Використання: \/remove_role &lt;user_id&gt; &lt;назва_ролі&gt;"
+        "en": "Usage: /remove_role &lt;user_id&gt; &lt;role_name&gt;",
+        "pl": "Użycie: /remove_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: /remove_role &lt;user_id&gt; &lt;назва_ролі&gt;",
+        "uk": "Використання: /remove_role &lt;user_id&gt; &lt;назва_ролі&gt;"
     },
     "remove_role_message": {
         "en": "Role «{roleName}» was successfully removed from user {userId}.",
@@ -940,24 +892,6 @@
         "pl": "Otwórz menu główne",
         "be": "Адкрыць галоўнае меню",
         "uk": "Відкрити головне меню"
-    },
-    "authors": {
-        "en": "Authors",
-        "pl": "Autorzy",
-        "be": "Аўтары",
-        "uk": "Автори"
-    },
-    "projects": {
-        "en": "Projects",
-        "pl": "Projekty",
-        "be": "Праекты",
-        "uk": "Проєкти"
-    },
-    "settings": {
-        "en": "Settings",
-        "pl": "Ustawienia",
-        "be": "Налады",
-        "uk": "Налаштування"
     },
     "admin_panel": {
         "en": "Admin Panel",
