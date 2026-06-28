@@ -364,7 +364,7 @@ class MyBot extends tgLib
     }
 
 
-    private function translate(string $key)
+    public function translate(string $key)
     {
         return $this->container->get('translator')->translate($key);
     }

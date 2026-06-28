@@ -174,8 +174,8 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($bot, $co
                     $notifiedUsers = []; // Track who we notified to avoid double notifications
                     
                     $sendTgMsg = function($targetId, $msgStr) use ($browser, $bot, $botToken) {
-                        $header = $bot->translate('bot_notification_header', $targetId);
-                        $footer = $bot->translate('bot_notification_footer', $targetId);
+                        $header = $bot->translate('bot_notification_header');
+                        $footer = $bot->translate('bot_notification_footer');
                         
                         $browser->post("https://api.telegram.org/bot{$botToken}/sendMessage", [
                             'Content-Type' => 'application/json'
@@ -193,7 +193,7 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($bot, $co
                             $targetUserId = (int) $parentComment['user_id'];
                             if ($targetUserId !== (int) $body['user_id']) {
                                 $shortText = mb_substr($body['text'], 0, 50) . (mb_strlen($body['text']) > 50 ? '...' : '');
-                                $notifMsgTpl = $bot->translate('bot_comment_reply', $targetUserId);
+                                $notifMsgTpl = $bot->translate('bot_comment_reply');
                                 $notifMsgStr = str_replace(['{shortText}', '{projectId}', '{commentId}'], [$shortText, $projectId, $commentId], $notifMsgTpl);
                                 
                                 $notif = $notificationService->notify($targetUserId, 'new_comment', $projectId, "Відповідь на ваш коментар: {$shortText}");
@@ -221,7 +221,7 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($bot, $co
                                     if ($targetUserId !== (int) $body['user_id'] && !in_array($targetUserId, $notifiedUsers, true)) {
                                         $shortText = mb_substr($body['text'], 0, 50) . (mb_strlen($body['text']) > 50 ? '...' : '');
                                         
-                                        $notifMsgTpl = $bot->translate('bot_new_comment', $targetUserId);
+                                        $notifMsgTpl = $bot->translate('bot_new_comment');
                                         $notifMsgStr = str_replace(['{shortText}', '{projectId}', '{commentId}'], [$shortText, $projectId, $commentId], $notifMsgTpl);
                                         
                                         $notif = $notificationService->notify($targetUserId, 'new_comment', $projectId, "Новий коментар до вашого проєкту: {$shortText}");
