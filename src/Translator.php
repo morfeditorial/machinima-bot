@@ -30,12 +30,12 @@ class Translator
     /**
      * Constructor to initialize translations and user locale.
      *
-     * @param array  $translations An associative array of translations.
      * @param string $user_locale  The locale to be used for translations.
      */
-    public function __construct(array $translations, string $user_locale)
+    public function __construct(string $user_locale = 'en')
     {
-        $this->translations = $translations;
+        $path = __DIR__ . '/../translations.json';
+        $this->translations = file_exists($path) ? json_decode(file_get_contents($path), true) : [];
         $this->user_locale = $user_locale;
     }
 
