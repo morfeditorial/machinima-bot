@@ -3,7 +3,7 @@
 /*
  *
  *    _______   _______    _______   _______
- *   /       \\/       \\//       \//       \
+ *   /       \/       \//       \//       \
  *  /        //        ///        //      __/
  * /         /         /        _/        _/
  * \__/__/__/\________/\____/___/\_______/
@@ -21,25 +21,102 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Role;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class RoleUserManageScreen extends AbstractScreen
+class RoleUserManageScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
+        $action = $update['callback_query']['data'] ?? '';
+        if (str_starts_with($action, 'role:user')) {
+            return true;
+        }
+
+        $userId = $update['message']['from']['id'] ?? 0;
+        if ($userId) {
+            $state = $this->getUserStateService()->getState($userId, 'awaiting_user_id_for_management');
+            if ($state) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function handle(array $update): void
+    {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        $text = $update['message']['text'] ?? '';
+
         if (! $this->isGranted('admin')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        $current_panel = $user_service->getCurrentPanel($this->userId);
+        $role_service = $this->getRoleService();
+        $user_service = $this->getUserService();
+        $user_state_service = $this->getUserStateService();
+        $visuals_links = $this->getVisualsLinks();
+        $current_panel = $user_service->getCurrentPanel($userId);
 
-        $action = $this->data['action'] ?? 'ask_user';
-        $targetUserId = (int) ($this->data['target_user_id'] ?? 0);
+        $parsed = $this->parsePayload($action);
+        
+        $internalAction = '';
+        $targetUserId = 0;
+        
+        if ($action && str_starts_with($action, 'role:user')) {
+            $subAction = $parsed['params'][0] ?? 'ask_user';
+            $targetUserId = (int) ($parsed['params'][1] ?? 0);
+            $roleName = $parsed['params'][2] ?? '';
 
-        if ('ask_user' === $action) {
+            if ('ask_user' === $subAction) {
+                $user_state_service->setState($userId, ['active' => true], 'awaiting_user_id_for_management');
+                $internalAction = 'ask_user';
+            } elseif ('do_add' === $subAction) {
+                $result = $role_service->assignRole($targetUserId, $roleName);
+                if ('success' === $result) {
+                    $this->client->sendMessage($chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($roleName), (string)$targetUserId], $this->translate('assign_role_message')));
+                } else {
+                    $this->client->sendMessage($chatId, $this->translate('role_assignment_failure_message'));
+                }
+                $internalAction = 'detail';
+            } elseif ('do_remove' === $subAction) {
+                $result = $role_service->removeUserRole($targetUserId, $roleName);
+                if ($result) {
+                    $this->client->sendMessage($chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($roleName), (string)$targetUserId], $this->translate('remove_role_message')));
+                } else {
+                    $this->client->sendMessage($chatId, $this->translate('remove_role_failed_message'));
+                }
+                $internalAction = 'detail';
+            } else {
+                $internalAction = $subAction;
+            }
+        } elseif ($text) {
+            $state_data = $user_state_service->getState($userId, 'awaiting_user_id_for_management');
+            if (false !== $state_data) {
+                $targetUserId = (int) $text;
+
+                if ($targetUserId <= 0) {
+                    $this->client->sendMessage($chatId, $this->translate('invalid_user_id_message'));
+                    return;
+                }
+
+                $messageId = $update['message']['message_id'] ?? 0;
+                if ($messageId > 0) {
+                    $this->client->request('deleteMessage', [
+                        'chat_id' => $chatId,
+                        'message_id' => $messageId,
+                    ]);
+                }
+
+                $user_state_service->clearState($userId, 'awaiting_user_id_for_management');
+                $internalAction = 'detail';
+            }
+        }
+
+        if ('ask_user' === $internalAction) {
             $keyboard = [
                 'inline_keyboard' => [
                     [
@@ -47,21 +124,34 @@ class RoleUserManageScreen extends AbstractScreen
                     ],
                 ],
             ];
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('enter_user_id_for_management_message'), $keyboard);
+            
+            $caption = $this->translate('enter_user_id_for_management_message');
+            if ($current_panel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $current_panel,
+                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visuals_links[1], [
+                    'caption' => $caption,
+                    'parse_mode' => 'HTML',
+                    'reply_markup' => $keyboard
+                ]);
+            }
             return;
         }
 
         if ($targetUserId <= 0) {
-            $this->bot->sendMessage($this->chatId, $this->translate('invalid_user_id_message'));
             return;
         }
 
-        $role_service = $this->bot->getContainer()->get('role_service');
         $userRoles = $role_service->getUserRoleNames($targetUserId);
 
-        if ('detail' === $action) {
+        if ('detail' === $internalAction) {
             $rolesText = empty($userRoles) ? "—" : "▫️ <b>" . implode("</b>\n▫️ <b>", $userRoles) . "</b>";
-            $text = str_replace(['{userId}', '{roles}'], [$targetUserId, $rolesText], $this->translate('user_roles_detail_message'));
+            $caption = str_replace(['{userId}', '{roles}'], [$targetUserId, $rolesText], $this->translate('user_roles_detail_message'));
 
             $keyboard = [
                 'inline_keyboard' => [
@@ -74,11 +164,25 @@ class RoleUserManageScreen extends AbstractScreen
                     ],
                 ],
             ];
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $text, $keyboard);
+            
+            if ($current_panel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $current_panel,
+                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visuals_links[1], [
+                    'caption' => $caption,
+                    'parse_mode' => 'HTML',
+                    'reply_markup' => $keyboard
+                ]);
+            }
             return;
         }
 
-        if ('add' === $action) {
+        if ('add' === $internalAction) {
             $allRoles = $role_service->getAllRolesSorted();
             $keyboard = ['inline_keyboard' => []];
             foreach ($allRoles as $role) {
@@ -91,11 +195,26 @@ class RoleUserManageScreen extends AbstractScreen
             $keyboard['inline_keyboard'][] = [
                 ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'user', 'detail', (string)$targetUserId)],
             ];
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{userId}', (string)$targetUserId, $this->translate('select_role_to_add_message')), $keyboard);
+            $caption = str_replace('{userId}', (string)$targetUserId, $this->translate('select_role_to_add_message'));
+            
+            if ($current_panel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $current_panel,
+                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visuals_links[1], [
+                    'caption' => $caption,
+                    'parse_mode' => 'HTML',
+                    'reply_markup' => $keyboard
+                ]);
+            }
             return;
         }
 
-        if ('remove' === $action) {
+        if ('remove' === $internalAction) {
             $keyboard = ['inline_keyboard' => []];
             foreach ($userRoles as $role_name) {
                 $keyboard['inline_keyboard'][] = [
@@ -105,77 +224,23 @@ class RoleUserManageScreen extends AbstractScreen
             $keyboard['inline_keyboard'][] = [
                 ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'user', 'detail', (string)$targetUserId)],
             ];
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{userId}', (string)$targetUserId, $this->translate('select_role_to_remove_message')), $keyboard);
+            $caption = str_replace('{userId}', (string)$targetUserId, $this->translate('select_role_to_remove_message'));
+            
+            if ($current_panel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $current_panel,
+                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visuals_links[1], [
+                    'caption' => $caption,
+                    'parse_mode' => 'HTML',
+                    'reply_markup' => $keyboard
+                ]);
+            }
             return;
-        }
-    }
-
-    public function handleCallback(string $action, array $params) : void
-    {
-        if (! $this->isGranted('admin')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
-        }
-
-        if ('user' === $action) {
-            $subAction = $params[0] ?? 'ask_user';
-            $targetUserId = (int) ($params[1] ?? 0);
-            $roleName = $params[2] ?? '';
-
-            if ('ask_user' === $subAction) {
-                $this->bot->getContainer()->get('user_state_service')->setState($this->userId, ['active' => true], 'awaiting_user_id_for_management');
-                $this->data['action'] = 'ask_user';
-                $this->render();
-                return;
-            }
-
-            if ('do_add' === $subAction) {
-                $result = $this->bot->getContainer()->get('role_service')->assignRole($targetUserId, $roleName);
-                if ('success' === $result) {
-                    $this->bot->sendMessage($this->chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($roleName), (string)$targetUserId], $this->translate('assign_role_message')));
-                } else {
-                    $this->bot->sendMessage($this->chatId, $this->translate('role_assignment_failure_message'));
-                }
-                $subAction = 'detail';
-            } elseif ('do_remove' === $subAction) {
-                $result = $this->bot->getContainer()->get('role_service')->removeUserRole($targetUserId, $roleName);
-                if ($result) {
-                    $this->bot->sendMessage($this->chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($roleName), (string)$targetUserId], $this->translate('remove_role_message')));
-                } else {
-                    $this->bot->sendMessage($this->chatId, $this->translate('remove_role_failed_message'));
-                }
-                $subAction = 'detail';
-            }
-
-            $this->data['action'] = $subAction;
-            $this->data['target_user_id'] = $targetUserId;
-            $this->render();
-        }
-    }
-
-    public function handleMessage(string $text) : void
-    {
-        $user_state_service = $this->bot->getContainer()->get('user_state_service');
-        $state_data = $user_state_service->getState($this->userId, 'awaiting_user_id_for_management');
-
-        if (false !== $state_data) {
-            $targetUserId = (int) $text;
-
-            if ($targetUserId <= 0) {
-                $this->bot->sendMessage($this->chatId, $this->translate('invalid_user_id_message'));
-                return;
-            }
-
-            $messageId = $this->data['message_id'] ?? 0;
-            if ($messageId > 0) {
-                $this->bot->deleteMessage($this->chatId, $messageId);
-            }
-
-            $user_state_service->clearState($this->userId, 'awaiting_user_id_for_management');
-
-            $this->data['action'] = 'detail';
-            $this->data['target_user_id'] = $targetUserId;
-            $this->render();
         }
     }
 }
