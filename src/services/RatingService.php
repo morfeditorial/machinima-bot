@@ -59,6 +59,23 @@ class RatingService
     }
 
     /**
+     * Get all interactions for a specific user
+     */
+    public function getUserInteractions(int $user_id) : array
+    {
+        $rows = $this->db->fetchAllAssociative(
+            'SELECT content_id, interaction_type FROM content_interactions WHERE user_id = ?',
+            [$user_id]
+        );
+        
+        $result = [];
+        foreach ($rows as $row) {
+            $result[$row['content_id']] = $row['interaction_type'];
+        }
+        return $result;
+    }
+
+    /**
      * Add a view to a project
      */
     public function addView(int $content_id, ?int $user_id = null) : bool
@@ -114,6 +131,17 @@ class RatingService
     }
 
     /**
+     * Get real-time stats for a project
+     */
+    public function getContentStats(int $content_id) : array
+    {
+        return $this->db->fetchAssociative(
+            'SELECT likes_count as likes, dislikes_count as dislikes, views_count as views FROM content WHERE id = ?',
+            [$content_id]
+        ) ?: ['likes' => 0, 'dislikes' => 0, 'views' => 0];
+    }
+
+    /**
      * Algorithm based on Reddit's Hot formula but with views influence
      */
     private function calculateHotScore(int $likes, int $dislikes, int $views, int $date) : float
@@ -144,7 +172,12 @@ class RatingService
     public function getTrendingContent(int $limit = 10) : array
     {
         return $this->db->fetchAllAssociative(
-            'SELECT * FROM content WHERE status = ? ORDER BY trending_score DESC LIMIT ?',
+            'SELECT c.*, a.name as author_name, a.id as author_profile_id FROM content c 
+             LEFT JOIN content_staff cs ON c.id = cs.content_id 
+             LEFT JOIN authors a ON cs.author_id = a.id 
+             WHERE c.status = ? 
+             GROUP BY c.id 
+             ORDER BY c.trending_score DESC LIMIT ?',
             ['published', $limit]
         );
     }

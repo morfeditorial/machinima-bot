@@ -87,9 +87,11 @@ class AuthorService
     public function getAuthorProjects(int $author_id, int $limit = 10, int $offset = 0) : array
     {
         return $this->db->fetchAllAssociative(
-            'SELECT c.* FROM content c 
+            'SELECT c.*, a.name as author_name, a.id as author_profile_id FROM content c 
              JOIN content_staff cs ON c.id = cs.content_id 
+             JOIN authors a ON cs.author_id = a.id 
              WHERE cs.author_id = ? AND c.status = ?
+             GROUP BY c.id
              ORDER BY c.trending_score DESC 
              LIMIT ? OFFSET ?',
             [$author_id, 'published', $limit, $offset]
