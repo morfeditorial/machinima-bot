@@ -4,27 +4,38 @@ declare(strict_types=1);
 
 namespace morfeditorial\services;
 
-use Doctrine\DBAL\Connection;
-use morfeditorial\storage\StorageInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Notification;
+use App\Entity\User;
 
 class NotificationService
 {
-    private Connection $db;
+    private \Doctrine\DBAL\Connection $db;
 
-    public function __construct(private StorageInterface $storage)
+    public function __construct(private EntityManagerInterface $em)
     {
-        $this->db = $storage->getConnection();
+        $this->db = $em->getConnection();
     }
 
     public function notify(int $user_id, string $type, int $target_id, string $message) : array
     {
-        $this->db->executeStatement(
-            'INSERT INTO notifications (user_id, type, target_id, message) VALUES (?, ?, ?, ?)',
-            [$user_id, $type, $target_id, $message]
-        );
-        $id = $this->db->lastInsertId();
+        $user = $this->em->getRepository(User::class)->find($user_id);
+        if (!$user) {
+            $user = new User();
+            $user->setId($user_id);
+            $this->em->persist($user);
+        }
+
+        $notification = new Notification();
+        $notification->setUser($user);
+        $notification->setType($type);
+        $notification->setTargetId($target_id);
+        $notification->setMessage($message);
         
-        return $this->getNotificationById((int) $id);
+        $this->em->persist($notification);
+        $this->em->flush();
+
+        return $this->getNotificationById($notification->getId());
     }
 
     public function getNotificationById(int $id) : ?array
@@ -46,18 +57,29 @@ class NotificationService
 
     public function markAsRead(int $id, int $user_id) : bool
     {
-        return (bool) $this->db->executeStatement(
-            'UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?',
-            [$id, $user_id]
-        );
+        $notification = $this->em->getRepository(Notification::class)->findOneBy(['id' => $id, 'user' => $user_id]);
+        if (!$notification) return false;
+
+        $notification->setIsRead(true);
+        $this->em->flush();
+        return true;
     }
 
     public function markAllAsRead(int $user_id) : bool
     {
-        return (bool) $this->db->executeStatement(
-            'UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0',
-            [$user_id]
-        );
+        $user = $this->em->getRepository(User::class)->find($user_id);
+        if (!$user) return false;
+
+        $notifications = $this->em->getRepository(Notification::class)->findBy(['user' => $user, 'isRead' => false]);
+        foreach ($notifications as $notification) {
+            $notification->setIsRead(true);
+        }
+        
+        if (!empty($notifications)) {
+            $this->em->flush();
+        }
+        
+        return true;
     }
 
     public function getUnreadCount(int $user_id) : int
