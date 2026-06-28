@@ -1,60 +1,47 @@
 <?php
 
-/*
- *
- *    _______   _______    _______   _______
- *   /       \\/       \\//       \//       \
- *  /        //        ///        //      __/
- * /         /         /        _/        _/
- * \__/__/__/\________/\____/___/\_______/
- *
- * This program is licensed under the CSSM Unlimited License v2.0.
- * Copyright (c) 2024 Serhii Cherneha
- *
- * @author CSSM Group
- * @link https://cssm.pp.ua/
- *
- *
- */
-
 declare(strict_types=1);
 
 namespace morfeditorial\commands;
 
-use morfeditorial\AbstractCommand;
-use morfeditorial\MyBot;
+use morfeditorial\BaseMachinimaCommand;
+use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
 
-class StartCommand extends AbstractCommand
+class StartCommand extends BaseMachinimaCommand
 {
-    public function __construct(MyBot $bot)
+    public function __construct(TelegramClient $client)
     {
-        parent::__construct($bot);
+        parent::__construct($client);
         $this->setAliases(['start', 'begin', 'initiate']);
     }
 
-    public function getDescriptionKey() : string
+    public function getCommand(): string
+    {
+        return 'start'; // Диспетчер шукатиме саме цю команду
+    }
+
+    public function getDescriptionKey(): string
     {
         return 'start_command_description';
     }
 
-    public function execute(
-        string $message,
-        int $message_id,
-        string $chat_type,
-        int $chat_id,
-        int $user_id,
-        $payload,
-        ?int $reply_message_id,
-        ?int $reply_author,
-        string $first_name,
-        $current_panel,
-        $current_page,
-        string $cmd,
-        array $args
-    ) : void {
-        $this->getUserStateService()->clearState($user_id);
+    public function handle(array $update): void
+    {
+        $chatId = $update['message']['chat']['id'] ?? 0;
+        $userId = $update['message']['from']['id'] ?? 0;
 
-        $photoUrl = $this->container->get('visuals_links')[0];
-        $this->bot->pictureReply($chat_id, $this->translate('welcome_message'), $photoUrl);
+        if (!$chatId || !$userId) {
+            return;
+        }
+
+        // Викликаємо стару звичну бізнес-логіку
+        $this->getUserStateService()->clearState($userId);
+
+        $photoUrl = $this->getVisualsLinks()[0];
+
+        // Використовуємо новий універсальний клієнт замість старого MyBot
+        $this->client->sendPhoto($chatId, $photoUrl, [
+            'caption' => $this->translate('welcome_message')
+        ]);
     }
 }
