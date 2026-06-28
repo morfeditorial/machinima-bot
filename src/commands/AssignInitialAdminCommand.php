@@ -53,28 +53,28 @@ class AssignInitialAdminCommand extends AbstractCommand
         string $cmd,
         array $args
     ) : void {
-        if (! $this->getRoleService()->getRoleByName('admin')) {
-            $this->getRoleService()->createRole('admin');
+        if (! $this->getRoleService()->getRoleByName('ROLE_ADMIN')) {
+            $this->getRoleService()->createRole('ROLE_ADMIN');
         }
 
-        if (! $this->getRoleService()->getRoleByName('moderator')) {
-            $this->getRoleService()->createRole('moderator');
+        if (! $this->getRoleService()->getRoleByName('ROLE_MODERATOR')) {
+            $this->getRoleService()->createRole('ROLE_MODERATOR');
         }
 
-        if (! $this->getRoleService()->getRoleByName('user')) {
-            $this->getRoleService()->createRole('user');
+        if (! $this->getRoleService()->getRoleByName('ROLE_USER')) {
+            $this->getRoleService()->createRole('ROLE_USER');
         }
 
-        $this->getRoleService()->addParentChild('admin', 'moderator');
-        $this->getRoleService()->addParentChild('moderator', 'user');
+        $this->getRoleService()->addParentChild('ROLE_ADMIN', 'ROLE_MODERATOR');
+        $this->getRoleService()->addParentChild('ROLE_MODERATOR', 'ROLE_USER');
 
-        if ($this->getRoleService()->getUsersCountByRole('admin') > 0) {
+        if ($this->getRoleService()->getUsersCountByRole('ROLE_ADMIN') > 0) {
             $this->bot->sendMessage($chat_id, $this->translate('already_initialled_admin_message'));
 
             return;
         }
 
-        $this->getRoleService()->assignRole($user_id, 'admin');
+        $this->getRoleService()->assignRole($user_id, 'ROLE_ADMIN');
 
         $this->bot->sendMessage($chat_id, $this->translate('success_initialled_admin_message'));
     }
