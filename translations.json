@@ -1038,27 +1038,21 @@
         "uk": "🔔 <b>Нове сповіщення</b>\n\n"
     },
     "bot_notification_footer": {
-        "en": "\n\n<i>Open the Mini App to view. Or simply Reply to this message to post your comment!</i>",
-        "pl": "\n\n<i>Otwórz Mini App, aby zobaczyć. Lub po prostu Odpowiedz na tę wiadomość, aby dodać swój komentarz!</i>",
-        "be": "\n\n<i>Адкрыйце Mini App, каб праглядзець. Або проста Адкажыце на гэтае паведамленне, каб дадаць свой каментар!</i>",
-        "uk": "\n\n<i>Відкрийте Mini App, щоб переглянути. Або просто дайте відповідь (Reply) на це повідомлення, щоб написати свій коментар!</i>"
+        "en": "\n\n<i>Open the Mini App to view.</i>",
+        "pl": "\n\n<i>Otwórz Mini App, aby zobaczyć.</i>",
+        "be": "\n\n<i>Адкрыйце Mini App, каб праглядзець.</i>",
+        "uk": "\n\n<i>Відкрийте Mini App, щоб переглянути.</i>"
     },
     "bot_new_comment": {
-        "en": "New comment on your project: {shortText}<a href=\"tg://btn/{projectId}/{commentId}\">&#8203;</a>",
-        "pl": "Nowy komentarz do twojego projektu: {shortText}<a href=\"tg://btn/{projectId}/{commentId}\">&#8203;</a>",
-        "be": "Новы каментар да вашага праекта: {shortText}<a href=\"tg://btn/{projectId}/{commentId}\">&#8203;</a>",
-        "uk": "Новий коментар до вашого проєкту: {shortText}<a href=\"tg://btn/{projectId}/{commentId}\">&#8203;</a>"
+        "en": "New comment on your project: {shortText}",
+        "pl": "Nowy komentarz do twojego projektu: {shortText}",
+        "be": "Новы каментар да вашага праекта: {shortText}",
+        "uk": "Новий коментар до вашого проєкту: {shortText}"
     },
     "bot_comment_reply": {
-        "en": "Reply to your comment: {shortText}<a href=\"tg://btn/{projectId}/{commentId}\">&#8203;</a>",
-        "pl": "Odpowiedź na twój komentarz: {shortText}<a href=\"tg://btn/{projectId}/{commentId}\">&#8203;</a>",
-        "be": "Адказ на ваш каментар: {shortText}<a href=\"tg://btn/{projectId}/{commentId}\">&#8203;</a>",
-        "uk": "Відповідь на ваш коментар: {shortText}<a href=\"tg://btn/{projectId}/{commentId}\">&#8203;</a>"
-    },
-    "reply_added_success": {
-        "en": "✅ Reply added!",
-        "pl": "✅ Odpowiedź dodana!",
-        "be": "✅ Адказ дададзены!",
-        "uk": "✅ Відповідь додано!"
+        "en": "Reply to your comment: {shortText}",
+        "pl": "Odpowiedź na twój komentarz: {shortText}",
+        "be": "Адказ на ваш каментар: {shortText}",
+        "uk": "Відповідь на ваш коментар: {shortText}"
     }
 }
