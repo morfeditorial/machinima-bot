@@ -211,6 +211,25 @@ class MyBot extends tgLib
         if ($command_data) {
             $this->executeCommand($command_data, $message_data);
         } else {
+            $replyText = $message_data['reply_text'] ?? '';
+            if ($replyText && preg_match('/#reply_(\d+)_(\d+)/', $replyText, $matches)) {
+                $projectId = (int)$matches[1];
+                $parentId = (int)$matches[2];
+                $text = $message_data['message'] ?? '';
+                $userId = $message_data['user_id'];
+                $firstName = $message_data['first_name'] ?? 'User';
+                
+                if (!empty($text)) {
+                    $contentService = $this->container->get('content_service');
+                    $contentService->addComment($projectId, $userId, $firstName, $text, $parentId ?: null);
+                    $this->sendMessage($message_data['chat_id'], "✅ Відповідь додано!");
+                    
+                    // Fire a notification to the SSE loop? Not easily done from here without hitting the API endpoint,
+                    // but the frontend will poll or refresh, or we can just let it be.
+                }
+                return;
+            }
+
             $text = $message_data['message'] ?? '';
             $this->screen_dispatcher->dispatchMessage($message_data, $text);
         }
@@ -268,6 +287,7 @@ class MyBot extends tgLib
             'callback_query_id' => $callback_query['id'] ?? null,
             'reply_message_id' => $data['message']['reply_to_message']['message_id'] ?? null,
             'reply_author' => $data['message']['reply_to_message']['from']['id'] ?? null,
+            'reply_text' => $data['message']['reply_to_message']['text'] ?? null,
             'first_name' => $data['message']['from']['first_name'] ?? null,
             'photo' => $data['message']['photo'] ?? null,
         ];
