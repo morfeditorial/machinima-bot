@@ -21,30 +21,39 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Project;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class ProjectTypeScreen extends AbstractScreen
+class ProjectTypeScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
+        $action = $update['callback_query']['data'] ?? '';
+        return strpos($action, 'project:set_type') === 0;
+    }
+
+    public function handle(array $update): void
+    {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+
         if (!$this->isGranted('creator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $user_state_service = $this->bot->getContainer()->get('user_state_service');
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
+        $user_state_service = $this->getUserStateService();
+        $user_service = $this->getUserService();
+        $visuals_links = $this->getVisualsLinks();
 
-        $payload = $this->data['payload'] ?? '';
-        $parsed = $this->parsePayload($payload);
+        $parsed = $this->parsePayload($action);
         $type = $parsed['params'][0] ?? null;
 
-        $current_panel = $user_service->getCurrentPanel($this->userId);
-        $state_data = $user_state_service->getState($this->userId, 'awaiting_project_description');
+        $current_panel = $user_service->getCurrentPanel($userId);
+        $state_data = $user_state_service->getState($userId, 'awaiting_project_description');
 
         if ($state_data && $type) {
-            $user_state_service->setState($this->userId, array_merge($state_data, ['type' => $type]), 'awaiting_project_description');
+            $user_state_service->setState($userId, array_merge($state_data, ['type' => $type]), 'awaiting_project_description');
             $keyboard = [
                 'inline_keyboard' => [
                     [
@@ -52,20 +61,16 @@ class ProjectTypeScreen extends AbstractScreen
                     ],
                 ],
             ];
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('enter_project_description_message'), $keyboard);
+            if ($current_panel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $current_panel,
+                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('enter_project_description_message'), 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate('enter_project_description_message'), null, null, null, false, $keyboard);
+            }
         }
-    }
-
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('set_type' === $action) {
-            $this->data['payload'] = $this->makePayload('project', 'set_type', $params[0] ?? '');
-            $this->render();
-        }
-    }
-
-    public function handleMessage(string $text) : void
-    {
-        // Не чекаємо тексту
     }
 }
