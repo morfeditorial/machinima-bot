@@ -21,114 +21,152 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Author;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class AuthorEditBioScreen extends AbstractScreen
+class AuthorEditBioScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
-        $authorId = (int)$this->data['author_id'];
-        $authorService = $this->bot->getContainer()->get('author_service');
-        $author = $authorService->getAuthorById($authorId);
-
-        $isOwnProfile = $author && (int) $author['telegram_user_id'] === $this->userId;
-
-        if (!$this->isGranted('moderator') && !$isOwnProfile) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
+        $action = $update['callback_query']['data'] ?? '';
+        $payload = $this->parsePayload($action);
+        
+        if ($payload['domain'] === 'author' && in_array($payload['action'], ['edit_bio', 'set_about'])) {
+            return true;
         }
 
-        $this->bot->getUserStateService()->setState($this->userId, ['author_id' => $authorId], 'set_author_about');
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $stateCheck = $this->getUserStateService()->getState($userId, 'set_author_about');
+        if (isset($update['message']) && is_array($stateCheck) && isset($stateCheck['author_id'])) {
+            return true;
+        }
 
-        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
-        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
-
-        $keyboard = [
-            'inline_keyboard' => [
-                [
-                    ['text' => $this->translate('go_back'), 'callback_data' => 'author:profile:' . $authorId],
-                ],
-            ],
-        ];
-
-        $text = $author['biography'] ? $this->translate('pending_bio_change') : $this->translate('pending_bio_add');
-        $visual = $author['biography'] ? $visualsLinks[5] : $visualsLinks[4];
-
-        $this->bot->editMediaMessage($this->chatId, $currentPanel, $visual, $text, $keyboard);
+        return false;
     }
 
-    public function handleCallback(string $action, array $params) : void
+    public function handle(array $update): void
     {
-        if ('edit_bio' === $action || 'set_about' === $action) {
-            $this->data['author_id'] = $params[0];
-            $this->render();
-        }
-    }
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        $text = $update['message']['text'] ?? '';
 
-    public function handleMessage(string $text) : void
-    {
-        $messageId = $this->data['message_id'];
-        $this->bot->deleteMessage($this->chatId, $messageId);
+        $payload = $this->parsePayload($action);
 
-        $userStateService = $this->bot->getUserStateService();
-        $state = $userStateService->getState($this->userId, 'set_author_about');
-        $userStateService->clearState($this->userId, 'set_author_about');
+        if ($payload['domain'] === 'author' && in_array($payload['action'], ['edit_bio', 'set_about'])) {
+            $authorId = (int)($payload['params'][0] ?? 0);
+            $authorService = $this->getAuthorService();
+            $author = $authorService->getAuthorById($authorId);
 
-        $authorId = $state['author_id'];
-        $authorService = $this->bot->getContainer()->get('author_service');
-        $author = $authorService->getAuthorById($authorId);
+            $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
 
-        $isOwnProfile = $author && (int) $author['telegram_user_id'] === $this->userId;
+            if (!$this->isGranted('moderator') && !$isOwnProfile) {
+                $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+                return;
+            }
+            $this->getUserStateService()->setState($userId, ['author_id' => $authorId], 'set_author_about');
 
-        if (!$this->isGranted('moderator') && !$isOwnProfile) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
-        }
+            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
+            $visualsLinks = $this->getVisualsLinks();
 
-        $authorService->setBiography($authorId, $text);
-        $authorStatus = $authorService->isPrivate($authorId);
-
-        $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
-        $backCallback = $currentPage ? $currentPage : 'admin:panel';
-
-        $keyboard = [
-            'inline_keyboard' => [
-                [
-                    ['text' => $this->translate('change_name'), 'callback_data' => 'author:change_name:' . $authorId],
-                    ['text' => ($authorStatus ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'author:set_private:' . $authorId],
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => 'author:profile:' . $authorId],
+                    ],
                 ],
-                [
-                    ['text' => $this->translate('change_bio'), 'callback_data' => 'author:edit_bio:' . $authorId],
-                    ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'author:edit_link:' . $authorId],
-                ],
-            ],
-        ];
-
-        if ($this->isGranted('moderator')) {
-            $keyboard['inline_keyboard'][] = [
-                ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
             ];
+
+            $msgText = $author['biography'] ? $this->translate('pending_bio_change') : $this->translate('pending_bio_add');
+            $visual = $author['biography'] ? $visualsLinks[5] : $visualsLinks[4];
+
+            if ($currentPanel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $currentPanel,
+                    'media' => ['type' => 'photo', 'media' => $visual, 'caption' => $msgText, 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visual, $msgText, null, $keyboard);
+            }
+            return;
         }
 
-        $keyboard['inline_keyboard'][] = [
-            ['text' => $this->translate('go_back'), 'callback_data' => $backCallback],
-        ];
+        if (isset($update['message'])) {
+            $messageId = $update['message']['message_id'] ?? 0;
+            if ($messageId) {
+                $this->client->deleteMessage($chatId, $messageId);
+            }
 
-        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
-        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+            $userStateService = $this->getUserStateService();
+            $state = $userStateService->getState($userId, 'set_author_about');
+            $userStateService->clearState($userId, 'set_author_about');
 
-        $successText = str_replace(
-            ['{author}', '{biography}', '{link}'],
-            [
-                htmlspecialchars($author['name']),
-                htmlspecialchars($text),
-                ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))
-            ],
-            ($author['biography'] ? $this->translate('bio_changed_message') : $this->translate('bio_added_message'))
-        );
+            $authorId = (int)($state['author_id'] ?? 0);
+            $authorService = $this->getAuthorService();
+            $author = $authorService->getAuthorById($authorId);
 
-        $visual = $author['biography'] ? $visualsLinks[8] : $visualsLinks[7];
+            $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
 
-        $this->bot->editMediaMessage($this->chatId, $currentPanel, $visual, $successText, $keyboard);
+            if (!$this->isGranted('moderator') && !$isOwnProfile) {
+                $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+                return;
+            }
+
+            $authorService->setBiography($authorId, $text);
+            $authorStatus = $authorService->isPrivate($authorId);
+
+            $currentPage = $this->getUserService()->getCurrentPage($userId);
+            $backCallback = $currentPage ? $currentPage : 'admin:panel';
+
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('change_name'), 'callback_data' => 'author:change_name:' . $authorId],
+                        ['text' => ($authorStatus ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'author:set_private:' . $authorId],
+                    ],
+                    [
+                        ['text' => $this->translate('change_bio'), 'callback_data' => 'author:edit_bio:' . $authorId],
+                        ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'author:edit_link:' . $authorId],
+                    ],
+                ],
+            ];
+
+            if ($this->isGranted('moderator')) {
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
+                ];
+            }
+
+            $keyboard['inline_keyboard'][] = [
+                ['text' => $this->translate('go_back'), 'callback_data' => $backCallback],
+            ];
+
+            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
+            $visualsLinks = $this->getVisualsLinks();
+
+            $successText = str_replace(
+                ['{author}', '{biography}', '{link}'],
+                [
+                    htmlspecialchars($author['name']),
+                    htmlspecialchars($text),
+                    ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))
+                ],
+                ($author['biography'] ? $this->translate('bio_changed_message') : $this->translate('bio_added_message'))
+            );
+
+            $visual = $author['biography'] ? $visualsLinks[8] : $visualsLinks[7];
+
+            if ($currentPanel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $currentPanel,
+                    'media' => ['type' => 'photo', 'media' => $visual, 'caption' => $successText, 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visual, $successText, null, $keyboard);
+            }
+        }
     }
 }
