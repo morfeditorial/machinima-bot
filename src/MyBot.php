@@ -211,23 +211,24 @@ class MyBot extends tgLib
         if ($command_data) {
             $this->executeCommand($command_data, $message_data);
         } else {
-            $replyText = $message_data['reply_text'] ?? '';
-            if ($replyText && preg_match('/#reply-(\d+)-(\d+)/', $replyText, $matches)) {
-                $projectId = (int)$matches[1];
-                $parentId = (int)$matches[2];
-                $text = $message_data['message'] ?? '';
-                $userId = $message_data['user_id'];
-                $firstName = $message_data['first_name'] ?? 'User';
-                
-                if (!empty($text)) {
-                    $contentService = $this->container->get('content_service');
-                    $contentService->addComment($projectId, $userId, $firstName, $text, $parentId ?: null);
-                    $this->sendMessage($message_data['chat_id'], $this->translate('reply_added_success', $userId));
-                    
-                    // Fire a notification to the SSE loop? Not easily done from here without hitting the API endpoint,
-                    // but the frontend will poll or refresh, or we can just let it be.
+            $replyEntities = $message_data['reply_entities'] ?? null;
+            if ($replyEntities) {
+                foreach ($replyEntities as $entity) {
+                    if ($entity['type'] === 'text_link' && isset($entity['url']) && preg_match('/tg:\/\/btn\/(\d+)\/(\d+)/', $entity['url'], $matches)) {
+                        $projectId = (int)$matches[1];
+                        $parentId = (int)$matches[2];
+                        $text = $message_data['message'] ?? '';
+                        $userId = $message_data['user_id'];
+                        $firstName = $message_data['first_name'] ?? 'User';
+                        
+                        if (!empty($text)) {
+                            $contentService = $this->container->get('content_service');
+                            $contentService->addComment($projectId, $userId, $firstName, $text, $parentId ?: null);
+                            $this->sendMessage($message_data['chat_id'], $this->translate('reply_added_success'));
+                        }
+                        return;
+                    }
                 }
-                return;
             }
 
             $text = $message_data['message'] ?? '';
@@ -288,6 +289,7 @@ class MyBot extends tgLib
             'reply_message_id' => $data['message']['reply_to_message']['message_id'] ?? null,
             'reply_author' => $data['message']['reply_to_message']['from']['id'] ?? null,
             'reply_text' => $data['message']['reply_to_message']['text'] ?? null,
+            'reply_entities' => $data['message']['reply_to_message']['entities'] ?? null,
             'first_name' => $data['message']['from']['first_name'] ?? null,
             'photo' => $data['message']['photo'] ?? null,
         ];
