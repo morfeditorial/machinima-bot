@@ -1,9 +1,16 @@
 {
     "name": "morfeditorial/machinima-bot",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../telegram-bot-bundle"
+        }
+    ],
     "require": {
         "php": ">=8.2",
         "symfony/dependency-injection": "^8.1",
-        "symfony/workflow": "^8.1"
+        "symfony/workflow": "^8.1",
+        "morfeditorial/telegram-bot-bundle": "*@dev"
     },
     "autoload": {
         "psr-4": {
@@ -12,5 +19,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.95"
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
