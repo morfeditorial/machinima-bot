@@ -3,7 +3,7 @@
 /*
  *
  *    _______   _______    _______   _______
- *   /       \\/       \\//       \//       \
+ *   /       \/       \//       \//       \
  *  /        //        ///        //      __/
  * /         /         /        _/        _/
  * \__/__/__/\________/\____/___/\_______/
@@ -21,17 +21,39 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Admin;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class ControlPanelScreen extends AbstractScreen
+class ControlPanelScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
-        $this->bot->getUserStateService()->clearState($this->userId);
+        $action = $update['callback_query']['data'] ?? '';
+        return str_starts_with($action, 'admin:panel') || str_starts_with($action, 'admin:create_public_page') || $action === 'panel';
+    }
 
-        $currentPage = $this->bot->getUserService()->getCurrentPage($this->userId);
+    public function handle(array $update): void
+    {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        $text = $update['message']['text'] ?? '';
+
+        if (str_starts_with($action, 'admin:create_public_page')) {
+            $authorService = $this->getContainer()->get('author_service');
+            $myAuthorProfile = $authorService->getAuthorByTelegramId($userId);
+            if (! $myAuthorProfile) {
+                // Fetch first name from telegram or just use "Staff #ID"
+                $firstName = $update['callback_query']['from']['first_name'] ?? ('Staff #' . $userId);
+                $authorService->createAuthor($firstName, $userId);
+            }
+        }
+
+        // Regardless of action (if it's panel or create_public_page), we render the panel.
+        $this->getUserStateService()->clearState($userId);
+
+        $currentPage = $this->getUserService()->getCurrentPage($userId);
         if (!is_null($currentPage)) {
-            $this->bot->getUserService()->resetCurrentPage($this->userId);
+            $this->getUserService()->resetCurrentPage($userId);
         }
 
         $keyboard = ['inline_keyboard' => []];
@@ -42,8 +64,8 @@ class ControlPanelScreen extends AbstractScreen
             ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
         ];
 
-        $authorService = $this->bot->getContainer()->get('author_service');
-        $myAuthorProfile = $authorService->getAuthorByTelegramId($this->userId);
+        $authorService = $this->getContainer()->get('author_service');
+        $myAuthorProfile = $authorService->getAuthorByTelegramId($userId);
 
         if ($myAuthorProfile) {
             $keyboard['inline_keyboard'][] = [
@@ -73,41 +95,35 @@ class ControlPanelScreen extends AbstractScreen
             ];
         }
 
-        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
-        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+        $currentPanel = $this->getUserService()->getCurrentPanel($userId);
+        $visualsLinks = $this->getVisualsLinks();
 
-        $this->bot->editMediaMessage(
-            $this->chatId,
-            $currentPanel,
-            $visualsLinks[1],
-            $this->translate('admin_panel_message'),
-            $keyboard
-        );
-    }
+        $caption = $this->translate('admin_panel_message');
 
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('panel' === $action) {
-            $this->render();
-            return;
+        if ($currentPanel) {
+            $this->client->request('editMessageMedia', [
+                'chat_id' => $chatId,
+                'message_id' => $currentPanel,
+                'media' => ['type' => 'photo', 'media' => $visualsLinks[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
+                'reply_markup' => $keyboard
+            ]);
+        } else {
+            $this->client->sendPhoto($chatId, $visualsLinks[1], [
+                'caption' => $caption,
+                'parse_mode' => 'HTML',
+                'reply_markup' => $keyboard
+            ]);
         }
 
-        if ('create_public_page' === $action) {
-            $authorService = $this->bot->getContainer()->get('author_service');
-            $myAuthorProfile = $authorService->getAuthorByTelegramId($this->userId);
-            if (! $myAuthorProfile) {
-                // Fetch first name from telegram or just use "Staff #ID"
-                $authorName = $this->data['first_name'] ?? ('Staff #' . $this->userId);
-                $authorService->createAuthor($authorName, $this->userId);
+        // If there's a text message (which shouldn't happen unless we listen for it, but just in case)
+        if ($text) {
+            $messageId = $update['message']['message_id'] ?? 0;
+            if ($messageId > 0) {
+                $this->client->request('deleteMessage', [
+                    'chat_id' => $chatId,
+                    'message_id' => $messageId
+                ]);
             }
-            $this->render();
-            return;
         }
-    }
-
-    public function handleMessage(string $text) : void
-    {
-        // Панель не чекає на текст
-        $this->bot->deleteMessage($this->chatId, $this->data['message_id'] ?? 0);
     }
 }
