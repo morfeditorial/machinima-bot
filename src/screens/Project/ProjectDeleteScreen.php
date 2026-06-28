@@ -21,71 +21,86 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Project;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class ProjectDeleteScreen extends AbstractScreen
+class ProjectDeleteScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
-        $project = $this->data['project'] ?? null;
-        $project_id = $this->data['project_id'] ?? 0;
-
-        if (!$project) {
-            return;
-        }
-
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        $current_panel = $user_service->getCurrentPanel($this->userId);
-
-        $keyboard = [
-            'inline_keyboard' => [
-                [
-                    ['text' => $this->translate('confirm_yes'), 'callback_data' => $this->makePayload('project', 'delete', (string)$project_id, 'confirm')],
-                ],
-                [
-                    ['text' => $this->translate('confirm_no'), 'callback_data' => $this->makePayload('project', 'view', (string)$project_id)],
-                ],
-            ],
-        ];
-        $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], str_replace('{title}', htmlspecialchars($project['title']), $this->translate('confirm_delete_project_message')), $keyboard);
+        $action = $update['callback_query']['data'] ?? '';
+        return strpos($action, 'project:delete') === 0;
     }
 
-    public function handleCallback(string $action, array $params) : void
+    public function handle(array $update): void
     {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        $callbackQueryId = $update['callback_query']['id'] ?? '';
+
         if (!$this->isGranted('creator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $content_service = $this->bot->getContainer()->get('content_service');
-        $project_id = isset($params[0]) ? (int)$params[0] : 0;
-        $subAction = isset($params[1]) ? $params[1] : 'prompt';
+        $user_service = $this->getUserService();
+        $content_service = $this->container->get('content_service');
+        $visuals_links = $this->getVisualsLinks();
 
-        if (!$content_service->canManageProject($this->userId, $project_id, $this->isGranted('moderator'))) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+        $parsed = $this->parsePayload($action);
+        $project_id = isset($parsed['params'][0]) ? (int)$parsed['params'][0] : 0;
+        $subAction = isset($parsed['params'][1]) ? $parsed['params'][1] : 'prompt';
+
+        if (!$content_service->canManageProject($userId, $project_id, $this->isGranted('moderator'))) {
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
         if ('prompt' === $subAction) {
             $project = $content_service->getContentById($project_id);
             if ($project) {
-                $this->data['project'] = $project;
-                $this->data['project_id'] = $project_id;
-                $this->render();
+                $current_panel = $user_service->getCurrentPanel($userId);
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('confirm_yes'), 'callback_data' => $this->makePayload('project', 'delete', (string)$project_id, 'confirm')],
+                        ],
+                        [
+                            ['text' => $this->translate('confirm_no'), 'callback_data' => $this->makePayload('project', 'view', (string)$project_id)],
+                        ],
+                    ],
+                ];
+
+                $caption = str_replace('{title}', htmlspecialchars($project['title']), $this->translate('confirm_delete_project_message'));
+
+                if ($current_panel) {
+                    $this->client->request('editMessageMedia', [
+                        'chat_id' => $chatId,
+                        'message_id' => $current_panel,
+                        'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
+                        'reply_markup' => $keyboard
+                    ]);
+                } else {
+                    $this->client->sendPhoto($chatId, $visuals_links[1], $caption, null, null, null, false, $keyboard);
+                }
             }
         } elseif ('confirm' === $subAction) {
             if ($content_service->deleteContent($project_id)) {
-                $this->bot->callbackAnswer($this->data['callback_query_id'] ?? '', $this->translate('project_deleted_message'));
+                if ($callbackQueryId) {
+                    $this->client->request('answerCallbackQuery', [
+                        'callback_query_id' => $callbackQueryId,
+                        'text' => $this->translate('project_deleted_message')
+                    ]);
+                }
             }
-            $this->data['payload'] = $this->makePayload('project', 'list');
-            $screen = new ProjectListScreen($this->bot, $this->data);
-            $screen->render();
-        }
-    }
 
-    public function handleMessage(string $text) : void
-    {
-        // Не чекаємо тексту
+            $updateCopy = $update;
+            $updateCopy['callback_query']['data'] = $this->makePayload('project', 'list');
+            $screen = new ProjectListScreen();
+            $screen->setClient($this->client);
+            $screen->setDependencies($this->container, $this->security);
+            $screen->handle($updateCopy);
+        }
     }
 }
