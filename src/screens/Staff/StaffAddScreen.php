@@ -21,122 +21,150 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Staff;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class StaffAddScreen extends AbstractScreen
+class StaffAddScreen extends BaseMachinimaScreen
 {
-    private int $projectId;
-    private int $page = 1;
-    private ?int $authorId = null;
-
-    public function setProjectId(int $projectId) : self
+    public function supports(array $update): bool
     {
-        $this->projectId = $projectId;
-        return $this;
+        $action = $update['callback_query']['data'] ?? '';
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+
+        if (str_starts_with($action, 'staff:add')) {
+            return true;
+        }
+
+        if (isset($update['message']['text'])) {
+            $state = $this->getUserStateService()->getState($userId, 'awaiting_staff_role');
+            if ($state) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public function setPage(int $page) : self
+    public function handle(array $update): void
     {
-        $this->page = $page;
-        return $this;
-    }
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        $text = $update['message']['text'] ?? '';
 
-    public function setAuthorId(?int $authorId) : self
-    {
-        $this->authorId = $authorId;
-        return $this;
-    }
-
-    public function render() : void
-    {
         if (! $this->isGranted('creator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        $current_panel = $user_service->getCurrentPanel($this->userId);
+        if (str_starts_with($action, 'staff:add')) {
+            $payload = $this->parsePayload($action);
+            $subAction = $payload['params'][0] ?? '';
+            $projectId = isset($payload['params'][1]) ? (int) $payload['params'][1] : 0;
 
-        if (null !== $this->authorId) {
-            // Awaiting staff role
-            $user_state_service = $this->bot->getContainer()->get('user_state_service');
-            $user_state_service->setState($this->userId, ['project_id' => $this->projectId, 'author_id' => $this->authorId], 'awaiting_staff_role');
-
-            $keyboard = [
-                'inline_keyboard' => [
-                    [
-                        ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('staff', 'manage', $this->projectId)],
-                    ],
-                ],
-            ];
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('enter_staff_role_message'), $keyboard);
-        } else {
-            // Select author
-            $keyboard = \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
-                $this->bot->getContainer()->get('bot_translator'),
-                $this->bot->getContainer()->get('author_service'),
-                $this->page,
-                3,
-                1,
-                "staff:add:select_role:{$this->projectId}:",
-                "staff:add:select_author:{$this->projectId}:page:"
-            );
-            // Replace the default go_back from generateAuthorsKeyboard
-            array_pop($keyboard['inline_keyboard']);
-            $keyboard['inline_keyboard'][] = [['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('staff', 'manage', $this->projectId)]];
-
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('select_author_for_staff_message'), $keyboard);
-        }
-    }
-
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('add' === $action) {
-            $subAction = $params[0] ?? '';
-            $this->projectId = isset($params[1]) ? (int) $params[1] : 0;
+            $current_panel = $this->getUserService()->getCurrentPanel($userId);
 
             if ('select_author' === $subAction) {
-                if (isset($params[2]) && 'page' === $params[2]) {
-                    $this->page = isset($params[3]) ? (int) $params[3] : 1;
+                $page = 1;
+                if (isset($payload['params'][2]) && 'page' === $payload['params'][2]) {
+                    $page = isset($payload['params'][3]) ? (int) $payload['params'][3] : 1;
                 }
-                $this->authorId = null;
-                $this->render();
+
+                $keyboard = \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
+                    $this->getTranslator(),
+                    $this->getAuthorService(),
+                    $page,
+                    3,
+                    1,
+                    "staff:add:select_role:{$projectId}:",
+                    "staff:add:select_author:{$projectId}:page:"
+                );
+
+                // Replace the default go_back from generateAuthorsKeyboard
+                array_pop($keyboard['inline_keyboard']);
+                $keyboard['inline_keyboard'][] = [['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('staff', 'manage', (string)$projectId)]];
+
+                if ($current_panel) {
+                    $this->client->request('editMessageMedia', [
+                        'chat_id' => $chatId,
+                        'message_id' => $current_panel,
+                        'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('select_author_for_staff_message'), 'parse_mode' => 'HTML'],
+                        'reply_markup' => $keyboard
+                    ]);
+                } else {
+                    $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('select_author_for_staff_message'), $keyboard);
+                }
             } elseif ('select_role' === $subAction) {
-                $this->authorId = isset($params[2]) ? (int) $params[2] : null;
-                $this->render();
+                $authorId = isset($payload['params'][2]) ? (int) $payload['params'][2] : null;
+
+                $this->getUserStateService()->setState($userId, ['project_id' => $projectId, 'author_id' => $authorId], 'awaiting_staff_role');
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('staff', 'manage', (string)$projectId)],
+                        ],
+                    ],
+                ];
+
+                if ($current_panel) {
+                    $this->client->request('editMessageMedia', [
+                        'chat_id' => $chatId,
+                        'message_id' => $current_panel,
+                        'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('enter_staff_role_message'), 'parse_mode' => 'HTML'],
+                        'reply_markup' => $keyboard
+                    ]);
+                } else {
+                    $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('enter_staff_role_message'), $keyboard);
+                }
             }
-        }
-    }
 
-    public function handleMessage(string $text) : void
-    {
-        $user_state_service = $this->bot->getContainer()->get('user_state_service');
-        $state_data = $user_state_service->getState($this->userId, 'awaiting_staff_role');
-
-        if ($state_data) {
-            $message_id = $this->data['message_id'] ?? null;
-            if ($message_id) {
-                $this->bot->deleteMessage($this->chatId, $message_id);
+            if (isset($update['callback_query']['id'])) {
+                $this->client->answerCallbackQuery($update['callback_query']['id']);
             }
+        } elseif ($text !== '') {
+            $state_data = $this->getUserStateService()->getState($userId, 'awaiting_staff_role');
 
-            $user_state_service->clearState($this->userId, 'awaiting_staff_role');
-            $content_service = $this->bot->getContainer()->get('content_service');
-            $author_service = $this->bot->getContainer()->get('author_service');
+            if ($state_data) {
+                $message_id = $update['message']['message_id'] ?? null;
+                if ($message_id) {
+                    $this->client->request('deleteMessage', ['chat_id' => $chatId, 'message_id' => $message_id]);
+                }
 
-            $project_id = $state_data['project_id'];
-            $author_id = $state_data['author_id'];
-            $role = $text;
+                $this->getUserStateService()->clearState($userId, 'awaiting_staff_role');
+                $content_service = $this->container->get('content_service');
+                $author_service = $this->getAuthorService();
 
-            $content_service->assignStaff($project_id, $author_id, $role);
-            $author = $author_service->getAuthorById($author_id);
+                $project_id = $state_data['project_id'];
+                $author_id = $state_data['author_id'];
+                $role = $text;
 
-            $this->bot->sendMessage($this->chatId, str_replace(['{author}', '{role}'], [htmlspecialchars($author['name']), htmlspecialchars($role)], $this->translate('staff_member_added_message')));
-            $user_state_service->clearState($this->userId);
+                $content_service->assignStaff($project_id, $author_id, $role);
+                $author = $author_service->getAuthorById($author_id);
 
-            // Transition to StaffManageScreen
-            $screen = new StaffManageScreen($this->bot, $this->data);
-            $screen->setProjectId($project_id)->render();
+                $this->client->sendMessage($chatId, str_replace(['{author}', '{role}'], [htmlspecialchars($author['name']), htmlspecialchars($role)], $this->translate('staff_member_added_message')));
+                $this->getUserStateService()->clearState($userId);
+
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('staff', 'manage', (string)$project_id)],
+                        ],
+                    ],
+                ];
+
+                $current_panel = $this->getUserService()->getCurrentPanel($userId);
+
+                if (isset($current_panel) && $current_panel) {
+                    $this->client->request('editMessageMedia', [
+                        'chat_id' => $chatId,
+                        'message_id' => $current_panel,
+                        'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('staff_member_added_message'), 'parse_mode' => 'HTML'],
+                        'reply_markup' => $keyboard
+                    ]);
+                } else {
+                    $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('staff_member_added_message'), $keyboard);
+                }
+            }
         }
     }
 }
