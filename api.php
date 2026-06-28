@@ -190,19 +190,26 @@ $http = new HttpServer(function (ServerRequestInterface $request) use ($contentS
                         }
                     }
 
-                    // 2. Notify Project Author
-                    if ($project && !empty($project['author_id'])) {
-                        $projectAuthor = $authorService->getAuthorById((int) $project['author_id']);
-                        if ($projectAuthor && !empty($projectAuthor['telegram_user_id'])) {
-                            $targetUserId = (int) $projectAuthor['telegram_user_id'];
-                            // Don't notify the project author if they are the one commenting, OR if we already notified them because they were the parent comment author
-                            if ($targetUserId !== (int) $body['user_id'] && !in_array($targetUserId, $notifiedUsers, true)) {
-                                $shortText = mb_substr($body['text'], 0, 50) . (mb_strlen($body['text']) > 50 ? '...' : '');
-                                $notif = $notificationService->notify($targetUserId, 'new_comment', $projectId, "Новий коментар до вашого проєкту: {$shortText}");
-                                
-                                $notifPayload = json_encode(['type' => 'NEW_NOTIFICATION', 'notification' => $notif]);
-                                foreach ($sseConnections as $conn) {
-                                    $conn->write("data: {$notifPayload}\n\n");
+                    // 2. Notify Project Staff
+                    if ($project) {
+                        $staffMembers = $contentService->getStaffByContentId($projectId);
+                        foreach ($staffMembers as $member) {
+                            if (!empty($member['author_id'])) {
+                                $projectAuthor = $authorService->getAuthorById((int) $member['author_id']);
+                                if ($projectAuthor && !empty($projectAuthor['telegram_user_id'])) {
+                                    $targetUserId = (int) $projectAuthor['telegram_user_id'];
+                                    
+                                    // Don't notify the staff member if they are the one commenting, OR if we already notified them
+                                    if ($targetUserId !== (int) $body['user_id'] && !in_array($targetUserId, $notifiedUsers, true)) {
+                                        $shortText = mb_substr($body['text'], 0, 50) . (mb_strlen($body['text']) > 50 ? '...' : '');
+                                        $notif = $notificationService->notify($targetUserId, 'new_comment', $projectId, "Новий коментар до вашого проєкту: {$shortText}");
+                                        $notifiedUsers[] = $targetUserId;
+                                        
+                                        $notifPayload = json_encode(['type' => 'NEW_NOTIFICATION', 'notification' => $notif]);
+                                        foreach ($sseConnections as $conn) {
+                                            $conn->write("data: {$notifPayload}\n\n");
+                                        }
+                                    }
                                 }
                             }
                         }
