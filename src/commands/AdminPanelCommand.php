@@ -54,7 +54,11 @@ class AdminPanelCommand extends BaseMachinimaCommand
 
         $current_panel = $this->getUserService()->getCurrentPanel($userId);
         if (!is_null($current_panel)) {
-            $this->client->deleteMessage($chatId, $current_panel);
+            try {
+                $this->client->deleteMessage($chatId, $current_panel);
+            } catch (\Throwable $e) {
+                // Old panel message may have been already deleted
+            }
         }
 
         $this->getUserService()->setCurrentPanel($userId, $messageId + 1);
