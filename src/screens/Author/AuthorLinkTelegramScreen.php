@@ -21,85 +21,136 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Author;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class AuthorLinkTelegramScreen extends AbstractScreen
+class AuthorLinkTelegramScreen extends BaseMachinimaScreen
 {
-    public function render() : void
+    public function supports(array $update): bool
     {
-        $authorId = (int)$this->data['author_id'];
-        $authorService = $this->bot->getContainer()->get('author_service');
-        $author = $authorService->getAuthorById($authorId);
-
-        if (!$this->isGranted('admin')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
-            return;
+        $action = $update['callback_query']['data'] ?? '';
+        $payload = $this->parsePayload($action);
+        
+        if ($payload['domain'] === 'author' && $payload['action'] === 'link_telegram') {
+            return true;
         }
-        $this->bot->getUserStateService()->setState($this->userId, ['author_id' => $authorId], 'link_telegram');
 
-        $currentPanel = $this->bot->getUserService()->getCurrentPanel($this->userId);
-        $visualsLinks = $this->bot->getContainer()->get('visuals_links');
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $stateCheck = $this->getUserStateService()->getState($userId, 'link_telegram');
+        if (isset($update['message']) && is_array($stateCheck) && isset($stateCheck['author_id'])) {
+            return true;
+        }
 
-        $keyboard = [
-            'inline_keyboard' => [
-                [
-                    ['text' => $this->translate('go_back'), 'callback_data' => 'author:profile:' . $authorId],
+        return false;
+    }
+
+    public function handle(array $update): void
+    {
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
+        $text = $update['message']['text'] ?? '';
+
+        $payload = $this->parsePayload($action);
+
+        if ($payload['domain'] === 'author' && $payload['action'] === 'link_telegram') {
+            $authorId = (int)($payload['params'][0] ?? 0);
+
+            if (!$this->isGranted('admin')) {
+                $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+                return;
+            }
+            $this->getUserStateService()->setState($userId, ['author_id' => $authorId], 'link_telegram');
+
+            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
+            $visualsLinks = $this->getVisualsLinks();
+
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => 'author:profile:' . $authorId],
+                    ],
                 ],
-            ],
-        ];
+            ];
 
-        $this->bot->editMediaMessage(
-            $this->chatId,
-            $currentPanel,
-            $visualsLinks[3],
-            $this->translate('pending_telegram_link'),
-            $keyboard
-        );
-    }
-
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('link_telegram' === $action) {
-            $this->data['author_id'] = $params[0] ?? 0;
-            $this->render();
-        }
-    }
-
-    public function handleMessage(string $text) : void
-    {
-        $stateData = $this->bot->getUserStateService()->getState($this->userId, 'link_telegram');
-        $authorId = (int)($stateData['author_id'] ?? 0);
-
-        if (!$this->isGranted('admin') || 0 === $authorId) {
-            $this->bot->getUserStateService()->clearState($this->userId, 'link_telegram');
+            if ($currentPanel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $currentPanel,
+                    'media' => ['type' => 'photo', 'media' => $visualsLinks[3], 'caption' => $this->translate('pending_telegram_link'), 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $visualsLinks[3], $this->translate('pending_telegram_link'), null, $keyboard);
+            }
             return;
         }
 
-        $this->bot->deleteMessage($this->chatId, $this->data['message_id'] ?? 0);
+        if (isset($update['message'])) {
+            $stateData = $this->getUserStateService()->getState($userId, 'link_telegram');
+            $authorId = (int)($stateData['author_id'] ?? 0);
 
-        $telegramId = (int) trim($text);
-        if ($telegramId <= 0) {
-            $this->bot->getUserStateService()->clearState($this->userId, 'link_telegram');
-            $this->data['author_id'] = $authorId;
-            (new AuthorProfileScreen($this->bot, $this->data))->render();
-            return;
+            if (!$this->isGranted('admin') || 0 === $authorId) {
+                $this->getUserStateService()->clearState($userId, 'link_telegram');
+                return;
+            }
+
+            $messageId = $update['message']['message_id'] ?? 0;
+            if ($messageId) {
+                $this->client->deleteMessage($chatId, $messageId);
+            }
+
+            $telegramId = (int) trim($text);
+            if ($telegramId <= 0) {
+                $this->getUserStateService()->clearState($userId, 'link_telegram');
+                // The old code instantiates AuthorProfileScreen and calls render.
+                // In new architecture, we might need to simulate an update or redirect.
+                // We'll simulate a callback to author:profile
+                $profileScreen = new AuthorProfileScreen();
+                $profileScreen->setDependencies($this->container, $this->security);
+                // We fake the update
+                $fakeUpdate = $update;
+                $fakeUpdate['callback_query'] = [
+                    'from' => ['id' => $userId],
+                    'message' => ['chat' => ['id' => $chatId]],
+                    'data' => 'author:profile:' . $authorId
+                ];
+                unset($fakeUpdate['message']);
+                $profileScreen->handle($fakeUpdate);
+                return;
+            }
+
+            $authorService = $this->getAuthorService();
+            $existingAuthor = $authorService->getAuthorByTelegramId($telegramId);
+            if (null !== $existingAuthor) {
+                $this->client->sendMessage($chatId, $this->translate('telegram_already_linked'));
+                $this->getUserStateService()->clearState($userId, 'link_telegram');
+                
+                $profileScreen = new AuthorProfileScreen();
+                $profileScreen->setDependencies($this->container, $this->security);
+                $fakeUpdate = $update;
+                $fakeUpdate['callback_query'] = [
+                    'from' => ['id' => $userId],
+                    'message' => ['chat' => ['id' => $chatId]],
+                    'data' => 'author:profile:' . $authorId
+                ];
+                unset($fakeUpdate['message']);
+                $profileScreen->handle($fakeUpdate);
+                return;
+            }
+
+            $authorService->setTelegramId($authorId, $telegramId);
+            $this->getUserStateService()->clearState($userId, 'link_telegram');
+
+            $profileScreen = new AuthorProfileScreen();
+            $profileScreen->setDependencies($this->container, $this->security);
+            $fakeUpdate = $update;
+            $fakeUpdate['callback_query'] = [
+                'from' => ['id' => $userId],
+                'message' => ['chat' => ['id' => $chatId]],
+                'data' => 'author:profile:' . $authorId
+            ];
+            unset($fakeUpdate['message']);
+            $profileScreen->handle($fakeUpdate);
         }
-
-        $authorService = $this->bot->getContainer()->get('author_service');
-        $existingAuthor = $authorService->getAuthorByTelegramId($telegramId);
-        if (null !== $existingAuthor) {
-            $this->bot->sendMessage($this->chatId, $this->translate('telegram_already_linked'));
-            $this->bot->getUserStateService()->clearState($this->userId, 'link_telegram');
-            $this->data['author_id'] = $authorId;
-            (new AuthorProfileScreen($this->bot, $this->data))->render();
-            return;
-        }
-
-        $authorService->setTelegramId($authorId, $telegramId);
-
-        $this->bot->getUserStateService()->clearState($this->userId, 'link_telegram');
-
-        $this->data['author_id'] = $authorId;
-        (new AuthorProfileScreen($this->bot, $this->data))->render();
     }
 }
