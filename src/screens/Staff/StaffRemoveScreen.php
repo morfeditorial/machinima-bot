@@ -21,93 +21,83 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Staff;
 
-use morfeditorial\screens\AbstractScreen;
+use morfeditorial\BaseMachinimaScreen;
 
-class StaffRemoveScreen extends AbstractScreen
+class StaffRemoveScreen extends BaseMachinimaScreen
 {
-    private int $projectId;
-    private int $authorId;
-    private string $role;
-    private bool $isConfirm = false;
-
-    public function setProjectId(int $projectId) : self
+    public function supports(array $update): bool
     {
-        $this->projectId = $projectId;
-        return $this;
+        $action = $update['callback_query']['data'] ?? '';
+        return str_starts_with($action, 'staff:remove');
     }
 
-    public function setAuthorId(int $authorId) : self
+    public function handle(array $update): void
     {
-        $this->authorId = $authorId;
-        return $this;
-    }
+        $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
+        $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
+        $action = $update['callback_query']['data'] ?? '';
 
-    public function setRole(string $role) : self
-    {
-        $this->role = $role;
-        return $this;
-    }
-
-    public function setConfirm(bool $isConfirm) : self
-    {
-        $this->isConfirm = $isConfirm;
-        return $this;
-    }
-
-    public function render() : void
-    {
         if (! $this->isGranted('creator')) {
-            $this->bot->sendMessage($this->chatId, $this->translate('no_permission_message'));
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $user_service = $this->bot->getContainer()->get('user_service');
-        $visuals_links = $this->bot->getContainer()->get('visuals_links');
-        $current_panel = $user_service->getCurrentPanel($this->userId);
+        $payload = $this->parsePayload($action);
+        $subAction = $payload['params'][0] ?? '';
+        $projectId = isset($payload['params'][1]) ? (int) $payload['params'][1] : 0;
+        $authorId = isset($payload['params'][2]) ? (int) $payload['params'][2] : 0;
+        $role = isset($payload['params'][3]) ? base64_decode($payload['params'][3]) : '';
 
-        if ($this->isConfirm) {
-            $content_service = $this->bot->getContainer()->get('content_service');
-            $content_service->removeStaff($this->projectId, $this->authorId, $this->role);
+        $current_panel = $this->getUserService()->getCurrentPanel($userId);
 
-            // Transition back to manage
-            $screen = new StaffManageScreen($this->bot, $this->data);
-            $screen->setProjectId($this->projectId)->render();
-        } else {
-            // Confirm screen
+        if ('confirm' === $subAction) {
             $keyboard = [
                 'inline_keyboard' => [
                     [
-                        ['text' => $this->translate('confirm_yes'), 'callback_data' => $this->makePayload('staff', 'remove', 'execute', $this->projectId, $this->authorId, base64_encode($this->role))],
+                        ['text' => $this->translate('confirm_yes'), 'callback_data' => $this->makePayload('staff', 'remove', 'execute', (string)$projectId, (string)$authorId, base64_encode($role))],
                     ],
                     [
-                        ['text' => $this->translate('confirm_no'), 'callback_data' => $this->makePayload('staff', 'manage', $this->projectId)],
+                        ['text' => $this->translate('confirm_no'), 'callback_data' => $this->makePayload('staff', 'manage', (string)$projectId)],
                     ],
                 ],
             ];
-            $this->bot->editMediaMessage($this->chatId, $current_panel, $visuals_links[1], $this->translate('confirm_delete_message'), $keyboard);
-        }
-    }
 
-    public function handleCallback(string $action, array $params) : void
-    {
-        if ('remove' === $action) {
-            $subAction = $params[0] ?? '';
-            $this->projectId = isset($params[1]) ? (int) $params[1] : 0;
-            $this->authorId = isset($params[2]) ? (int) $params[2] : 0;
-            $this->role = isset($params[3]) ? base64_decode($params[3]) : '';
+            if ($current_panel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $current_panel,
+                    'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('confirm_delete_message'), 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('confirm_delete_message'), $keyboard);
+            }
+        } elseif ('execute' === $subAction) {
+            $content_service = $this->container->get('content_service');
+            $content_service->removeStaff($projectId, $authorId, $role);
 
-            if ('confirm' === $subAction) {
-                $this->isConfirm = false; // Show confirm screen
-                $this->render();
-            } elseif ('execute' === $subAction) {
-                $this->isConfirm = true; // Proceed to execute
-                $this->render();
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('staff', 'manage', (string)$projectId)],
+                    ],
+                ],
+            ];
+
+            if ($current_panel) {
+                $this->client->request('editMessageMedia', [
+                    'chat_id' => $chatId,
+                    'message_id' => $current_panel,
+                    'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('manage_staff'), 'parse_mode' => 'HTML'],
+                    'reply_markup' => $keyboard
+                ]);
+            } else {
+                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('manage_staff'), $keyboard);
             }
         }
-    }
 
-    public function handleMessage(string $text) : void
-    {
-        // Not used
+        if (isset($update['callback_query']['id'])) {
+            $this->client->answerCallbackQuery($update['callback_query']['id']);
+        }
     }
 }
