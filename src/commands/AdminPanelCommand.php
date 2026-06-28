@@ -75,6 +75,18 @@ class AdminPanelCommand extends BaseMachinimaCommand
             ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
         ];
 
+        $myAuthorProfile = $this->getAuthorService()->getAuthorByTelegramId($userId);
+
+        if ($myAuthorProfile) {
+            $keyboard['inline_keyboard'][] = [
+                ['text' => '📝 ' . $this->translate('public_page'), 'callback_data' => 'author:profile:' . $myAuthorProfile['id']],
+            ];
+        } else {
+            $keyboard['inline_keyboard'][] = [
+                ['text' => $this->translate('create_public_page'), 'callback_data' => 'admin:create_public_page'],
+            ];
+        }
+
         if ($this->isGranted('ROLE_MODERATOR')) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => $this->translate('add_author'), 'callback_data' => 'author:add'],
