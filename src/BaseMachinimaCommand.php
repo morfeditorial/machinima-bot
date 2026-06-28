@@ -104,4 +104,14 @@ abstract class BaseMachinimaCommand extends BundleAbstractCommand
     {
         return $this->hidden_from_menu;
     }
+
+    /**
+     * Extracts arguments passed after the command (e.g. /assign_role 123 admin -> ['123', 'admin'])
+     */
+    protected function getArgs(array $update): array
+    {
+        $text = $update['message']['text'] ?? '';
+        $parts = explode(' ', trim(preg_replace("/\s+/", ' ', $text)));
+        return array_slice($parts, 1);
+    }
 }
