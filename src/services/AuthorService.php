@@ -1,176 +1,185 @@
 <?php
 
-/*
- *
- *    _______   _______    _______   _______
- *   /       \\/       \\//       \//       \
- *  /        //        ///        //      __/
- * /         /         /        _/        _/
- * \__/__/__/\________/\____/___/\_______/
- *
- * This program is licensed under the CSSM Unlimited License v2.0.
- * Copyright (c) 2024 Serhii Cherneha
- *
- * @author CSSM Group
- * @link https://cssm.pp.ua/
- *
- *
- */
-
 declare(strict_types=1);
 
 namespace morfeditorial\services;
 
-use morfeditorial\storage\StorageInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Author;
+use App\Entity\Content;
+use App\Entity\ContentStaff;
 
 class AuthorService
 {
     private const STATE_PRIVATE = 'private';
-
     private const STATE_PUBLIC = 'public';
 
-    private $db;
-
-    public function __construct(private StorageInterface $storage)
+    public function __construct(private EntityManagerInterface $em)
     {
-        $this->db = $storage->getConnection();
     }
 
     public function createAuthor(string $name, ?int $telegram_user_id = null) : int
     {
-        $this->db->executeStatement(
-            'INSERT INTO authors (name, state, telegram_user_id) VALUES (?, ?, ?)',
-            [trim($name), self::STATE_PRIVATE, $telegram_user_id]
-        );
+        $author = new Author();
+        $author->setName(trim($name));
+        $author->setState(self::STATE_PRIVATE);
+        $author->setTelegramUserId($telegram_user_id);
 
-        return (int) $this->db->lastInsertId();
+        $this->em->persist($author);
+        $this->em->flush();
+
+        return $author->getId();
     }
 
     public function deleteAuthor(int $author_id) : void
     {
-        $this->db->executeStatement(
-            'DELETE FROM authors WHERE id = ?',
-            [$author_id]
-        );
+        $author = $this->em->getRepository(Author::class)->find($author_id);
+        if ($author) {
+            $this->em->remove($author);
+            $this->em->flush();
+        }
     }
 
     public function getTopAuthors(int $limit = 10) : array
     {
-        return $this->db->fetchAllAssociative(
-            'SELECT a.*, COUNT(cs.content_id) as projects_count 
-             FROM authors a 
-             LEFT JOIN content_staff cs ON a.id = cs.author_id 
-             LEFT JOIN content c ON cs.content_id = c.id AND c.status = ?
-             WHERE a.state = ?
-             GROUP BY a.id 
-             ORDER BY projects_count DESC 
-             LIMIT ?',
-            ['published', 'public', $limit]
-        );
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('a.id', 'a.name', 'a.biography', 'a.channelLink', 'a.createdAt', 'a.state', 'a.telegramUserId', 'COUNT(cs.content) as projects_count')
+           ->from(Author::class, 'a')
+           ->leftJoin(ContentStaff::class, 'cs', 'WITH', 'cs.author = a')
+           ->leftJoin(Content::class, 'c', 'WITH', 'cs.content = c AND c.status = :status')
+           ->where('a.state = :state')
+           ->setParameter('status', 'published')
+           ->setParameter('state', self::STATE_PUBLIC)
+           ->groupBy('a.id')
+           ->orderBy('projects_count', 'DESC')
+           ->setMaxResults($limit);
+
+        return $qb->getQuery()->getArrayResult();
     }
 
     public function getAuthorById(int $author_id) : ?array
     {
-        $result = $this->db->fetchAssociative(
-            'SELECT * FROM authors WHERE id = ?',
-            [$author_id]
-        );
+        $author = $this->em->getRepository(Author::class)->find($author_id);
+        if (!$author) {
+            return null;
+        }
 
-        return false !== $result ? $result : null;
+        return [
+            'id' => $author->getId(),
+            'name' => $author->getName(),
+            'biography' => $author->getBiography(),
+            'channel_link' => $author->getChannelLink(),
+            'created_at' => $author->getCreatedAt(),
+            'state' => $author->getState(),
+            'telegram_user_id' => $author->getTelegramUserId()
+        ];
     }
 
     public function getAllAuthors() : array
     {
-        return $this->db->fetchAllAssociative('SELECT * FROM authors');
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('a.id', 'a.name', 'a.biography', 'a.channelLink as channel_link', 'a.createdAt as created_at', 'a.state', 'a.telegramUserId as telegram_user_id')
+           ->from(Author::class, 'a');
+
+        return $qb->getQuery()->getArrayResult();
     }
 
     public function getAuthorProjects(int $author_id, int $limit = 10, int $offset = 0) : array
     {
-        return $this->db->fetchAllAssociative(
-            'SELECT c.*, a.name as author_name, a.id as author_profile_id FROM content c 
-             JOIN content_staff cs ON c.id = cs.content_id 
-             JOIN authors a ON cs.author_id = a.id 
-             WHERE cs.author_id = ? AND c.status = ?
-             GROUP BY c.id
-             ORDER BY c.trending_score DESC 
-             LIMIT ? OFFSET ?',
-            [$author_id, 'published', $limit, $offset]
-        );
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('c.id', 'c.title', 'c.description', 'c.url', 'c.cover', 'c.type', 'c.status', 'c.publishedAt', 'c.trendingScore', 'a.name as author_name', 'a.id as author_profile_id')
+           ->from(Content::class, 'c')
+           ->join(ContentStaff::class, 'cs', 'WITH', 'cs.content = c')
+           ->join(Author::class, 'a', 'WITH', 'cs.author = a')
+           ->where('cs.author = :author_id')
+           ->andWhere('c.status = :status')
+           ->setParameter('author_id', $author_id)
+           ->setParameter('status', 'published')
+           ->groupBy('c.id', 'a.id')
+           ->orderBy('c.trendingScore', 'DESC')
+           ->setFirstResult($offset)
+           ->setMaxResults($limit);
+
+        return $qb->getQuery()->getArrayResult();
     }
 
     public function updateAuthorName(int $author_id, string $name) : void
     {
-        $this->db->executeStatement(
-            'UPDATE authors SET name = ? WHERE id = ?',
-            [trim($name), $author_id]
-        );
+        $author = $this->em->getRepository(Author::class)->find($author_id);
+        if ($author) {
+            $author->setName(trim($name));
+            $this->em->flush();
+        }
     }
 
     public function setBiography(int $author_id, string $biography) : void
     {
-        $this->db->executeStatement(
-            'UPDATE authors SET biography = ? WHERE id = ?',
-            [trim($biography), $author_id]
-        );
+        $author = $this->em->getRepository(Author::class)->find($author_id);
+        if ($author) {
+            $author->setBiography(trim($biography));
+            $this->em->flush();
+        }
     }
 
     public function setChannelLink(int $author_id, string $link) : void
     {
-        $this->db->executeStatement(
-            'UPDATE authors SET channel_link = ? WHERE id = ?',
-            [trim($link), $author_id]
-        );
+        $author = $this->em->getRepository(Author::class)->find($author_id);
+        if ($author) {
+            $author->setChannelLink(trim($link));
+            $this->em->flush();
+        }
     }
 
     public function setTelegramId(int $author_id, ?int $telegram_user_id) : void
     {
-        $this->db->executeStatement(
-            'UPDATE authors SET telegram_user_id = ? WHERE id = ?',
-            [$telegram_user_id, $author_id]
-        );
+        $author = $this->em->getRepository(Author::class)->find($author_id);
+        if ($author) {
+            $author->setTelegramUserId($telegram_user_id);
+            $this->em->flush();
+        }
     }
 
     public function setPrivate(int $author_id, bool $private = true) : void
     {
-        $state = $private ? self::STATE_PRIVATE : self::STATE_PUBLIC;
-        $this->db->executeStatement(
-            'UPDATE authors SET state = ? WHERE id = ?',
-            [$state, $author_id]
-        );
+        $author = $this->em->getRepository(Author::class)->find($author_id);
+        if ($author) {
+            $author->setState($private ? self::STATE_PRIVATE : self::STATE_PUBLIC);
+            $this->em->flush();
+        }
     }
 
     public function isPrivate(int $author_id) : bool
     {
-        $result = $this->db->fetchAssociative(
-            'SELECT state FROM authors WHERE id = ?',
-            [$author_id]
-        );
-
-        return $result && self::STATE_PRIVATE === $result['state'];
+        $author = $this->em->getRepository(Author::class)->find($author_id);
+        return $author && $author->getState() === self::STATE_PRIVATE;
     }
 
     public function getAuthorCreationTime(int $author_id) : ?string
     {
-        $result = $this->db->fetchOne(
-            'SELECT created_at FROM authors WHERE id = ?',
-            [$author_id]
-        );
-
-        return false !== $result ? (string) $result : null;
+        $author = $this->em->getRepository(Author::class)->find($author_id);
+        return $author ? $author->getCreatedAt() : null;
     }
 
     public function countAuthors() : int
     {
-        return (int) $this->db->fetchOne('SELECT COUNT(*) FROM authors');
+        return $this->em->getRepository(Author::class)->count([]);
     }
 
     public function getAuthorByTelegramId(int $telegram_user_id) : ?array
     {
-        $result = $this->db->fetchAssociative(
-            'SELECT * FROM authors WHERE telegram_user_id = ?',
-            [$telegram_user_id]
-        );
+        $author = $this->em->getRepository(Author::class)->findOneBy(['telegramUserId' => $telegram_user_id]);
+        if (!$author) {
+            return null;
+        }
 
-        return $result ?: null;
+        return [
+            'id' => $author->getId(),
+            'name' => $author->getName(),
+            'biography' => $author->getBiography(),
+            'channel_link' => $author->getChannelLink(),
+            'created_at' => $author->getCreatedAt(),
+            'state' => $author->getState(),
+            'telegram_user_id' => $author->getTelegramUserId()
+        ];
     }
 }
