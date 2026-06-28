@@ -3,9 +3,7 @@
     "require": {
         "php": ">=8.2",
         "symfony/dependency-injection": "^8.1",
-        "symfony/workflow": "^8.1",
-        "react/http": "^1.11",
-        "react/socket": "^1.17"
+        "symfony/workflow": "^8.1"
     },
     "autoload": {
         "psr-4": {
