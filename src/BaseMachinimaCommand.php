@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace morfeditorial;
 
-use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Service\Attribute\Required;
-use TelegramBot\Bundle\Command\AbstractCommand as BundleAbstractCommand;
+use Morfeditorial\TelegramBotBundle\Command\AbstractCommand as BundleAbstractCommand;
 use morfeditorial\services\AuthorService;
 use morfeditorial\services\RoleService;
 use morfeditorial\services\UserService;
