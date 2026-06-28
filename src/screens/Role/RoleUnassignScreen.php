@@ -50,7 +50,7 @@ class RoleUnassignScreen extends BaseMachinimaScreen
         $action = $update['callback_query']['data'] ?? '';
         $text = $update['message']['text'] ?? '';
 
-        if (! $this->isGranted('admin')) {
+        if (! $this->isGranted('ROLE_ADMIN')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

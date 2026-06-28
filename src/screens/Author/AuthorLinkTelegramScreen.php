@@ -55,7 +55,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
         if ($payload['domain'] === 'author' && $payload['action'] === 'link_telegram') {
             $authorId = (int)($payload['params'][0] ?? 0);
 
-            if (!$this->isGranted('admin')) {
+            if (!$this->isGranted('ROLE_ADMIN')) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -89,7 +89,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
             $stateData = $this->getUserStateService()->getState($userId, 'link_telegram');
             $authorId = (int)($stateData['author_id'] ?? 0);
 
-            if (!$this->isGranted('admin') || 0 === $authorId) {
+            if (!$this->isGranted('ROLE_ADMIN') || 0 === $authorId) {
                 $this->getUserStateService()->clearState($userId, 'link_telegram');
                 return;
             }

@@ -57,7 +57,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
 
             $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
 
-            if (!$this->isGranted('moderator') && !$isOwnProfile) {
+            if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -68,7 +68,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
                 $this->renderProfile($chatId, $userId, $authorId);
             }
         } elseif ($route === 'unlink_telegram') {
-            if (!$this->isGranted('admin')) {
+            if (!$this->isGranted('ROLE_ADMIN')) {
                 return;
             }
             $authorId = (int)($params[0] ?? 0);
@@ -87,7 +87,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
 
         $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
 
-        if (!$this->isGranted('moderator') && !$isOwnProfile) {
+        if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
@@ -112,7 +112,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($this->isGranted('admin')) {
+            if ($this->isGranted('ROLE_ADMIN')) {
                 if ($author['telegram_user_id']) {
                     $keyboard['inline_keyboard'][] = [
                         ['text' => $this->translate('unlink_telegram'), 'callback_data' => 'author:unlink_telegram:' . $authorId],
@@ -124,7 +124,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
                 }
             }
 
-            if ($this->isGranted('moderator') || $isOwnProfile) {
+            if ($this->isGranted('ROLE_MODERATOR') || $isOwnProfile) {
                 $keyboard['inline_keyboard'][] = [
                     ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
                 ];

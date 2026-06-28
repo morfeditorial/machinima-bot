@@ -57,7 +57,7 @@ class ProjectCreateScreen extends BaseMachinimaScreen
         $message_id = $update['message']['message_id'] ?? null;
         $photo = $update['message']['photo'] ?? null;
 
-        if (!$this->isGranted('creator')) {
+        if (!$this->isGranted('ROLE_CREATOR')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

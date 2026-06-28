@@ -37,7 +37,7 @@ class ProjectViewScreen extends BaseMachinimaScreen
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
         $action = $update['callback_query']['data'] ?? '';
 
-        if (!$this->isGranted('creator')) {
+        if (!$this->isGranted('ROLE_CREATOR')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
@@ -87,12 +87,12 @@ class ProjectViewScreen extends BaseMachinimaScreen
                 ];
 
                 $transition_buttons = [];
-                if ('draft' === $project['status'] && $this->isGranted('creator')) {
+                if ('draft' === $project['status'] && $this->isGranted('ROLE_CREATOR')) {
                     $transition_buttons[] = ['text' => $this->translate('submit_project'), 'callback_data' => 'project:transition:' . $project_id . ':submit'];
-                } elseif ('pending_review' === $project['status'] && $this->isGranted('moderator')) {
+                } elseif ('pending_review' === $project['status'] && $this->isGranted('ROLE_MODERATOR')) {
                     $transition_buttons[] = ['text' => $this->translate('publish_project'), 'callback_data' => 'project:transition:' . $project_id . ':publish'];
                     $transition_buttons[] = ['text' => $this->translate('reject_project'), 'callback_data' => 'project:transition:' . $project_id . ':reject'];
-                } elseif ('rejected' === $project['status'] && $this->isGranted('moderator')) {
+                } elseif ('rejected' === $project['status'] && $this->isGranted('ROLE_MODERATOR')) {
                     $transition_buttons[] = ['text' => $this->translate('redraft_project'), 'callback_data' => 'project:transition:' . $project_id . ':re-draft'];
                 }
 

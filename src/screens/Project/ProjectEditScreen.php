@@ -53,7 +53,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
         $photo = $update['message']['photo'] ?? null;
         $callbackQueryId = $update['callback_query']['id'] ?? '';
 
-        if (!$this->isGranted('creator')) {
+        if (!$this->isGranted('ROLE_CREATOR')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

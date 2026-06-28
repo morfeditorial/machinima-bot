@@ -78,7 +78,7 @@ class ControlPanelScreen extends BaseMachinimaScreen
         }
 
         // Moderator і вище: керування авторами
-        if ($this->isGranted('moderator')) {
+        if ($this->isGranted('ROLE_MODERATOR')) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => '✍️ ' . $this->translate('add_author'), 'callback_data' => 'author:add'],
                 ['text' => '❌ ' . $this->translate('delete_author'), 'callback_data' => 'author:delete'],
@@ -89,7 +89,7 @@ class ControlPanelScreen extends BaseMachinimaScreen
         }
 
         // Admin: керування ролями, категоріями тощо
-        if ($this->isGranted('admin')) {
+        if ($this->isGranted('ROLE_ADMIN')) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => '🔒 ' . $this->translate('access_control'), 'callback_data' => 'role:control'],
             ];

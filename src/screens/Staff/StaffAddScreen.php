@@ -51,7 +51,7 @@ class StaffAddScreen extends BaseMachinimaScreen
         $action = $update['callback_query']['data'] ?? '';
         $text = $update['message']['text'] ?? '';
 
-        if (! $this->isGranted('creator')) {
+        if (! $this->isGranted('ROLE_CREATOR')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

@@ -37,7 +37,7 @@ class CategoryDeleteScreen extends BaseMachinimaScreen
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
         $action = $update['callback_query']['data'] ?? '';
 
-        if (! $this->isGranted('moderator')) {
+        if (! $this->isGranted('ROLE_MODERATOR')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

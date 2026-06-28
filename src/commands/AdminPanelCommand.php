@@ -75,7 +75,7 @@ class AdminPanelCommand extends BaseMachinimaCommand
             ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
         ];
 
-        if ($this->isGranted('moderator')) {
+        if ($this->isGranted('ROLE_MODERATOR')) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => $this->translate('add_author'), 'callback_data' => 'author:add'],
                 ['text' => $this->translate('delete_author'), 'callback_data' => 'author:delete'],
@@ -85,7 +85,7 @@ class AdminPanelCommand extends BaseMachinimaCommand
             ];
         }
 
-        if ($this->isGranted('admin')) {
+        if ($this->isGranted('ROLE_ADMIN')) {
             $keyboard['inline_keyboard'][] = [
                 ['text' => $this->translate('access_control'), 'callback_data' => 'role:control'],
             ];

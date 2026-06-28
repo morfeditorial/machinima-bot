@@ -49,7 +49,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
         $params = $payload['params'];
 
         if ($route === 'delete' || $route === 'delete_page') {
-            if (!$this->isGranted('moderator')) {
+            if (!$this->isGranted('ROLE_MODERATOR')) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -102,7 +102,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
 
         $isOwnProfile = (int) $author['telegram_user_id'] === $userId;
 
-        if (!$this->isGranted('moderator') && !$isOwnProfile) {
+        if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
@@ -148,7 +148,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
 
         $isOwnProfile = (int) $author['telegram_user_id'] === $userId;
 
-        if (!$this->isGranted('moderator') && !$isOwnProfile) {
+        if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

@@ -64,8 +64,7 @@ abstract class BaseMachinimaCommand extends BundleAbstractCommand
 
     public function isGranted(string $role_name): bool
     {
-        $symfony_role = 'ROLE_' . strtoupper($role_name);
-        return $this->security->isGranted($symfony_role);
+        return $this->security->isGranted($role_name);
     }
 
     public function getVisualsLinks()

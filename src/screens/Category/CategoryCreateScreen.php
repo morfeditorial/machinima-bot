@@ -51,7 +51,7 @@ class CategoryCreateScreen extends BaseMachinimaScreen
         $action = $update['callback_query']['data'] ?? '';
         $text = $update['message']['text'] ?? '';
 
-        if (! $this->isGranted('moderator')) {
+        if (! $this->isGranted('ROLE_MODERATOR')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

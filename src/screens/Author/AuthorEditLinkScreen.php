@@ -59,7 +59,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
 
             $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
 
-            if (!$this->isGranted('moderator') && !$isOwnProfile) {
+            if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -105,7 +105,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
 
             $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
 
-            if (!$this->isGranted('moderator') && !$isOwnProfile) {
+            if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -129,7 +129,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($this->isGranted('moderator')) {
+            if ($this->isGranted('ROLE_MODERATOR')) {
                 $keyboard['inline_keyboard'][] = [
                     ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
                 ];
