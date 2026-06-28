@@ -1082,5 +1082,9 @@
     "bot_comment_reply": {
         "uk": "Відповідь на ваш коментар: %s\n\n#reply_%d_%d",
         "en": "Reply to your comment: %s\n\n#reply_%d_%d"
+    },
+    "reply_added_success": {
+        "uk": "✅ Відповідь додано!",
+        "en": "✅ Reply added!"
     }
 }

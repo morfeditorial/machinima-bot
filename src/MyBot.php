@@ -222,7 +222,7 @@ class MyBot extends tgLib
                 if (!empty($text)) {
                     $contentService = $this->container->get('content_service');
                     $contentService->addComment($projectId, $userId, $firstName, $text, $parentId ?: null);
-                    $this->sendMessage($message_data['chat_id'], "✅ Відповідь додано!");
+                    $this->sendMessage($message_data['chat_id'], $this->translate('reply_added_success', $userId));
                     
                     // Fire a notification to the SSE loop? Not easily done from here without hitting the API endpoint,
                     // but the frontend will poll or refresh, or we can just let it be.
