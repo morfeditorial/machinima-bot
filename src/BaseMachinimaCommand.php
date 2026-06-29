@@ -4,32 +4,28 @@ declare(strict_types=1);
 
 namespace morfeditorial;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Service\Attribute\Required;
 use Morfeditorial\TelegramBotBundle\Command\AbstractCommand as BundleAbstractCommand;
-use morfeditorial\contracts\AuthorServiceInterface;
-use morfeditorial\contracts\RoleServiceInterface;
-use morfeditorial\contracts\UserServiceInterface;
-use morfeditorial\contracts\UserStateServiceInterface;
+use App\Service\RoleService;
 
 abstract class BaseMachinimaCommand extends BundleAbstractCommand
 {
     protected ContainerInterface $container;
     protected Security $security;
+    protected EntityManagerInterface $em;
     protected string $description = '';
     protected array $aliases = [];
     protected bool $hidden_from_menu = false;
 
-    /**
-     * Using #[Required] allows Symfony to inject these automatically 
-     * without forcing us to redefine massive constructors in every child command.
-     */
     #[Required]
-    public function setDependencies(ContainerInterface $container, Security $security): void
+    public function setDependencies(ContainerInterface $container, Security $security, EntityManagerInterface $em): void
     {
         $this->container = $container;
         $this->security = $security;
+        $this->em = $em;
     }
 
     public function getTranslator()
@@ -42,24 +38,9 @@ abstract class BaseMachinimaCommand extends BundleAbstractCommand
         return $this->getTranslator()->translate($key);
     }
 
-    public function getAuthorService(): AuthorServiceInterface
+    public function getRoleService(): RoleService
     {
-        return $this->container->get('author_service');
-    }
-
-    public function getUserService(): UserServiceInterface
-    {
-        return $this->container->get('user_service');
-    }
-
-    public function getUserStateService(): UserStateServiceInterface
-    {
-        return $this->container->get('user_state_service');
-    }
-
-    public function getRoleService(): RoleServiceInterface
-    {
-        return $this->container->get('role_service');
+        return $this->container->get(RoleService::class);
     }
 
     public function isGranted(string $role_name): bool
@@ -104,9 +85,6 @@ abstract class BaseMachinimaCommand extends BundleAbstractCommand
         return $this->hidden_from_menu;
     }
 
-    /**
-     * Extracts arguments passed after the command (e.g. /assign_role 123 admin -> ['123', 'admin'])
-     */
     protected function getArgs(array $update): array
     {
         $text = $update['message']['text'] ?? '';
