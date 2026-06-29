@@ -21,33 +21,30 @@ declare(strict_types=1);
 
 namespace morfeditorial\utils;
 
-use morfeditorial\services\AuthorService;
 use morfeditorial\Translator;
+use App\Entity\Author;
 
 class KeyboardHelper
 {
     public static function generateAuthorsKeyboard(
         Translator $translator,
-        AuthorService $authorService,
+        array $authors,
         int $page_number = 1,
         int $buttons_per_page = 3,
         int $authors_per_row = 1,
         string $prefix = 'author:profile:',
-        string $page_prefix = 'author:list:',
-        ?array $authors = null
+        string $page_prefix = 'author:list:'
     ) : array {
-        $is_from_database = is_null($authors);
-        $authors = $authors ?? $authorService->getAllAuthors();
         $total_buttons = count($authors);
         $total_pages = (int) ceil($total_buttons / $buttons_per_page);
         $page_number = max(1, min($page_number, max(1, $total_pages)));
 
-        $sliced_authors = array_slice($authors, ($page_number - 1) * $buttons_per_page, $buttons_per_page);
+        $sliced_authors = array_slice(array_values($authors), ($page_number - 1) * $buttons_per_page, $buttons_per_page);
         $keyboard = ['inline_keyboard' => []];
 
         $current_row = [];
         foreach ($sliced_authors as $author) {
-            $current_row[] = ['text' => $author['name'], 'callback_data' => $prefix . $author['id']];
+            $current_row[] = ['text' => $author->getName(), 'callback_data' => $prefix . $author->getId()];
             if (count($current_row) === $authors_per_row) {
                 $keyboard['inline_keyboard'][] = $current_row;
                 $current_row = [];
@@ -68,9 +65,7 @@ class KeyboardHelper
             $keyboard['inline_keyboard'][] = $pagination;
         }
 
-        if ($is_from_database) {
-            $keyboard['inline_keyboard'][] = [['text' => $translator->translate('go_back'), 'callback_data' => 'admin:panel']];
-        }
+        $keyboard['inline_keyboard'][] = [['text' => $translator->translate('go_back'), 'callback_data' => 'admin:panel']];
 
         return $keyboard;
     }

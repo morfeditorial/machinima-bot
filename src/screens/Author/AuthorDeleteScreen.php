@@ -23,6 +23,8 @@ namespace morfeditorial\screens\Author;
 
 use morfeditorial\BaseMachinimaScreen;
 use morfeditorial\utils\KeyboardHelper;
+use App\Entity\Author;
+use App\Entity\User;
 
 class AuthorDeleteScreen extends BaseMachinimaScreen
 {
@@ -55,13 +57,21 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             }
 
             $page = $route === 'delete_page' ? (int)($params[0] ?? 1) : 1;
-            $this->getUserService()->setCurrentPage($userId, 'delete_page_' . $page);
+            $user = $this->em->find(User::class, $userId);
+            if (!$user) {
+                $user = new User();
+                $user->setId($userId);
+                $this->em->persist($user);
+            }
+            $user->setCurrentPage('delete_page_' . $page);
+            $this->em->flush();
 
             $visualsLinks = $this->getVisualsLinks();
 
+            $allAuthors = $this->em->getRepository(Author::class)->findAll();
             $keyboard = KeyboardHelper::generateAuthorsKeyboard(
                 $this->getTranslator(),
-                $this->getAuthorService(),
+                $allAuthors,
                 $page,
                 3,
                 1,
@@ -69,7 +79,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
                 'author:delete_page:'
             );
 
-            $authors = $this->getAuthorService()->getAllAuthors();
+            $authors = $allAuthors;
             $messageText = empty($authors) ? $this->translate('empty_authors_list_message') : $this->translate('delete_author_message');
 
             $this->renderPanel($chatId, $userId, $visualsLinks[1], $messageText, $keyboard);
@@ -82,22 +92,21 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
 
     private function confirmDelete(int $chatId, int $userId, int $authorId) : void
     {
-        $authorService = $this->getAuthorService();
-        $author = $authorService->getAuthorById($authorId);
+        $author = $this->em->find(Author::class, $authorId);
 
-        if (false === $author) {
+        if (null === $author) {
             $this->client->sendMessage($chatId, $this->translate('author_not_found_message'));
             return;
         }
 
-        $isOwnProfile = (int) $author['telegram_user_id'] === $userId;
+        $isOwnProfile = (int) $author->getTelegramUserId() === $userId;
 
         if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $currentPage = $this->getUserService()->getCurrentPage($userId);
+        $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage();
         $prefix = preg_match("/^delete_page_(\d+)$/", $currentPage ?? 'delete_page_1', $matches) ? 'author:delete_page:' . $matches[1] : 'author:profile:' . $authorId;
 
         $visualsLinks = $this->getVisualsLinks();
@@ -113,29 +122,32 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             ],
         ];
 
-        $this->renderPanel($chatId, $userId, $visualsLinks[1], str_replace('{author}', htmlspecialchars($author['name']), $this->translate('confirm_delete_message')), $keyboard);
+        $this->renderPanel($chatId, $userId, $visualsLinks[1], str_replace('{author}', htmlspecialchars($author->getName()), $this->translate('confirm_delete_message')), $keyboard);
     }
 
     private function doDelete(int $chatId, int $userId, int $authorId) : void
     {
-        $authorService = $this->getAuthorService();
-        $author = $authorService->getAuthorById($authorId);
+        $author = $this->em->find(Author::class, $authorId);
 
-        if (false === $author) {
+        if (null === $author) {
             $this->client->sendMessage($chatId, $this->translate('author_not_found_message'));
             return;
         }
 
-        $isOwnProfile = (int) $author['telegram_user_id'] === $userId;
+        $isOwnProfile = (int) $author->getTelegramUserId() === $userId;
 
         if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
-        $authorService->deleteAuthor($authorId);
+        $delAuthor = $this->em->find(Author::class, $authorId);
+        if ($delAuthor) {
+            $this->em->remove($delAuthor);
+            $this->em->flush();
+        }
 
-        $currentPage = $this->getUserService()->getCurrentPage($userId) ?? 'admin:panel';
+        $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage() ?? 'admin:panel';
         $backCallback = preg_match("/^delete_page_(\d+)$/", $currentPage, $matches) ? 'author:delete_page:' . $matches[1] : 'admin:panel';
 
         $visualsLinks = $this->getVisualsLinks();
@@ -148,6 +160,6 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             ],
         ];
 
-        $this->renderPanel($chatId, $userId, $visualsLinks[1], str_replace('{author}', htmlspecialchars($author['name']), $this->translate('author_deleted_message')), $keyboard);
+        $this->renderPanel($chatId, $userId, $visualsLinks[1], str_replace('{author}', htmlspecialchars($author->getName()), $this->translate('author_deleted_message')), $keyboard);
     }
 }

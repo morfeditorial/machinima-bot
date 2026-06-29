@@ -23,6 +23,8 @@ namespace morfeditorial\screens\Author;
 
 use morfeditorial\BaseMachinimaScreen;
 use morfeditorial\utils\KeyboardHelper;
+use App\Entity\Author;
+use App\Entity\User;
 
 class AuthorListScreen extends BaseMachinimaScreen
 {
@@ -48,13 +50,21 @@ class AuthorListScreen extends BaseMachinimaScreen
 
         if ($payload['domain'] === 'author' && $payload['action'] === 'list') {
             $page = (int)($payload['params'][0] ?? 1);
-            $this->getUserService()->setCurrentPage($userId, 'author:list:' . $page);
+            $user = $this->em->find(User::class, $userId);
+            if (!$user) {
+                $user = new User();
+                $user->setId($userId);
+                $this->em->persist($user);
+            }
+            $user->setCurrentPage('author:list:' . $page);
+            $this->em->flush();
 
             $visualsLinks = $this->getVisualsLinks();
 
+            $allAuthors = $this->em->getRepository(Author::class)->findAll();
             $keyboard = KeyboardHelper::generateAuthorsKeyboard(
                 $this->getTranslator(),
-                $this->getAuthorService(),
+                $allAuthors,
                 $page,
                 3,
                 1,
@@ -62,7 +72,7 @@ class AuthorListScreen extends BaseMachinimaScreen
                 'author:list:'
             );
 
-            $authors = $this->getAuthorService()->getAllAuthors();
+            $authors = $allAuthors;
             $messageText = empty($authors) ? $this->translate('empty_authors_list_message') : $this->translate('list_of_authors_message');
 
             $this->renderPanel($chatId, $userId, $visualsLinks[9], $messageText, $keyboard, true);
