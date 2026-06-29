@@ -22,6 +22,8 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\BaseMachinimaScreen;
+use App\Entity\User;
+use App\Entity\UserState;
 
 class RoleControlScreen extends BaseMachinimaScreen
 {
@@ -46,11 +48,19 @@ class RoleControlScreen extends BaseMachinimaScreen
             return;
         }
 
-        $this->getUserStateService()->clearState($userId);
+        $user = $this->em->find(User::class, $userId);
 
-        $current_page = $this->getUserService()->getCurrentPage($userId);
-        if (!is_null($current_page)) {
-            $this->getUserService()->resetCurrentPage($userId);
+        if ($user) {
+            $states = $this->em->getRepository(UserState::class)->findBy(['user' => $user]);
+            foreach ($states as $state) {
+                $this->em->remove($state);
+            }
+
+            if (!is_null($user->getCurrentPage())) {
+                $user->setCurrentPage(null);
+            }
+
+            $this->em->flush();
         }
 
         $keyboard = [
