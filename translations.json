@@ -24,10 +24,10 @@
         "uk": "Видалити роль"
     },
     "delete_role_usage_message": {
-        "en": "Usage: /delete_role &lt;role_name&gt;",
-        "pl": "Użycie: /delete_role &lt;nazwa_roli&gt;",
-        "be": "Выкарыстанне: /delete_role &lt;назва_ролі&gt;",
-        "uk": "Використання: /delete_role &lt;назва_ролі&gt;"
+        "en": "Usage: \/delete_role &lt;role_name&gt;",
+        "pl": "Użycie: \/delete_role &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/delete_role &lt;назва_ролі&gt;",
+        "uk": "Використання: \/delete_role &lt;назва_ролі&gt;"
     },
     "create_role_command_description": {
         "en": "Create a new role",
@@ -48,16 +48,16 @@
         "uk": "Забрати роль у користувача"
     },
     "welcome_message": {
-        "en": "Hello, I'm Pai! 👋🏻\n\nMy mission is to centralize Ukrainian machinimators. We now have our own convenient app! Open it via the bot menu to find interesting projects, short films, and series based on <b>Minecraft</b>.\n\n📚 Send /help if you have any questions.",
-        "pl": "Cześć, jestem Pai! 👋🏻\n\nMoje zadanie to scentralizować ukraińskich machinimatorów. Mamy teraz własną wygodną aplikację! Otwórz ją przez menu bota, aby znaleźć interesujące projekty oparte na <b>Minecraft</b>.\n\n📚 Wyślij /help w razie pytań.",
-        "be": "Прывітанне, я Пай! 👋🏻\n\nМая мэта — цэнтралізаваць украінскіх машыніматараў. Цяпер у нас ёсць уласная зручная праграма! Адкрыйце яе праз меню бота, каб знайсці цікавыя праекты на аснове <b>Minecraft</b>.\n\n📚 Калі ў вас ёсць пытанні, дашліце /help.",
-        "uk": "Привіт, я чат-бот на ім’я Пай! 👋🏻\n\nМоє покликання — централізувати українських машиніматорів в одному списку. Відтепер ми маємо власний зручний додаток! Відкрийте його через меню бота, щоб знаходити цікаві проєкти, короткометражні фільми і серіали, зняті на основі <b>Minecraft</b>.\n\n📚 Якщо у вас виникли питання, введіть команду /help"
+        "en": "Hello, I'm Pai! 👋🏻\n\nMy mission is to centralize Ukrainian machinimators. We now have our own convenient app! Open it via the bot menu to find interesting projects, short films, and series based on <b>Minecraft<\/b>.\n\n📚 Send \/help if you have any questions.",
+        "pl": "Cześć, jestem Pai! 👋🏻\n\nMoje zadanie to scentralizować ukraińskich machinimatorów. Mamy teraz własną wygodną aplikację! Otwórz ją przez menu bota, aby znaleźć interesujące projekty oparte na <b>Minecraft<\/b>.\n\n📚 Wyślij \/help w razie pytań.",
+        "be": "Прывітанне, я Пай! 👋🏻\n\nМая мэта — цэнтралізаваць украінскіх машыніматараў. Цяпер у нас ёсць уласная зручная праграма! Адкрыйце яе праз меню бота, каб знайсці цікавыя праекты на аснове <b>Minecraft<\/b>.\n\n📚 Калі ў вас ёсць пытанні, дашліце \/help.",
+        "uk": "Привіт, я чат-бот на ім’я Пай! 👋🏻\n\nМоє покликання — централізувати українських машиніматорів в одному списку. Відтепер ми маємо власний зручний додаток! Відкрийте його через меню бота, щоб знаходити цікаві проєкти, короткометражні фільми і серіали, зняті на основі <b>Minecraft<\/b>.\n\n📚 Якщо у вас виникли питання, введіть команду \/help"
     },
     "help_message": {
-        "en": "🌟 All bot features have been moved to the Mini App!\n\nJust click the Menu button (or 'Open App') to access the news feed, search, and categories.\n\nIf you are an administrator, use the /admin_panel command to manage content.",
-        "pl": "🌟 Wszystkie funkcje bota zostały przeniesione do aplikacji!\n\nPo prostu kliknij przycisk Menu, aby uzyskać dostęp do kanału aktualności, wyszukiwania i kategorii.\n\nJeśli jesteś administratorem, użyj polecenia /admin_panel.",
-        "be": "🌟 Усе функцыі бота перанесены ў міні-праграму!\n\nПроста націсніце кнопку Меню (або 'Адкрыць праграму'), каб атрымаць доступ да стужкі навін, пошуку і катэгорый.\n\nКалі вы адміністратар, выкарыстоўвайце каманду /admin_panel.",
-        "uk": "🌟 Весь функціонал бота тепер перенесено у мінідодаток (Mini App)!\n\nПросто натисніть на кнопку «Меню» (або «Відкрити додаток») у лівому нижньому куті, щоб отримати доступ до стрічки новин, пошуку та категорій.\n\nЯкщо ви адміністратор, використовуйте команду /admin_panel для керування контентом."
+        "en": "🌟 All bot features have been moved to the Mini App!\n\nJust click the Menu button (or 'Open App') to access the news feed, search, and categories.\n\nIf you are an administrator, use the \/admin_panel command to manage content.",
+        "pl": "🌟 Wszystkie funkcje bota zostały przeniesione do aplikacji!\n\nPo prostu kliknij przycisk Menu, aby uzyskać dostęp do kanału aktualności, wyszukiwania i kategorii.\n\nJeśli jesteś administratorem, użyj polecenia \/admin_panel.",
+        "be": "🌟 Усе функцыі бота перанесены ў міні-праграму!\n\nПроста націсніце кнопку Меню (або 'Адкрыць праграму'), каб атрымаць доступ да стужкі навін, пошуку і катэгорый.\n\nКалі вы адміністратар, выкарыстоўвайце каманду \/admin_panel.",
+        "uk": "🌟 Весь функціонал бота тепер перенесено у мінідодаток (Mini App)!\n\nПросто натисніть на кнопку «Меню» (або «Відкрити додаток») у лівому нижньому куті, щоб отримати доступ до стрічки новин, пошуку та категорій.\n\nЯкщо ви адміністратор, використовуйте команду \/admin_panel для керування контентом."
     },
     "bot_name": {
         "en": "Morf — centralized chatbot",
@@ -263,18 +263,6 @@
         "be": "Удзельнік каманды {author} дададзены як {role}!",
         "uk": "Учасника {author} додано як {role}!"
     },
-    "staff_list_message": {
-        "en": "Project Staff:",
-        "pl": "Zespół projektu:",
-        "be": "Каманда праекта:",
-        "uk": "Команда проєкту:"
-    },
-    "remove_staff_member": {
-        "en": "Remove member",
-        "pl": "Usuń członka",
-        "be": "Выдаліць удзельніка",
-        "uk": "Видалити учасника"
-    },
     "manage_categories": {
         "en": "Manage Categories 🏷",
         "pl": "Zarządzaj kategoriami 🏷",
@@ -311,12 +299,6 @@
         "be": "Катэгорыя «{name}» дададзена!",
         "uk": "Категорію «{name}» додано!"
     },
-    "delete_category": {
-        "en": "Delete Category",
-        "pl": "Usuń kategorię",
-        "be": "Выдаліць катэгорыю",
-        "uk": "Видалити категорію"
-    },
     "confirm_delete_category_message": {
         "en": "Are you sure you want to delete category «{name}»? This will NOT delete subcategories but will remove links.",
         "pl": "Czy na pewno chcesz usunąć kategorię «{name}»? To NIE usunie podkategorii, ale usunie powiązania.",
@@ -334,12 +316,6 @@
         "pl": "Wybierz kategorie",
         "be": "Абярыце катэгорыі",
         "uk": "Обрати категорії"
-    },
-    "no_categories_message": {
-        "en": "No categories found.",
-        "pl": "Nie znaleziono żadnych kategorii.",
-        "be": "Катэгорый не знойдзена.",
-        "uk": "Категорій не знайдено."
     },
     "submit_project": {
         "en": "Submit for Review",
@@ -364,18 +340,6 @@
         "pl": "Wróć do wersji roboczej",
         "be": "Вярнуць у чарнавікі",
         "uk": "Повернути в чернетки"
-    },
-    "status_changed_message": {
-        "en": "Project status changed to: {status}",
-        "pl": "Status projektu zmieniony na: {status}",
-        "be": "Статус праекта зменены на: {status}",
-        "uk": "Статус проєкту змінено на: {status}"
-    },
-    "status_change_failed_message": {
-        "en": "Failed to change status. Invalid transition.",
-        "pl": "Nie udało się zmienić statusu. Nieprawidłowe przejście.",
-        "be": "Не ўдалося змяніць статус. Няправільны пераход.",
-        "uk": "Не вдалося змінити статус. Недопустимий перехід."
     },
     "delete_this_project": {
         "en": "Delete Project",
@@ -418,12 +382,6 @@
         "pl": "Edytuj typ",
         "be": "Рэдагаваць тып",
         "uk": "Змінити тип"
-    },
-    "enter_new_value_message": {
-        "en": "Enter the new value:",
-        "pl": "Wprowadź nową wartość:",
-        "be": "Увядзіце новае значэнне:",
-        "uk": "Введи нове значення:"
     },
     "project_updated_message": {
         "en": "Project updated!",
@@ -569,24 +527,6 @@
         "be": "🔙 Вярнуцца",
         "uk": "🔙 Повернутися назад"
     },
-    "cancel": {
-        "en": "❌ Cancel",
-        "pl": "❌ Anuluj",
-        "be": "❌ Адмяніць",
-        "uk": "❌ Скасувати"
-    },
-    "no_content_found": {
-        "en": "No content found.",
-        "pl": "Nie znaleziono żadnej treści.",
-        "be": "Кантэнт не знойдзены.",
-        "uk": "Контент не знайдено."
-    },
-    "unknown_command_message": {
-        "en": "I'm sorry, but I don't recognize that command. Please try a different command.",
-        "pl": "Przepraszam, ale nie rozpoznaję tej komendy. Proszę spróbuj innej komendy.",
-        "be": "Прабачце, але я не распазнаю гэтую каманду. Калі ласка, паспрабуйце іншую каманду.",
-        "uk": "Вибачте, але я не розпізнаю цю команду. Будь ласка, спробуйте іншу команду."
-    },
     "no_permission_message": {
         "en": "You do not have permission to perform this command.",
         "pl": "Nie masz uprawnień do wykonania tego polecenia.",
@@ -624,10 +564,10 @@
         "uk": "Роль з назвою «{roleName}» вже існує. Виберіть іншу назву."
     },
     "create_role_usage_message": {
-        "en": "Usage: /create_role &lt;role_name&gt;",
-        "pl": "Użycie: /create_role &lt;nazwa_roli&gt;",
-        "be": "Выкарыстанне: /create_role &lt;назва_ролі&gt;",
-        "uk": "Використання: /create_role &lt;назва_ролі&gt;"
+        "en": "Usage: \/create_role &lt;role_name&gt;",
+        "pl": "Użycie: \/create_role &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/create_role &lt;назва_ролі&gt;",
+        "uk": "Використання: \/create_role &lt;назва_ролі&gt;"
     },
     "delete_role": {
         "en": "Delete role",
@@ -672,16 +612,16 @@
         "uk": "Ролі «{roleName}» не знайдено."
     },
     "assign_role_usage_message": {
-        "en": "Usage: /assign_role &lt;user_id&gt; &lt;role_name&gt;",
-        "pl": "Użycie: /assign_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
-        "be": "Выкарыстанне: /assign_role &lt;user_id&gt; &lt;назва_ролі&gt;",
-        "uk": "Використання: /assign_role &lt;user_id&gt; &lt;назва_ролі&gt;"
+        "en": "Usage: \/assign_role &lt;user_id&gt; &lt;role_name&gt;",
+        "pl": "Użycie: \/assign_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/assign_role &lt;user_id&gt; &lt;назва_ролі&gt;",
+        "uk": "Використання: \/assign_role &lt;user_id&gt; &lt;назва_ролі&gt;"
     },
     "remove_role_usage_message": {
-        "en": "Usage: /remove_role &lt;user_id&gt; &lt;role_name&gt;",
-        "pl": "Użycie: /remove_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
-        "be": "Выкарыстанне: /remove_role &lt;user_id&gt; &lt;назва_ролі&gt;",
-        "uk": "Використання: /remove_role &lt;user_id&gt; &lt;назва_ролі&gt;"
+        "en": "Usage: \/remove_role &lt;user_id&gt; &lt;role_name&gt;",
+        "pl": "Użycie: \/remove_role &lt;user_id&gt; &lt;nazwa_roli&gt;",
+        "be": "Выкарыстанне: \/remove_role &lt;user_id&gt; &lt;назва_ролі&gt;",
+        "uk": "Використання: \/remove_role &lt;user_id&gt; &lt;назва_ролі&gt;"
     },
     "remove_role_message": {
         "en": "Role «{roleName}» was successfully removed from user {userId}.",
@@ -725,12 +665,6 @@
         "be": "Прызначыць ролю карыстальніку",
         "uk": "Призначити роль користувачу"
     },
-    "unassign_role_from_user": {
-        "en": "Remove Role from User",
-        "pl": "Zabierz rolę użytkownikowi",
-        "be": "Забраць ролю ў карыстальніка",
-        "uk": "Забрати роль у користувача"
-    },
     "select_parent_message": {
         "en": "Select parent role for {role}:",
         "pl": "Wybierz rolę nadrzędną dla {role}:",
@@ -748,12 +682,6 @@
         "pl": "Ta rola nie ma ról podrzędnych.",
         "be": "Гэтая роля не мае даччыных роляў.",
         "uk": "Ця роль не має дочірніх ролей."
-    },
-    "remove": {
-        "en": "Remove",
-        "pl": "Usuń",
-        "be": "Выдаліць",
-        "uk": "Видалити"
     },
     "select_child_to_remove_message": {
         "en": "Select child of {role} to remove relationship:",
@@ -893,12 +821,6 @@
         "be": "Адкрыць галоўнае меню",
         "uk": "Відкрити головне меню"
     },
-    "admin_panel": {
-        "en": "Admin Panel",
-        "pl": "Panel Admina",
-        "be": "Адмін-панэль",
-        "uk": "Адмін-панель"
-    },
     "create_public_page": {
         "en": "➕ Create Public Page",
         "pl": "➕ Utwórz stronę publiczną",
@@ -946,29 +868,5 @@
         "pl": "❌ Błąd: Nie można zaktualizować statusu. Możesz nie mieć uprawnień lub przejście jest nieprawidłowe.",
         "be": "❌ Памылка: немагчыма абнавіць статус. Магчыма, у вас няма правоў, або пераход немагчымы.",
         "uk": "❌ Помилка: неможливо оновити статус. Можливо, у вас немає прав, або перехід неможливий."
-    },
-    "bot_notification_header": {
-        "en": "🔔 <b>New Notification</b>\n\n",
-        "pl": "🔔 <b>Nowe powiadomienie</b>\n\n",
-        "be": "🔔 <b>Новае апавяшчэнне</b>\n\n",
-        "uk": "🔔 <b>Нове сповіщення</b>\n\n"
-    },
-    "bot_notification_footer": {
-        "en": "\n\n<i>Open the Mini App to view.</i>",
-        "pl": "\n\n<i>Otwórz Mini App, aby zobaczyć.</i>",
-        "be": "\n\n<i>Адкрыйце Mini App, каб праглядзець.</i>",
-        "uk": "\n\n<i>Відкрийте Mini App, щоб переглянути.</i>"
-    },
-    "bot_new_comment": {
-        "en": "New comment on your project: {shortText}",
-        "pl": "Nowy komentarz do twojego projektu: {shortText}",
-        "be": "Новы каментар да вашага праекта: {shortText}",
-        "uk": "Новий коментар до вашого проєкту: {shortText}"
-    },
-    "bot_comment_reply": {
-        "en": "Reply to your comment: {shortText}",
-        "pl": "Odpowiedź na twój komentarz: {shortText}",
-        "be": "Адказ на ваш каментар: {shortText}",
-        "uk": "Відповідь на ваш коментар: {shortText}"
     }
 }
