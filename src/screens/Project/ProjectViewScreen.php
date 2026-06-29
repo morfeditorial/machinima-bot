@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Project;
 
 use morfeditorial\BaseMachinimaScreen;
+use App\Entity\User;
 
 class ProjectViewScreen extends BaseMachinimaScreen
 {
@@ -42,7 +43,6 @@ class ProjectViewScreen extends BaseMachinimaScreen
             return;
         }
 
-        $user_service = $this->getUserService();
         $content_service = $this->container->get('content_service');
         $visuals_links = $this->getVisualsLinks();
 
@@ -81,7 +81,7 @@ class ProjectViewScreen extends BaseMachinimaScreen
                             ['text' => $this->translate('delete_this_project'), 'callback_data' => $this->makePayload('project', 'delete', (string)$project_id)],
                         ],
                         [
-                            ['text' => $this->translate('go_back'), 'callback_data' => $user_service->getCurrentPage($userId) ?? $this->makePayload('project', 'list')],
+                            ['text' => $this->translate('go_back'), 'callback_data' => $this->em->find(User::class, $userId)?->getCurrentPage() ?? $this->makePayload('project', 'list')],
                         ],
                     ],
                 ];
