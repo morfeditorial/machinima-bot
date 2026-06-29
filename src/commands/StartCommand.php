@@ -19,10 +19,10 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial\commands;
+namespace Morfeditorial\commands;
 
-use morfeditorial\BaseMachinimaCommand;
-use morfeditorial\TelegramBotBundle\Client\TelegramClient;
+use Morfeditorial\BaseMachinimaCommand;
+use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
 
 class StartCommand extends BaseMachinimaCommand
 {

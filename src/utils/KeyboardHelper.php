@@ -19,9 +19,9 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial\utils;
+namespace Morfeditorial\utils;
 
-use morfeditorial\Translator;
+use Morfeditorial\Translator;
 
 class KeyboardHelper
 {

@@ -19,9 +19,9 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial\screens\Staff;
+namespace Morfeditorial\screens\Staff;
 
-use morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\BaseMachinimaScreen;
 
 class StaffManageScreen extends BaseMachinimaScreen
 {

@@ -19,9 +19,9 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial\screens\Project;
+namespace Morfeditorial\screens\Project;
 
-use morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\BaseMachinimaScreen;
 
 class ProjectCreateScreen extends BaseMachinimaScreen
 {

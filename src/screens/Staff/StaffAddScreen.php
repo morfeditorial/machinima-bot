@@ -19,10 +19,10 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial\screens\Staff;
+namespace Morfeditorial\screens\Staff;
 
 use App\Entity\Author;
-use morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\BaseMachinimaScreen;
 
 class StaffAddScreen extends BaseMachinimaScreen
 {
@@ -70,7 +70,7 @@ class StaffAddScreen extends BaseMachinimaScreen
                 }
 
                 $allAuthors = $this->em->getRepository(Author::class)->findAll();
-                $keyboard = \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
+                $keyboard = \Morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
                     $this->getTranslator(),
                     $allAuthors,
                     $page,

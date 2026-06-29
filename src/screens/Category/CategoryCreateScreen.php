@@ -19,9 +19,9 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial\screens\Category;
+namespace Morfeditorial\screens\Category;
 
-use morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\BaseMachinimaScreen;
 
 class CategoryCreateScreen extends BaseMachinimaScreen
 {

@@ -19,10 +19,10 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial\screens\Admin;
+namespace Morfeditorial\screens\Admin;
 
 use App\Entity\Author;
-use morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\BaseMachinimaScreen;
 
 class ControlPanelScreen extends BaseMachinimaScreen
 {

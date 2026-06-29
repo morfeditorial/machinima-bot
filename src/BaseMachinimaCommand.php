@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial;
+namespace Morfeditorial;
 
 use App\Repository\AuthorRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserStateRepository;
 use App\Service\RoleService;
 use Doctrine\ORM\EntityManagerInterface;
-use morfeditorial\TelegramBotBundle\Command\AbstractCommand as BundleAbstractCommand;
+use Morfeditorial\TelegramBotBundle\Command\AbstractCommand as BundleAbstractCommand;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Service\Attribute\Required;

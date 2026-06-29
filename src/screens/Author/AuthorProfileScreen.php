@@ -19,10 +19,10 @@
 
 declare(strict_types=1);
 
-namespace morfeditorial\screens\Author;
+namespace Morfeditorial\screens\Author;
 
 use App\Entity\Author;
-use morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\BaseMachinimaScreen;
 
 class AuthorProfileScreen extends BaseMachinimaScreen
 {
