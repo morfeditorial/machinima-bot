@@ -22,6 +22,9 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Author;
 
 use morfeditorial\BaseMachinimaScreen;
+use App\Entity\User;
+use App\Entity\UserState;
+use App\Entity\Author;
 
 class AuthorProfileScreen extends BaseMachinimaScreen
 {
@@ -52,10 +55,9 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             $this->renderProfile($chatId, $userId, $authorId);
         } elseif ($route === 'set_private') {
             $authorId = (int)($params[0] ?? 0);
-            $authorService = $this->getAuthorService();
-            $author = $authorService->getAuthorById($authorId);
+            $author = $this->em->find(Author::class, $authorId);
 
-            $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
+            $isOwnProfile = $author && (int) $author->getTelegramUserId() === $userId;
 
             if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
@@ -63,8 +65,12 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             }
 
             if (null !== $author) {
-                $isPrivate = $authorService->isPrivate($authorId);
-                $authorService->setPrivate($authorId, !$isPrivate);
+                $isPrivate = $author->getState() === 'private';
+                $privAuthor = $this->em->find(Author::class, $authorId);
+                if ($privAuthor) {
+                    $privAuthor->setState(!$isPrivate ? 'private' : 'public');
+                    $this->em->flush();
+                }
                 $this->renderProfile($chatId, $userId, $authorId);
             }
         } elseif ($route === 'unlink_telegram') {
@@ -72,20 +78,29 @@ class AuthorProfileScreen extends BaseMachinimaScreen
                 return;
             }
             $authorId = (int)($params[0] ?? 0);
-            $authorService = $this->getAuthorService();
-            $authorService->setTelegramId($authorId, null);
+            $tgAuthor = $this->em->find(Author::class, $authorId);
+            if ($tgAuthor) {
+                $tgAuthor->setTelegramUserId(null);
+                $this->em->flush();
+            }
             $this->renderProfile($chatId, $userId, $authorId);
         }
     }
 
     private function renderProfile(int $chatId, int $userId, int $authorId): void
     {
-        $this->getUserStateService()->clearState($userId);
+        $userObj = $this->em->find(User::class, $userId);
+        if ($userObj) {
+            $states = $this->em->getRepository(UserState::class)->findBy(['user' => $userObj]);
+            foreach ($states as $state) {
+                $this->em->remove($state);
+            }
+            $this->em->flush();
+        }
 
-        $authorService = $this->getAuthorService();
-        $author = $authorService->getAuthorById($authorId);
+        $author = $this->em->find(Author::class, $authorId);
 
-        $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
+        $isOwnProfile = $author && (int) $author->getTelegramUserId() === $userId;
 
         if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
@@ -95,8 +110,8 @@ class AuthorProfileScreen extends BaseMachinimaScreen
         $visualsLinks = $this->getVisualsLinks();
 
         if (null !== $author) {
-            $authorStatus = $authorService->isPrivate($authorId);
-            $currentPage = $this->getUserService()->getCurrentPage($userId);
+            $authorStatus = $author->getState() === 'private';
+            $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage();
 
             $keyboard = [
                 'inline_keyboard' => [
@@ -105,14 +120,14 @@ class AuthorProfileScreen extends BaseMachinimaScreen
                         ['text' => ($authorStatus ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'author:set_private:' . $authorId],
                     ],
                     [
-                        ['text' => ($author['biography'] ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'author:edit_bio:' . $authorId],
-                        ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'author:edit_link:' . $authorId],
+                        ['text' => ($author->getBiography() ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'author:edit_bio:' . $authorId],
+                        ['text' => ($author->getChannelLink() ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'author:edit_link:' . $authorId],
                     ],
                 ],
             ];
 
             if ($this->isGranted('ROLE_ADMIN')) {
-                if ($author['telegram_user_id']) {
+                if ($author->getTelegramUserId()) {
                     $keyboard['inline_keyboard'][] = [
                         ['text' => $this->translate('unlink_telegram'), 'callback_data' => 'author:unlink_telegram:' . $authorId],
                     ];
@@ -136,9 +151,9 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             $text = str_replace(
                 ['{author}', '{biography}', '{link}'],
                 [
-                    htmlspecialchars($author['name']),
-                    ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')),
-                    ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))
+                    htmlspecialchars($author->getName()),
+                    ($author->getBiography() ? htmlspecialchars($author->getBiography()) : $this->translate('bio_not_set')),
+                    ($author->getChannelLink() ? htmlspecialchars($author->getChannelLink()) : $this->translate('link_not_set'))
                 ],
                 $this->translate('author_info_message')
             );
