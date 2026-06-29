@@ -23,6 +23,9 @@ namespace morfeditorial\commands;
 
 use morfeditorial\BaseMachinimaCommand;
 use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
+use App\Entity\User;
+use App\Entity\UserState;
+use App\Entity\Author;
 
 class AdminPanelCommand extends BaseMachinimaCommand
 {
@@ -50,23 +53,33 @@ class AdminPanelCommand extends BaseMachinimaCommand
 
         if (!$chatId || !$userId) return;
 
-        $this->getUserStateService()->clearState($userId);
+        $user = $this->em->find(User::class, $userId);
+        if (!$user) {
+            $user = new User();
+            $user->setId($userId);
+            $this->em->persist($user);
+        }
 
-        $current_panel = $this->getUserService()->getCurrentPanel($userId);
-        if (!is_null($current_panel)) {
+        $states = $this->em->getRepository(UserState::class)->findBy(['user' => $user]);
+        foreach ($states as $state) {
+            $this->em->remove($state);
+        }
+
+        $currentPanel = $user->getCurrentPanel();
+        if (!is_null($currentPanel)) {
             try {
-                $this->client->deleteMessage($chatId, $current_panel);
+                $this->client->deleteMessage($chatId, $currentPanel);
             } catch (\Throwable $e) {
-                // Old panel message may have been already deleted
             }
         }
 
-        $this->getUserService()->setCurrentPanel($userId, $messageId + 1);
+        $user->setCurrentPanel($messageId + 1);
 
-        $current_page = $this->getUserService()->getCurrentPage($userId);
-        if (!is_null($current_page)) {
-            $this->getUserService()->resetCurrentPage($userId);
+        if (!is_null($user->getCurrentPage())) {
+            $user->setCurrentPage(null);
         }
+
+        $this->em->flush();
 
         $keyboard = ['inline_keyboard' => []];
 
@@ -75,11 +88,11 @@ class AdminPanelCommand extends BaseMachinimaCommand
             ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
         ];
 
-        $myAuthorProfile = $this->getAuthorService()->getAuthorByTelegramId($userId);
+        $myAuthorProfile = $this->em->getRepository(Author::class)->findOneBy(['telegramUserId' => $userId]);
 
         if ($myAuthorProfile) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => '📝 ' . $this->translate('public_page'), 'callback_data' => 'author:profile:' . $myAuthorProfile['id']],
+                ['text' => '📝 ' . $this->translate('public_page'), 'callback_data' => 'author:profile:' . $myAuthorProfile->getId()],
             ];
         } else {
             $keyboard['inline_keyboard'][] = [
