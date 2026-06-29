@@ -1,0 +1,19 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    Morfeditorial\Screens\:
+        resource: '../../Screens/'
+        public: true
+
+    Morfeditorial\Commands\:
+        resource: '../../Commands/'
+        public: true
+
+    Morfeditorial\Translator:
+        public: true
+
+    bot_translator:
+        alias: Morfeditorial\Translator
+        public: true
