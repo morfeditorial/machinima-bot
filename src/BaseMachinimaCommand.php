@@ -9,7 +9,7 @@ use App\Repository\UserRepository;
 use App\Repository\UserStateRepository;
 use App\Service\RoleService;
 use Doctrine\ORM\EntityManagerInterface;
-use Morfeditorial\TelegramBotBundle\Command\AbstractCommand as BundleAbstractCommand;
+use morfeditorial\TelegramBotBundle\Command\AbstractCommand as BundleAbstractCommand;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Service\Attribute\Required;

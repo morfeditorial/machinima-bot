@@ -22,7 +22,7 @@ declare(strict_types=1);
 namespace morfeditorial\commands;
 
 use morfeditorial\BaseMachinimaCommand;
-use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
+use morfeditorial\TelegramBotBundle\Client\TelegramClient;
 
 class CreateRoleCommand extends BaseMachinimaCommand
 {

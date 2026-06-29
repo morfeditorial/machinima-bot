@@ -26,7 +26,7 @@ use App\Repository\UserRepository;
 use App\Repository\UserStateRepository;
 use App\Service\RoleService;
 use Doctrine\ORM\EntityManagerInterface;
-use Morfeditorial\TelegramBotBundle\Screen\AbstractScreen as BundleAbstractScreen;
+use morfeditorial\TelegramBotBundle\Screen\AbstractScreen as BundleAbstractScreen;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Service\Attribute\Required;
