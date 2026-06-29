@@ -86,20 +86,7 @@ class RoleRemoveScreen extends BaseMachinimaScreen
 
                 $caption = str_replace('{role}', $role_name, $this->translate('select_child_to_remove_message'));
 
-                if ($current_panel) {
-                    $this->client->request('editMessageMedia', [
-                        'chat_id' => $chatId,
-                        'message_id' => $current_panel,
-                        'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
-                        'reply_markup' => $keyboard
-                    ]);
-                } else {
-                    $this->client->sendPhoto($chatId, $visuals_links[1], [
-                        'caption' => $caption,
-                        'parse_mode' => 'HTML',
-                        'reply_markup' => $keyboard
-                    ]);
-                }
+                $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             }
         } elseif ('confirm_remove_child' === $subAction) {
             $parent_name = $parsed['params'][1] ?? '';
@@ -145,20 +132,7 @@ class RoleRemoveScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $message_text, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], [
-                    'caption' => $message_text,
-                    'parse_mode' => 'HTML',
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $message_text, $keyboard);
         }
     }
 }

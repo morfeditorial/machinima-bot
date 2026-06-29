@@ -93,20 +93,7 @@ class RoleViewScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $message_text, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], [
-                    'caption' => $message_text,
-                    'parse_mode' => 'HTML',
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $message_text, $keyboard);
         } else {
             // Render list
             $all_roles = $role_service->getAllRolesSorted();
@@ -135,20 +122,7 @@ class RoleViewScreen extends BaseMachinimaScreen
                 ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'control')],
             ];
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('role_hierarchy_message'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], [
-                    'caption' => $this->translate('role_hierarchy_message'),
-                    'parse_mode' => 'HTML',
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('role_hierarchy_message'), $keyboard);
         }
     }
 }

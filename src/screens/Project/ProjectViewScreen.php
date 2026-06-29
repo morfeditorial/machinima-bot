@@ -100,19 +100,9 @@ class ProjectViewScreen extends BaseMachinimaScreen
                     array_unshift($keyboard['inline_keyboard'], $transition_buttons);
                 }
 
-                $current_panel = $user_service->getCurrentPanel($userId);
                 $cover = $project['cover_file_id'] ?: $visuals_links[1];
                 
-                if ($current_panel) {
-                    $this->client->request('editMessageMedia', [
-                        'chat_id' => $chatId,
-                        'message_id' => $current_panel,
-                        'media' => ['type' => 'photo', 'media' => $cover, 'caption' => $message_text, 'parse_mode' => 'HTML'],
-                        'reply_markup' => $keyboard
-                    ]);
-                } else {
-                    $this->client->sendPhoto($chatId, $cover, $message_text, null, null, null, false, $keyboard);
-                }
+                $this->renderPanel($chatId, $userId, $cover, $message_text, $keyboard);
             }
         } elseif ('transition' === $subAction) {
             $projectId = (int)($parsed['params'][0] ?? 0);

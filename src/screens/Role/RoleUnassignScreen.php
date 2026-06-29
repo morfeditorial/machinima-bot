@@ -58,8 +58,6 @@ class RoleUnassignScreen extends BaseMachinimaScreen
         $user_state_service = $this->getUserStateService();
         $user_service = $this->getUserService();
         $visuals_links = $this->getVisualsLinks();
-        $current_panel = $user_service->getCurrentPanel($userId);
-
         if ($action && str_starts_with($action, 'role:unassign')) {
             $parsed = $this->parsePayload($action);
             $subAction = $parsed['params'][0] ?? '';
@@ -78,20 +76,7 @@ class RoleUnassignScreen extends BaseMachinimaScreen
 
                 $caption = str_replace('{role}', $role_name, $this->translate('enter_user_id_to_remove_role_message'));
 
-                if ($current_panel) {
-                    $this->client->request('editMessageMedia', [
-                        'chat_id' => $chatId,
-                        'message_id' => $current_panel,
-                        'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
-                        'reply_markup' => $keyboard
-                    ]);
-                } else {
-                    $this->client->sendPhoto($chatId, $visuals_links[1], [
-                        'caption' => $caption,
-                        'parse_mode' => 'HTML',
-                        'reply_markup' => $keyboard
-                    ]);
-                }
+                $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             }
             return;
         }

@@ -59,8 +59,6 @@ class ProjectDeleteScreen extends BaseMachinimaScreen
         if ('prompt' === $subAction) {
             $project = $content_service->getContentById($project_id);
             if ($project) {
-                $current_panel = $user_service->getCurrentPanel($userId);
-
                 $keyboard = [
                     'inline_keyboard' => [
                         [
@@ -74,16 +72,7 @@ class ProjectDeleteScreen extends BaseMachinimaScreen
 
                 $caption = str_replace('{title}', htmlspecialchars($project['title']), $this->translate('confirm_delete_project_message'));
 
-                if ($current_panel) {
-                    $this->client->request('editMessageMedia', [
-                        'chat_id' => $chatId,
-                        'message_id' => $current_panel,
-                        'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
-                        'reply_markup' => $keyboard
-                    ]);
-                } else {
-                    $this->client->sendPhoto($chatId, $visuals_links[1], $caption, null, null, null, false, $keyboard);
-                }
+                $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             }
         } elseif ('confirm' === $subAction) {
             if ($content_service->deleteContent($project_id)) {

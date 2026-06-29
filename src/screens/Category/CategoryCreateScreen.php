@@ -73,18 +73,7 @@ class CategoryCreateScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            $current_panel = $this->getUserService()->getCurrentPanel($userId);
-
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('enter_category_name_message'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('enter_category_name_message'), $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('enter_category_name_message'), $keyboard);
 
             if (isset($update['callback_query']['id'])) {
                 $this->client->answerCallbackQuery($update['callback_query']['id']);
@@ -116,16 +105,7 @@ class CategoryCreateScreen extends BaseMachinimaScreen
                     ],
                 ];
 
-                if (isset($current_panel) && $current_panel) {
-                    $this->client->request('editMessageMedia', [
-                        'chat_id' => $chatId,
-                        'message_id' => $current_panel,
-                        'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('category_added_message'), 'parse_mode' => 'HTML'],
-                        'reply_markup' => $keyboard
-                    ]);
-                } else {
-                    $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('category_added_message'), $keyboard);
-                }
+                $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('category_added_message'), $keyboard);
             }
         }
     }

@@ -48,8 +48,6 @@ class StaffRemoveScreen extends BaseMachinimaScreen
         $authorId = isset($payload['params'][2]) ? (int) $payload['params'][2] : 0;
         $role = isset($payload['params'][3]) ? base64_decode($payload['params'][3]) : '';
 
-        $current_panel = $this->getUserService()->getCurrentPanel($userId);
-
         if ('confirm' === $subAction) {
             $keyboard = [
                 'inline_keyboard' => [
@@ -62,16 +60,7 @@ class StaffRemoveScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('confirm_delete_message'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('confirm_delete_message'), $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('confirm_delete_message'), $keyboard);
         } elseif ('execute' === $subAction) {
             $content_service = $this->container->get('content_service');
             $content_service->removeStaff($projectId, $authorId, $role);
@@ -84,16 +73,7 @@ class StaffRemoveScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('manage_staff'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('manage_staff'), $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('manage_staff'), $keyboard);
         }
 
         if (isset($update['callback_query']['id'])) {

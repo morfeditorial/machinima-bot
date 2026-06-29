@@ -78,8 +78,6 @@ class RoleAssignScreen extends BaseMachinimaScreen
             $role_name = $payload['params'][1] ?? '';
             $this->getUserStateService()->setState($userId, ['role_name' => $role_name], 'awaiting_user_id_for_role');
 
-            $current_panel = $this->getUserService()->getCurrentPanel($userId);
-
             $keyboard = [
                 'inline_keyboard' => [
                     [
@@ -90,24 +88,7 @@ class RoleAssignScreen extends BaseMachinimaScreen
 
             $caption = str_replace('{role}', htmlspecialchars($role_name), $this->translate('enter_user_id_for_role_message'));
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => [
-                        'type' => 'photo',
-                        'media' => $this->getVisualsLinks()[1],
-                        'caption' => $caption,
-                        'parse_mode' => 'HTML',
-                    ],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], [
-                    'caption' => $caption,
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $caption, $keyboard);
 
             if (isset($update['callback_query']['id'])) {
                 $this->client->answerCallbackQuery($update['callback_query']['id']);

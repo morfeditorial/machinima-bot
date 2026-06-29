@@ -49,7 +49,6 @@ class ProjectTypeScreen extends BaseMachinimaScreen
         $parsed = $this->parsePayload($action);
         $type = $parsed['params'][0] ?? null;
 
-        $current_panel = $user_service->getCurrentPanel($userId);
         $state_data = $user_state_service->getState($userId, 'awaiting_project_description');
 
         if ($state_data && $type) {
@@ -61,16 +60,7 @@ class ProjectTypeScreen extends BaseMachinimaScreen
                     ],
                 ],
             ];
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('enter_project_description_message'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate('enter_project_description_message'), null, null, null, false, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('enter_project_description_message'), $keyboard);
         }
     }
 }

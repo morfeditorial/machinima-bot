@@ -46,8 +46,6 @@ class CategoryDeleteScreen extends BaseMachinimaScreen
         $subAction = $payload['params'][0] ?? '';
         $categoryId = isset($payload['params'][1]) ? (int) $payload['params'][1] : 0;
 
-        $current_panel = $this->getUserService()->getCurrentPanel($userId);
-
         if ('confirm' === $subAction) {
             $keyboard = [
                 'inline_keyboard' => [
@@ -62,16 +60,7 @@ class CategoryDeleteScreen extends BaseMachinimaScreen
 
             $text = str_replace('{name}', 'ID ' . $categoryId, $this->translate('confirm_delete_category_message'));
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $text, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $text, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $text, $keyboard);
         } elseif ('execute' === $subAction) {
             $this->container->get('content_service')->deleteCategory($categoryId);
 
@@ -83,16 +72,7 @@ class CategoryDeleteScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('category_deleted_message'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('category_deleted_message'), $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('category_deleted_message'), $keyboard);
         }
 
         if (isset($update['callback_query']['id'])) {

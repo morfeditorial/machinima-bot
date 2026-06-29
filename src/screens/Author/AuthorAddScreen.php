@@ -58,7 +58,6 @@ class AuthorAddScreen extends BaseMachinimaScreen
             }
 
             $this->getUserStateService()->setState($userId, 'awaiting_author_name_creation');
-            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
             $visualsLinks = $this->getVisualsLinks();
 
             $keyboard = [
@@ -69,16 +68,7 @@ class AuthorAddScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($currentPanel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $currentPanel,
-                    'media' => ['type' => 'photo', 'media' => $visualsLinks[10], 'caption' => $this->translate('add_author_message'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visualsLinks[10], $this->translate('add_author_message'), null, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visualsLinks[10], $this->translate('add_author_message'), $keyboard);
             return;
         }
 
@@ -126,19 +116,9 @@ class AuthorAddScreen extends BaseMachinimaScreen
                 ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
             ];
 
-            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
             $visualsLinks = $this->getVisualsLinks();
 
-            if ($currentPanel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $currentPanel,
-                    'media' => ['type' => 'photo', 'media' => $visualsLinks[2], 'caption' => str_replace('{author}', htmlspecialchars($text), $this->translate('author_added_message')), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visualsLinks[2], str_replace('{author}', htmlspecialchars($text), $this->translate('author_added_message')), null, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visualsLinks[2], str_replace('{author}', htmlspecialchars($text), $this->translate('author_added_message')), $keyboard);
         }
     }
 }

@@ -50,7 +50,6 @@ class AuthorListScreen extends BaseMachinimaScreen
             $page = (int)($payload['params'][0] ?? 1);
             $this->getUserService()->setCurrentPage($userId, 'author:list:' . $page);
 
-            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
             $visualsLinks = $this->getVisualsLinks();
 
             $keyboard = KeyboardHelper::generateAuthorsKeyboard(
@@ -66,20 +65,7 @@ class AuthorListScreen extends BaseMachinimaScreen
             $authors = $this->getAuthorService()->getAllAuthors();
             $messageText = empty($authors) ? $this->translate('empty_authors_list_message') : $this->translate('list_of_authors_message');
 
-            if ($currentPanel) {
-                try {
-                    $this->client->request('editMessageMedia', [
-                        'chat_id' => $chatId,
-                        'message_id' => $currentPanel,
-                        'media' => ['type' => 'photo', 'media' => $visualsLinks[9], 'caption' => $messageText, 'parse_mode' => 'HTML'],
-                        'reply_markup' => $keyboard
-                    ]);
-                } catch (\Throwable $e) {
-                    $this->client->sendPhoto($chatId, $visualsLinks[9], ['caption' => $messageText, 'parse_mode' => 'HTML', 'reply_markup' => $keyboard]);
-                }
-            } else {
-                $this->client->sendPhoto($chatId, $visualsLinks[9], ['caption' => $messageText, 'parse_mode' => 'HTML', 'reply_markup' => $keyboard]);
-            }
+            $this->renderPanel($chatId, $userId, $visualsLinks[9], $messageText, $keyboard, true);
         }
     }
 }

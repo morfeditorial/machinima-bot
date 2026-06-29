@@ -43,8 +43,6 @@ class ProjectListScreen extends BaseMachinimaScreen
         $visuals_links = $this->getVisualsLinks();
 
         $user_state_service->clearState($userId);
-        $current_panel = $user_service->getCurrentPanel($userId);
-
         $parsed = $this->parsePayload($action);
         $page = isset($parsed['params'][0]) ? (int)$parsed['params'][0] : 1;
         if ($page < 1) {
@@ -84,19 +82,6 @@ class ProjectListScreen extends BaseMachinimaScreen
             ['text' => $this->translate('go_back'), 'callback_data' => 'admin:panel'],
         ];
 
-        if ($current_panel) {
-            try {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('manage_projects'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } catch (\Throwable $e) {
-                $this->client->sendPhoto($chatId, $visuals_links[1], ['caption' => $this->translate('manage_projects'), 'parse_mode' => 'HTML', 'reply_markup' => $keyboard]);
-            }
-        } else {
-            $this->client->sendPhoto($chatId, $visuals_links[1], ['caption' => $this->translate('manage_projects'), 'parse_mode' => 'HTML', 'reply_markup' => $keyboard]);
-        }
+        $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('manage_projects'), $keyboard, true);
     }
 }

@@ -95,25 +95,11 @@ class ControlPanelScreen extends BaseMachinimaScreen
             ];
         }
 
-        $currentPanel = $this->getUserService()->getCurrentPanel($userId);
         $visualsLinks = $this->getVisualsLinks();
 
         $caption = $this->translate('admin_panel_message');
 
-        if ($currentPanel) {
-            $this->client->request('editMessageMedia', [
-                'chat_id' => $chatId,
-                'message_id' => $currentPanel,
-                'media' => ['type' => 'photo', 'media' => $visualsLinks[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
-                'reply_markup' => $keyboard
-            ]);
-        } else {
-            $this->client->sendPhoto($chatId, $visualsLinks[1], [
-                'caption' => $caption,
-                'parse_mode' => 'HTML',
-                'reply_markup' => $keyboard
-            ]);
-        }
+        $this->renderPanel($chatId, $userId, $visualsLinks[1], $caption, $keyboard);
 
         // If there's a text message (which shouldn't happen unless we listen for it, but just in case)
         if ($text) {

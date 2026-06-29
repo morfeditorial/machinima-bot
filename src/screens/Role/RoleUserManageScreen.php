@@ -126,20 +126,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
             ];
             
             $caption = $this->translate('enter_user_id_for_management_message');
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], [
-                    'caption' => $caption,
-                    'parse_mode' => 'HTML',
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             return;
         }
 
@@ -165,20 +152,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
                 ],
             ];
             
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], [
-                    'caption' => $caption,
-                    'parse_mode' => 'HTML',
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             return;
         }
 
@@ -197,20 +171,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
             ];
             $caption = str_replace('{userId}', (string)$targetUserId, $this->translate('select_role_to_add_message'));
             
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], [
-                    'caption' => $caption,
-                    'parse_mode' => 'HTML',
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             return;
         }
 
@@ -226,20 +187,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
             ];
             $caption = str_replace('{userId}', (string)$targetUserId, $this->translate('select_role_to_remove_message'));
             
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $caption, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], [
-                    'caption' => $caption,
-                    'parse_mode' => 'HTML',
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             return;
         }
     }

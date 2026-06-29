@@ -116,4 +116,44 @@ abstract class BaseMachinimaScreen extends BundleAbstractScreen
         $parts = [$domain, $action, ...$params];
         return implode(':', $parts);
     }
+
+    /**
+     * Render a panel: edit existing panel message or send a new photo.
+     */
+    protected function renderPanel(int $chatId, int $userId, string $visual, string $caption, array $keyboard, bool $safe = false): void
+    {
+        $currentPanel = $this->getUserService()->getCurrentPanel($userId);
+
+        $editParams = [
+            'chat_id' => $chatId,
+            'message_id' => $currentPanel,
+            'media' => [
+                'type' => 'photo',
+                'media' => $visual,
+                'caption' => $caption,
+                'parse_mode' => 'HTML',
+            ],
+            'reply_markup' => $keyboard,
+        ];
+
+        $sendParams = [
+            'caption' => $caption,
+            'parse_mode' => 'HTML',
+            'reply_markup' => $keyboard,
+        ];
+
+        if ($currentPanel) {
+            if ($safe) {
+                try {
+                    $this->client->request('editMessageMedia', $editParams);
+                } catch (\Throwable) {
+                    $this->client->sendPhoto($chatId, $visual, $sendParams);
+                }
+            } else {
+                $this->client->request('editMessageMedia', $editParams);
+            }
+        } else {
+            $this->client->sendPhoto($chatId, $visual, $sendParams);
+        }
+    }
 }

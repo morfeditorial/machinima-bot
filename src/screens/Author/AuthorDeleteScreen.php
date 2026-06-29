@@ -57,7 +57,6 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             $page = $route === 'delete_page' ? (int)($params[0] ?? 1) : 1;
             $this->getUserService()->setCurrentPage($userId, 'delete_page_' . $page);
 
-            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
             $visualsLinks = $this->getVisualsLinks();
 
             $keyboard = KeyboardHelper::generateAuthorsKeyboard(
@@ -73,16 +72,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             $authors = $this->getAuthorService()->getAllAuthors();
             $messageText = empty($authors) ? $this->translate('empty_authors_list_message') : $this->translate('delete_author_message');
 
-            if ($currentPanel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $currentPanel,
-                    'media' => ['type' => 'photo', 'media' => $visualsLinks[1], 'caption' => $messageText, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visualsLinks[1], $messageText, null, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visualsLinks[1], $messageText, $keyboard);
         } elseif ($route === 'to_delete') {
             $this->confirmDelete($chatId, $userId, (int)($params[0] ?? 0));
         } elseif ($route === 'delete_confirm' || $route === 'delete_confirmation') {
@@ -110,7 +100,6 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
         $currentPage = $this->getUserService()->getCurrentPage($userId);
         $prefix = preg_match("/^delete_page_(\d+)$/", $currentPage ?? 'delete_page_1', $matches) ? 'author:delete_page:' . $matches[1] : 'author:profile:' . $authorId;
 
-        $currentPanel = $this->getUserService()->getCurrentPanel($userId);
         $visualsLinks = $this->getVisualsLinks();
 
         $keyboard = [
@@ -124,16 +113,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             ],
         ];
 
-        if ($currentPanel) {
-            $this->client->request('editMessageMedia', [
-                'chat_id' => $chatId,
-                'message_id' => $currentPanel,
-                'media' => ['type' => 'photo', 'media' => $visualsLinks[1], 'caption' => str_replace('{author}', htmlspecialchars($author['name']), $this->translate('confirm_delete_message')), 'parse_mode' => 'HTML'],
-                'reply_markup' => $keyboard
-            ]);
-        } else {
-            $this->client->sendPhoto($chatId, $visualsLinks[1], str_replace('{author}', htmlspecialchars($author['name']), $this->translate('confirm_delete_message')), null, $keyboard);
-        }
+        $this->renderPanel($chatId, $userId, $visualsLinks[1], str_replace('{author}', htmlspecialchars($author['name']), $this->translate('confirm_delete_message')), $keyboard);
     }
 
     private function doDelete(int $chatId, int $userId, int $authorId) : void
@@ -158,7 +138,6 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
         $currentPage = $this->getUserService()->getCurrentPage($userId) ?? 'admin:panel';
         $backCallback = preg_match("/^delete_page_(\d+)$/", $currentPage, $matches) ? 'author:delete_page:' . $matches[1] : 'admin:panel';
 
-        $currentPanel = $this->getUserService()->getCurrentPanel($userId);
         $visualsLinks = $this->getVisualsLinks();
 
         $keyboard = [
@@ -169,15 +148,6 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             ],
         ];
 
-        if ($currentPanel) {
-            $this->client->request('editMessageMedia', [
-                'chat_id' => $chatId,
-                'message_id' => $currentPanel,
-                'media' => ['type' => 'photo', 'media' => $visualsLinks[1], 'caption' => str_replace('{author}', htmlspecialchars($author['name']), $this->translate('author_deleted_message')), 'parse_mode' => 'HTML'],
-                'reply_markup' => $keyboard
-            ]);
-        } else {
-            $this->client->sendPhoto($chatId, $visualsLinks[1], str_replace('{author}', htmlspecialchars($author['name']), $this->translate('author_deleted_message')), null, $keyboard);
-        }
+        $this->renderPanel($chatId, $userId, $visualsLinks[1], str_replace('{author}', htmlspecialchars($author['name']), $this->translate('author_deleted_message')), $keyboard);
     }
 }

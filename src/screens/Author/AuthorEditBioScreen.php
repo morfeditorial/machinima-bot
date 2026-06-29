@@ -65,7 +65,6 @@ class AuthorEditBioScreen extends BaseMachinimaScreen
             }
             $this->getUserStateService()->setState($userId, ['author_id' => $authorId], 'set_author_about');
 
-            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
             $visualsLinks = $this->getVisualsLinks();
 
             $keyboard = [
@@ -79,16 +78,7 @@ class AuthorEditBioScreen extends BaseMachinimaScreen
             $msgText = $author['biography'] ? $this->translate('pending_bio_change') : $this->translate('pending_bio_add');
             $visual = $author['biography'] ? $visualsLinks[5] : $visualsLinks[4];
 
-            if ($currentPanel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $currentPanel,
-                    'media' => ['type' => 'photo', 'media' => $visual, 'caption' => $msgText, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visual, $msgText, null, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visual, $msgText, $keyboard);
             return;
         }
 
@@ -142,7 +132,6 @@ class AuthorEditBioScreen extends BaseMachinimaScreen
                 ['text' => $this->translate('go_back'), 'callback_data' => $backCallback],
             ];
 
-            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
             $visualsLinks = $this->getVisualsLinks();
 
             $successText = str_replace(
@@ -157,16 +146,7 @@ class AuthorEditBioScreen extends BaseMachinimaScreen
 
             $visual = $author['biography'] ? $visualsLinks[8] : $visualsLinks[7];
 
-            if ($currentPanel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $currentPanel,
-                    'media' => ['type' => 'photo', 'media' => $visual, 'caption' => $successText, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visual, $successText, null, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visual, $successText, $keyboard);
         }
     }
 }

@@ -76,16 +76,7 @@ class ProjectCreateScreen extends BaseMachinimaScreen
                     ],
                 ],
             ];
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('enter_project_title_message'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate('enter_project_title_message'), null, null, null, false, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('enter_project_title_message'), $keyboard);
             return;
         }
 
@@ -112,16 +103,7 @@ class ProjectCreateScreen extends BaseMachinimaScreen
                     ],
                 ],
             ];
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('select_project_type_message'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate('select_project_type_message'), null, null, null, false, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('select_project_type_message'), $keyboard);
         } elseif ($state_data = $user_state_service->getState($userId, 'awaiting_project_description')) {
             if ($message_id) {
                 $this->client->request('deleteMessage', ['chat_id' => $chatId, 'message_id' => $message_id]);
@@ -136,16 +118,7 @@ class ProjectCreateScreen extends BaseMachinimaScreen
                     ],
                 ],
             ];
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('enter_project_url_message'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate('enter_project_url_message'), null, null, null, false, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('enter_project_url_message'), $keyboard);
         } elseif ($state_data = $user_state_service->getState($userId, 'awaiting_project_url')) {
             if ($message_id) {
                 $this->client->request('deleteMessage', ['chat_id' => $chatId, 'message_id' => $message_id]);
@@ -160,16 +133,7 @@ class ProjectCreateScreen extends BaseMachinimaScreen
                     ],
                 ],
             ];
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('upload_project_cover_message'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate('upload_project_cover_message'), null, null, null, false, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('upload_project_cover_message'), $keyboard);
         } elseif ($state_data = $user_state_service->getState($userId, 'awaiting_project_cover')) {
             if ($photo) {
                 $file_id = end($photo)['file_id'];

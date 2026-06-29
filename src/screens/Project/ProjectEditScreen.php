@@ -91,16 +91,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
                         ],
                     ];
                     $cover = $project['cover_file_id'] ?: $visuals_links[1];
-                    if ($current_panel) {
-                        $this->client->request('editMessageMedia', [
-                            'chat_id' => $chatId,
-                            'message_id' => $current_panel,
-                            'media' => ['type' => 'photo', 'media' => $cover, 'caption' => $this->translate('edit_project'), 'parse_mode' => 'HTML'],
-                            'reply_markup' => $keyboard
-                        ]);
-                    } else {
-                        $this->client->sendPhoto($chatId, $cover, $this->translate('edit_project'), null, null, null, false, $keyboard);
-                    }
+                    $this->renderPanel($chatId, $userId, $cover, $this->translate('edit_project'), $keyboard);
                 }
             } elseif ('field' === $sub_action) {
                 $field = $parsed['params'][2] ?? '';
@@ -119,16 +110,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
                             ],
                         ],
                     ];
-                    if ($current_panel) {
-                        $this->client->request('editMessageMedia', [
-                            'chat_id' => $chatId,
-                            'message_id' => $current_panel,
-                            'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate('select_project_type_message'), 'parse_mode' => 'HTML'],
-                            'reply_markup' => $keyboard
-                        ]);
-                    } else {
-                        $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate('select_project_type_message'), null, null, null, false, $keyboard);
-                    }
+                    $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('select_project_type_message'), $keyboard);
                 } else {
                     $user_state_service->setState($userId, ['project_id' => $project_id, 'field' => $field], 'editing_project_field');
                     $msg_key = 'cover' === $field ? 'upload_project_cover_message' : 'enter_new_value_message';
@@ -139,16 +121,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
                             ],
                         ],
                     ];
-                    if ($current_panel) {
-                        $this->client->request('editMessageMedia', [
-                            'chat_id' => $chatId,
-                            'message_id' => $current_panel,
-                            'media' => ['type' => 'photo', 'media' => $visuals_links[1], 'caption' => $this->translate($msg_key), 'parse_mode' => 'HTML'],
-                            'reply_markup' => $keyboard
-                        ]);
-                    } else {
-                        $this->client->sendPhoto($chatId, $visuals_links[1], $this->translate($msg_key), null, null, null, false, $keyboard);
-                    }
+                    $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate($msg_key), $keyboard);
                 }
             } elseif ('set_type' === $sub_action) {
                 $type = $parsed['params'][2] ?? '';

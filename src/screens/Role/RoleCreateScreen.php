@@ -72,8 +72,6 @@ class RoleCreateScreen extends BaseMachinimaScreen
         $payload = $this->parsePayload($action);
         $subAction = $payload['params'][0] ?? '';
 
-        $current_panel = $this->getUserService()->getCurrentPanel($userId);
-
         if (empty($subAction)) {
             $this->getUserStateService()->setState($userId, 'awaiting_role_creation');
             $keyboard = [
@@ -84,24 +82,7 @@ class RoleCreateScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => [
-                        'type' => 'photo',
-                        'media' => $this->getVisualsLinks()[1],
-                        'caption' => $this->translate('enter_role_name_message'),
-                        'parse_mode' => 'HTML',
-                    ],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], [
-                    'caption' => $this->translate('enter_role_name_message'),
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('enter_role_name_message'), $keyboard);
         } elseif ('confirm_parent' === $subAction) {
             $parent_name = $payload['params'][1] ?? '';
             $child_name = $payload['params'][2] ?? '';
@@ -143,19 +124,7 @@ class RoleCreateScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => [
-                        'type' => 'photo',
-                        'media' => $this->getVisualsLinks()[1],
-                        'caption' => $message_text,
-                        'parse_mode' => 'HTML',
-                    ],
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $message_text, $keyboard);
         } elseif ('add_parent' === $subAction) {
             $role_name = $payload['params'][1] ?? '';
             $all_roles = $this->getRoleService()->getAllRolesSorted();
@@ -188,19 +157,7 @@ class RoleCreateScreen extends BaseMachinimaScreen
                 ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'view', 'show', $role_name)],
             ];
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => [
-                        'type' => 'photo',
-                        'media' => $this->getVisualsLinks()[1],
-                        'caption' => str_replace('{role}', $role_name, $this->translate('select_parent_message')),
-                        'parse_mode' => 'HTML',
-                    ],
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], str_replace('{role}', $role_name, $this->translate('select_parent_message')), $keyboard);
         }
 
         if (isset($update['callback_query']['id']) && 'confirm_parent' !== $subAction) {
@@ -247,21 +204,7 @@ class RoleCreateScreen extends BaseMachinimaScreen
 
             $this->client->sendMessage($chatId, str_replace('{role}', htmlspecialchars($text), $this->translate('role_created_redirect_message')));
 
-            $current_panel = $this->getUserService()->getCurrentPanel($userId);
-            
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => [
-                        'type' => 'photo',
-                        'media' => $this->getVisualsLinks()[1],
-                        'caption' => str_replace('{role}', htmlspecialchars($text), $this->translate('select_parent_message')),
-                        'parse_mode' => 'HTML',
-                    ],
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], str_replace('{role}', htmlspecialchars($text), $this->translate('select_parent_message')), $keyboard);
         }
     }
 }

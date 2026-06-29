@@ -62,18 +62,7 @@ class StaffManageScreen extends BaseMachinimaScreen
             ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('project', 'view', (string)$projectId)],
         ];
 
-        $current_panel = $this->getUserService()->getCurrentPanel($userId);
-
-        if ($current_panel) {
-            $this->client->request('editMessageMedia', [
-                'chat_id' => $chatId,
-                'message_id' => $current_panel,
-                'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('manage_staff'), 'parse_mode' => 'HTML'],
-                'reply_markup' => $keyboard
-            ]);
-        } else {
-            $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('manage_staff'), $keyboard);
-        }
+        $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('manage_staff'), $keyboard);
 
         if (isset($update['callback_query']['id'])) {
             $this->client->answerCallbackQuery($update['callback_query']['id']);

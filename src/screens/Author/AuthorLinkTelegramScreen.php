@@ -61,7 +61,6 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
             }
             $this->getUserStateService()->setState($userId, ['author_id' => $authorId], 'link_telegram');
 
-            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
             $visualsLinks = $this->getVisualsLinks();
 
             $keyboard = [
@@ -72,16 +71,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($currentPanel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $currentPanel,
-                    'media' => ['type' => 'photo', 'media' => $visualsLinks[3], 'caption' => $this->translate('pending_telegram_link'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visualsLinks[3], $this->translate('pending_telegram_link'), null, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visualsLinks[3], $this->translate('pending_telegram_link'), $keyboard);
             return;
         }
 

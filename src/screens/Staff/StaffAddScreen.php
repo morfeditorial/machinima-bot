@@ -61,8 +61,6 @@ class StaffAddScreen extends BaseMachinimaScreen
             $subAction = $payload['params'][0] ?? '';
             $projectId = isset($payload['params'][1]) ? (int) $payload['params'][1] : 0;
 
-            $current_panel = $this->getUserService()->getCurrentPanel($userId);
-
             if ('select_author' === $subAction) {
                 $page = 1;
                 if (isset($payload['params'][2]) && 'page' === $payload['params'][2]) {
@@ -83,16 +81,7 @@ class StaffAddScreen extends BaseMachinimaScreen
                 array_pop($keyboard['inline_keyboard']);
                 $keyboard['inline_keyboard'][] = [['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('staff', 'manage', (string)$projectId)]];
 
-                if ($current_panel) {
-                    $this->client->request('editMessageMedia', [
-                        'chat_id' => $chatId,
-                        'message_id' => $current_panel,
-                        'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('select_author_for_staff_message'), 'parse_mode' => 'HTML'],
-                        'reply_markup' => $keyboard
-                    ]);
-                } else {
-                    $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('select_author_for_staff_message'), $keyboard);
-                }
+                $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('select_author_for_staff_message'), $keyboard);
             } elseif ('select_role' === $subAction) {
                 $authorId = isset($payload['params'][2]) ? (int) $payload['params'][2] : null;
 
@@ -106,16 +95,7 @@ class StaffAddScreen extends BaseMachinimaScreen
                     ],
                 ];
 
-                if ($current_panel) {
-                    $this->client->request('editMessageMedia', [
-                        'chat_id' => $chatId,
-                        'message_id' => $current_panel,
-                        'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('enter_staff_role_message'), 'parse_mode' => 'HTML'],
-                        'reply_markup' => $keyboard
-                    ]);
-                } else {
-                    $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('enter_staff_role_message'), $keyboard);
-                }
+                $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('enter_staff_role_message'), $keyboard);
             }
 
             if (isset($update['callback_query']['id'])) {
@@ -152,18 +132,7 @@ class StaffAddScreen extends BaseMachinimaScreen
                     ],
                 ];
 
-                $current_panel = $this->getUserService()->getCurrentPanel($userId);
-
-                if (isset($current_panel) && $current_panel) {
-                    $this->client->request('editMessageMedia', [
-                        'chat_id' => $chatId,
-                        'message_id' => $current_panel,
-                        'media' => ['type' => 'photo', 'media' => $this->getVisualsLinks()[1], 'caption' => $this->translate('staff_member_added_message'), 'parse_mode' => 'HTML'],
-                        'reply_markup' => $keyboard
-                    ]);
-                } else {
-                    $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], $this->translate('staff_member_added_message'), $keyboard);
-                }
+                $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('staff_member_added_message'), $keyboard);
             }
         }
     }

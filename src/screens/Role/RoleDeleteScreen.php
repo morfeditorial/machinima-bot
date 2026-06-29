@@ -46,7 +46,6 @@ class RoleDeleteScreen extends BaseMachinimaScreen
             return;
         }
 
-        $current_panel = $this->getUserService()->getCurrentPanel($userId);
         $payload = $this->parsePayload($action);
         $subAction = $payload['params'][0] ?? '';
 
@@ -65,24 +64,7 @@ class RoleDeleteScreen extends BaseMachinimaScreen
                 ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'control')],
             ];
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => [
-                        'type' => 'photo',
-                        'media' => $this->getVisualsLinks()[1],
-                        'caption' => $this->translate('select_role_to_delete_message'),
-                        'parse_mode' => 'HTML',
-                    ],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $this->getVisualsLinks()[1], [
-                    'caption' => $this->translate('select_role_to_delete_message'),
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('select_role_to_delete_message'), $keyboard);
         } elseif ('confirm' === $subAction) {
             $role_name = $payload['params'][1] ?? '';
 
@@ -95,19 +77,7 @@ class RoleDeleteScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($current_panel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $current_panel,
-                    'media' => [
-                        'type' => 'photo',
-                        'media' => $this->getVisualsLinks()[1],
-                        'caption' => str_replace('{role}', htmlspecialchars($role_name), $this->translate('confirm_delete_role_message')),
-                        'parse_mode' => 'HTML',
-                    ],
-                    'reply_markup' => $keyboard
-                ]);
-            }
+            $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], str_replace('{role}', htmlspecialchars($role_name), $this->translate('confirm_delete_role_message')), $keyboard);
         } elseif ('do_delete' === $subAction) {
             $role_name = $payload['params'][1] ?? '';
 
@@ -134,19 +104,7 @@ class RoleDeleteScreen extends BaseMachinimaScreen
                     ],
                 ];
 
-                if ($current_panel) {
-                    $this->client->request('editMessageMedia', [
-                        'chat_id' => $chatId,
-                        'message_id' => $current_panel,
-                        'media' => [
-                            'type' => 'photo',
-                            'media' => $this->getVisualsLinks()[1],
-                            'caption' => $this->translate('access_control_panel_message'),
-                            'parse_mode' => 'HTML',
-                        ],
-                        'reply_markup' => $keyboard
-                    ]);
-                }
+                $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('access_control_panel_message'), $keyboard);
             } else {
                 if (isset($update['callback_query']['id'])) {
                     $this->client->answerCallbackQuery($update['callback_query']['id'], [

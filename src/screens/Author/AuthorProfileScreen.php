@@ -92,7 +92,6 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             return;
         }
 
-        $currentPanel = $this->getUserService()->getCurrentPanel($userId);
         $visualsLinks = $this->getVisualsLinks();
 
         if (null !== $author) {
@@ -144,16 +143,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
                 $this->translate('author_info_message')
             );
 
-            if ($currentPanel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $currentPanel,
-                    'media' => ['type' => 'photo', 'media' => $visualsLinks[11], 'caption' => $text, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visualsLinks[11], $text, null, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visualsLinks[11], $text, $keyboard);
             return;
         }
 
@@ -165,15 +155,6 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             ],
         ];
 
-        if ($currentPanel) {
-            $this->client->request('editMessageMedia', [
-                'chat_id' => $chatId,
-                'message_id' => $currentPanel,
-                'media' => ['type' => 'photo', 'media' => $visualsLinks[1], 'caption' => $this->translate('author_not_found_message'), 'parse_mode' => 'HTML'],
-                'reply_markup' => $keyboard
-            ]);
-        } else {
-            $this->client->sendPhoto($chatId, $visualsLinks[1], $this->translate('author_not_found_message'), null, $keyboard);
-        }
+        $this->renderPanel($chatId, $userId, $visualsLinks[1], $this->translate('author_not_found_message'), $keyboard);
     }
 }

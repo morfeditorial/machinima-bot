@@ -65,7 +65,6 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
             }
             $this->getUserStateService()->setState($userId, ['author_id' => $authorId], 'add_author_link');
 
-            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
             $visualsLinks = $this->getVisualsLinks();
 
             $keyboard = [
@@ -76,16 +75,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($currentPanel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $currentPanel,
-                    'media' => ['type' => 'photo', 'media' => $visualsLinks[1], 'caption' => $this->translate('pending_link_change'), 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visualsLinks[1], $this->translate('pending_link_change'), null, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visualsLinks[1], $this->translate('pending_link_change'), $keyboard);
             return;
         }
 
@@ -139,7 +129,6 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
                 ['text' => $this->translate('go_back'), 'callback_data' => $backCallback],
             ];
 
-            $currentPanel = $this->getUserService()->getCurrentPanel($userId);
             $visualsLinks = $this->getVisualsLinks();
 
             $successText = str_replace(
@@ -152,16 +141,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
                 $this->translate('link_changed_message')
             );
 
-            if ($currentPanel) {
-                $this->client->request('editMessageMedia', [
-                    'chat_id' => $chatId,
-                    'message_id' => $currentPanel,
-                    'media' => ['type' => 'photo', 'media' => $visualsLinks[1], 'caption' => $successText, 'parse_mode' => 'HTML'],
-                    'reply_markup' => $keyboard
-                ]);
-            } else {
-                $this->client->sendPhoto($chatId, $visualsLinks[1], $successText, null, $keyboard);
-            }
+            $this->renderPanel($chatId, $userId, $visualsLinks[1], $successText, $keyboard);
         }
     }
 }
