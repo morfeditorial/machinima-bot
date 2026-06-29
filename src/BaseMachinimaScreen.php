@@ -27,20 +27,28 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Service\Attribute\Required;
 use Morfeditorial\TelegramBotBundle\Screen\AbstractScreen as BundleAbstractScreen;
 use App\Service\RoleService;
-use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Repository\UserStateRepository;
+use App\Repository\AuthorRepository;
 
 abstract class BaseMachinimaScreen extends BundleAbstractScreen
 {
     protected ContainerInterface $container;
     protected Security $security;
     protected EntityManagerInterface $em;
+    protected UserRepository $userRepo;
+    protected UserStateRepository $userStateRepo;
+    protected AuthorRepository $authorRepo;
 
     #[Required]
-    public function setDependencies(ContainerInterface $container, Security $security, EntityManagerInterface $em): void
+    public function setDependencies(ContainerInterface $container, Security $security, EntityManagerInterface $em, UserRepository $userRepo, UserStateRepository $userStateRepo, AuthorRepository $authorRepo): void
     {
         $this->container = $container;
         $this->security = $security;
         $this->em = $em;
+        $this->userRepo = $userRepo;
+        $this->userStateRepo = $userStateRepo;
+        $this->authorRepo = $authorRepo;
     }
 
     public function getContainer(): ContainerInterface
@@ -94,8 +102,7 @@ abstract class BaseMachinimaScreen extends BundleAbstractScreen
 
     protected function renderPanel(int $chatId, int $userId, string $visual, string $caption, array $keyboard, bool $safe = false): void
     {
-        $user = $this->em->find(User::class, $userId);
-        $currentPanel = $user?->getCurrentPanel();
+        $currentPanel = $this->userRepo->getCurrentPanel($userId);
 
         $editParams = [
             'chat_id' => $chatId,
