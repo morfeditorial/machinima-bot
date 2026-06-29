@@ -22,6 +22,9 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Staff;
 
 use morfeditorial\BaseMachinimaScreen;
+use App\Entity\Author;
+use App\Entity\User;
+use App\Entity\UserState;
 
 class StaffAddScreen extends BaseMachinimaScreen
 {
@@ -35,8 +38,9 @@ class StaffAddScreen extends BaseMachinimaScreen
         }
 
         if (isset($update['message']['text'])) {
-            $state = $this->getUserStateService()->getState($userId, 'awaiting_staff_role');
-            if ($state) {
+            $tempUser = $this->em->find(User::class, $userId);
+            $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'awaiting_staff_role']) : null;
+            if ($tempState) {
                 return true;
             }
         }
@@ -67,9 +71,10 @@ class StaffAddScreen extends BaseMachinimaScreen
                     $page = isset($payload['params'][3]) ? (int) $payload['params'][3] : 1;
                 }
 
+                $allAuthors = $this->em->getRepository(Author::class)->findAll();
                 $keyboard = \morfeditorial\utils\KeyboardHelper::generateAuthorsKeyboard(
                     $this->getTranslator(),
-                    $this->getAuthorService(),
+                    $allAuthors,
                     $page,
                     3,
                     1,
@@ -85,7 +90,21 @@ class StaffAddScreen extends BaseMachinimaScreen
             } elseif ('select_role' === $subAction) {
                 $authorId = isset($payload['params'][2]) ? (int) $payload['params'][2] : null;
 
-                $this->getUserStateService()->setState($userId, ['project_id' => $projectId, 'author_id' => $authorId], 'awaiting_staff_role');
+                $tmpUser = $this->em->find(User::class, $userId);
+                if (!$tmpUser) {
+                    $tmpUser = new User();
+                    $tmpUser->setId($userId);
+                    $this->em->persist($tmpUser);
+                }
+                $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_staff_role']);
+                if (!$tmpState) {
+                    $tmpState = new UserState();
+                    $tmpState->setUser($tmpUser);
+                    $tmpState->setStateKey('awaiting_staff_role');
+                    $this->em->persist($tmpState);
+                }
+                $tmpState->setStateValue(json_encode(['project_id' => $projectId, 'author_id' => $authorId]));
+                $this->em->flush();
 
                 $keyboard = [
                     'inline_keyboard' => [
@@ -102,7 +121,9 @@ class StaffAddScreen extends BaseMachinimaScreen
                 $this->client->answerCallbackQuery($update['callback_query']['id']);
             }
         } elseif ($text !== '') {
-            $state_data = $this->getUserStateService()->getState($userId, 'awaiting_staff_role');
+            $tmpUser = $this->em->find(User::class, $userId);
+            $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_staff_role']) : null;
+            $state_data = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
 
             if ($state_data) {
                 $message_id = $update['message']['message_id'] ?? null;
@@ -110,19 +131,28 @@ class StaffAddScreen extends BaseMachinimaScreen
                     $this->client->request('deleteMessage', ['chat_id' => $chatId, 'message_id' => $message_id]);
                 }
 
-                $this->getUserStateService()->clearState($userId, 'awaiting_staff_role');
+                if ($tmpUser && $tmpState) {
+                    $this->em->remove($tmpState);
+                    $this->em->flush();
+                }
                 $content_service = $this->container->get('content_service');
-                $author_service = $this->getAuthorService();
 
                 $project_id = $state_data['project_id'];
                 $author_id = $state_data['author_id'];
                 $role = $text;
 
                 $content_service->assignStaff($project_id, $author_id, $role);
-                $author = $author_service->getAuthorById($author_id);
+                $author = $this->em->find(Author::class, $author_id);
 
-                $this->client->sendMessage($chatId, str_replace(['{author}', '{role}'], [htmlspecialchars($author['name']), htmlspecialchars($role)], $this->translate('staff_member_added_message')));
-                $this->getUserStateService()->clearState($userId);
+                $this->client->sendMessage($chatId, str_replace(['{author}', '{role}'], [htmlspecialchars($author->getName()), htmlspecialchars($role)], $this->translate('staff_member_added_message')));
+                $userObj = $this->em->find(User::class, $userId);
+                if ($userObj) {
+                    $states = $this->em->getRepository(UserState::class)->findBy(['user' => $userObj]);
+                    foreach ($states as $state) {
+                        $this->em->remove($state);
+                    }
+                    $this->em->flush();
+                }
 
                 $keyboard = [
                     'inline_keyboard' => [
