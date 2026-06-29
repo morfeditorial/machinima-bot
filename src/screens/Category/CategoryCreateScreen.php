@@ -22,6 +22,8 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Category;
 
 use morfeditorial\BaseMachinimaScreen;
+use App\Entity\User;
+use App\Entity\UserState;
 
 class CategoryCreateScreen extends BaseMachinimaScreen
 {
@@ -35,8 +37,9 @@ class CategoryCreateScreen extends BaseMachinimaScreen
         }
 
         if (isset($update['message']['text'])) {
-            $state = $this->getUserStateService()->getState($userId, 'awaiting_category_name');
-            if ($state) {
+            $tempUser = $this->em->find(User::class, $userId);
+            $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'awaiting_category_name']) : null;
+            if ($tempState) {
                 return true;
             }
         }
@@ -61,7 +64,21 @@ class CategoryCreateScreen extends BaseMachinimaScreen
             $subAction = $payload['params'][0] ?? '';
             $parentId = isset($payload['params'][1]) ? (int) $payload['params'][1] : null;
 
-            $this->getUserStateService()->setState($userId, ['parent_id' => $parentId], 'awaiting_category_name');
+            $tmpUser = $this->em->find(User::class, $userId);
+            if (!$tmpUser) {
+                $tmpUser = new User();
+                $tmpUser->setId($userId);
+                $this->em->persist($tmpUser);
+            }
+            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_category_name']);
+            if (!$tmpState) {
+                $tmpState = new UserState();
+                $tmpState->setUser($tmpUser);
+                $tmpState->setStateKey('awaiting_category_name');
+                $this->em->persist($tmpState);
+            }
+            $tmpState->setStateValue(json_encode(['parent_id' => $parentId]));
+            $this->em->flush();
 
             $back_callback = $parentId ? $this->makePayload('category', 'manage', (string)$parentId) : $this->makePayload('category', 'manage');
 
@@ -79,7 +96,9 @@ class CategoryCreateScreen extends BaseMachinimaScreen
                 $this->client->answerCallbackQuery($update['callback_query']['id']);
             }
         } elseif ($text !== '') {
-            $state_data = $this->getUserStateService()->getState($userId, 'awaiting_category_name');
+            $tmpUser = $this->em->find(User::class, $userId);
+            $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_category_name']) : null;
+            $state_data = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
 
             if ($state_data) {
                 $message_id = $update['message']['message_id'] ?? null;
@@ -94,7 +113,14 @@ class CategoryCreateScreen extends BaseMachinimaScreen
                 $content_service->createCategory($name, $parent_id);
 
                 $this->client->sendMessage($chatId, str_replace('{name}', htmlspecialchars($name), $this->translate('category_added_message')));
-                $this->getUserStateService()->clearState($userId, 'awaiting_category_name');
+                $userObj = $this->em->find(User::class, $userId);
+                if ($userObj) {
+                    $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'awaiting_category_name']);
+                    if ($state) {
+                        $this->em->remove($state);
+                        $this->em->flush();
+                    }
+                }
                 
                 $back_callback = $parent_id ? $this->makePayload('category', 'manage', (string)$parent_id) : $this->makePayload('category', 'manage');
                 $keyboard = [
