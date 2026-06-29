@@ -6,6 +6,7 @@
             "url": "../telegram-bot-bundle"
         }
     ],
+    "type": "symfony-bundle",
     "require": {
         "php": ">=8.2",
         "symfony/dependency-injection": "^8.1",
