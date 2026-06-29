@@ -23,8 +23,7 @@ namespace morfeditorial\screens\Author;
 
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
-use App\Entity\User;
-use App\Entity\UserState;
+
 
 class AuthorLinkTelegramScreen extends BaseMachinimaScreen
 {
@@ -38,9 +37,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
         }
 
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
-        $tempUser = $this->em->find(User::class, $userId);
-        $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'link_telegram']) : null;
-        $stateCheck = $tempState ? json_decode($tempState->getStateValue(), true) : null;
+        $stateCheck = $this->userStateRepo->get($userId, 'link_telegram');
         if (isset($update['message']) && is_array($stateCheck) && isset($stateCheck['author_id'])) {
             return true;
         }
@@ -64,21 +61,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
-            $tmpUser = $this->em->find(User::class, $userId);
-            if (!$tmpUser) {
-                $tmpUser = new User();
-                $tmpUser->setId($userId);
-                $this->em->persist($tmpUser);
-            }
-            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'link_telegram']);
-            if (!$tmpState) {
-                $tmpState = new UserState();
-                $tmpState->setUser($tmpUser);
-                $tmpState->setStateKey('link_telegram');
-                $this->em->persist($tmpState);
-            }
-            $tmpState->setStateValue(json_encode(['author_id' => $authorId]));
-            $this->em->flush();
+            $this->userStateRepo->set($userId, ['author_id' => $authorId], 'link_telegram');
 
             $visualsLinks = $this->getVisualsLinks();
 
@@ -95,20 +78,11 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
         }
 
         if (isset($update['message'])) {
-            $tmpUser = $this->em->find(User::class, $userId);
-            $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'link_telegram']) : null;
-            $stateData = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
+            $stateData = $this->userStateRepo->get($userId, 'link_telegram');
             $authorId = (int)($stateData['author_id'] ?? 0);
 
             if (!$this->isGranted('ROLE_ADMIN') || 0 === $authorId) {
-                $userObj = $this->em->find(User::class, $userId);
-                if ($userObj) {
-                    $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'link_telegram']);
-                    if ($state) {
-                        $this->em->remove($state);
-                        $this->em->flush();
-                    }
-                }
+                $this->userStateRepo->clear($userId, 'link_telegram');
                 return;
             }
 
@@ -119,14 +93,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
 
             $telegramId = (int) trim($text);
             if ($telegramId <= 0) {
-                $userObj = $this->em->find(User::class, $userId);
-                if ($userObj) {
-                    $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'link_telegram']);
-                    if ($state) {
-                        $this->em->remove($state);
-                        $this->em->flush();
-                    }
-                }
+                $this->userStateRepo->clear($userId, 'link_telegram');
                 // The old code instantiates AuthorProfileScreen and calls render.
                 // In new architecture, we might need to simulate an update or redirect.
                 // We'll simulate a callback to author:profile
@@ -144,17 +111,10 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
                 return;
             }
 
-            $existingAuthor = $this->em->getRepository(Author::class)->findOneBy(['telegramUserId' => $telegramId]);
+            $existingAuthor = $this->authorRepo->findByTelegramId($telegramId);
             if (null !== $existingAuthor) {
                 $this->client->sendMessage($chatId, $this->translate('telegram_already_linked'));
-                $userObj = $this->em->find(User::class, $userId);
-                if ($userObj) {
-                    $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'link_telegram']);
-                    if ($state) {
-                        $this->em->remove($state);
-                        $this->em->flush();
-                    }
-                }
+                $this->userStateRepo->clear($userId, 'link_telegram');
                 
                 $profileScreen = new AuthorProfileScreen();
                 $profileScreen->setDependencies($this->container, $this->security);
@@ -174,14 +134,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
                 $tgAuthor->setTelegramUserId($telegramId);
                 $this->em->flush();
             }
-            $userObj = $this->em->find(User::class, $userId);
-            if ($userObj) {
-                $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'link_telegram']);
-                if ($state) {
-                    $this->em->remove($state);
-                    $this->em->flush();
-                }
-            }
+            $this->userStateRepo->clear($userId, 'link_telegram');
 
             $profileScreen = new AuthorProfileScreen();
             $profileScreen->setDependencies($this->container, $this->security);

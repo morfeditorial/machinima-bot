@@ -24,7 +24,7 @@ namespace morfeditorial\screens\Author;
 use morfeditorial\BaseMachinimaScreen;
 use morfeditorial\utils\KeyboardHelper;
 use App\Entity\Author;
-use App\Entity\User;
+
 
 class AuthorListScreen extends BaseMachinimaScreen
 {
@@ -50,14 +50,7 @@ class AuthorListScreen extends BaseMachinimaScreen
 
         if ($payload['domain'] === 'author' && $payload['action'] === 'list') {
             $page = (int)($payload['params'][0] ?? 1);
-            $user = $this->em->find(User::class, $userId);
-            if (!$user) {
-                $user = new User();
-                $user->setId($userId);
-                $this->em->persist($user);
-            }
-            $user->setCurrentPage('author:list:' . $page);
-            $this->em->flush();
+            $this->userRepo->setCurrentPage($userId, 'author:list:' . $page);
 
             $visualsLinks = $this->getVisualsLinks();
 

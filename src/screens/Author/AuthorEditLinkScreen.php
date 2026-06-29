@@ -23,8 +23,7 @@ namespace morfeditorial\screens\Author;
 
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
-use App\Entity\User;
-use App\Entity\UserState;
+
 
 class AuthorEditLinkScreen extends BaseMachinimaScreen
 {
@@ -38,9 +37,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
         }
 
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
-        $tempUser = $this->em->find(User::class, $userId);
-        $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'add_author_link']) : null;
-        $stateCheck = $tempState ? json_decode($tempState->getStateValue(), true) : null;
+        $stateCheck = $this->userStateRepo->get($userId, 'add_author_link');
         if (isset($update['message']) && is_array($stateCheck) && isset($stateCheck['author_id'])) {
             return true;
         }
@@ -67,21 +64,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
-            $tmpUser = $this->em->find(User::class, $userId);
-            if (!$tmpUser) {
-                $tmpUser = new User();
-                $tmpUser->setId($userId);
-                $this->em->persist($tmpUser);
-            }
-            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'add_author_link']);
-            if (!$tmpState) {
-                $tmpState = new UserState();
-                $tmpState->setUser($tmpUser);
-                $tmpState->setStateKey('add_author_link');
-                $this->em->persist($tmpState);
-            }
-            $tmpState->setStateValue(json_encode(['author_id' => $authorId]));
-            $this->em->flush();
+            $this->userStateRepo->set($userId, ['author_id' => $authorId], 'add_author_link');
 
             $visualsLinks = $this->getVisualsLinks();
 
@@ -103,13 +86,8 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
                 $this->client->deleteMessage($chatId, $messageId);
             }
 
-            $tmpUser = $this->em->find(User::class, $userId);
-            $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'add_author_link']) : null;
-            $state = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
-            if ($tmpUser && $tmpState) {
-                $this->em->remove($tmpState);
-                $this->em->flush();
-            }
+            $state = $this->userStateRepo->get($userId, 'add_author_link');
+            $this->userStateRepo->clear($userId, 'add_author_link');
 
             $authorId = (int)($state['author_id'] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
@@ -128,7 +106,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
             }
             $authorStatus = $this->em->find(Author::class, $authorId)?->getState() === 'private';
 
-            $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage();
+            $currentPage = $this->userRepo->getCurrentPage($userId);
             $backCallback = $currentPage ? $currentPage : 'admin:panel';
 
             $keyboard = [

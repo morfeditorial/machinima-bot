@@ -24,7 +24,7 @@ namespace morfeditorial\screens\Author;
 use morfeditorial\BaseMachinimaScreen;
 use morfeditorial\utils\KeyboardHelper;
 use App\Entity\Author;
-use App\Entity\User;
+
 
 class AuthorDeleteScreen extends BaseMachinimaScreen
 {
@@ -57,14 +57,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             }
 
             $page = $route === 'delete_page' ? (int)($params[0] ?? 1) : 1;
-            $user = $this->em->find(User::class, $userId);
-            if (!$user) {
-                $user = new User();
-                $user->setId($userId);
-                $this->em->persist($user);
-            }
-            $user->setCurrentPage('delete_page_' . $page);
-            $this->em->flush();
+            $this->userRepo->setCurrentPage($userId, 'delete_page_' . $page);
 
             $visualsLinks = $this->getVisualsLinks();
 
@@ -106,7 +99,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             return;
         }
 
-        $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage();
+        $currentPage = $this->userRepo->getCurrentPage($userId);
         $prefix = preg_match("/^delete_page_(\d+)$/", $currentPage ?? 'delete_page_1', $matches) ? 'author:delete_page:' . $matches[1] : 'author:profile:' . $authorId;
 
         $visualsLinks = $this->getVisualsLinks();
@@ -147,7 +140,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             $this->em->flush();
         }
 
-        $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage() ?? 'admin:panel';
+        $currentPage = $this->userRepo->getCurrentPage($userId) ?? 'admin:panel';
         $backCallback = preg_match("/^delete_page_(\d+)$/", $currentPage, $matches) ? 'author:delete_page:' . $matches[1] : 'admin:panel';
 
         $visualsLinks = $this->getVisualsLinks();

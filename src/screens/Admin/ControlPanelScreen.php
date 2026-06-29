@@ -23,8 +23,7 @@ namespace morfeditorial\screens\Admin;
 
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
-use App\Entity\User;
-use App\Entity\UserState;
+
 
 class ControlPanelScreen extends BaseMachinimaScreen
 {
@@ -42,7 +41,7 @@ class ControlPanelScreen extends BaseMachinimaScreen
         $text = $update['message']['text'] ?? '';
 
         if (str_starts_with($action, 'admin:create_public_page')) {
-            $myAuthorProfile = $this->em->getRepository(Author::class)->findOneBy(['telegramUserId' => $userId]);
+            $myAuthorProfile = $this->authorRepo->findByTelegramId($userId);
             if (! $myAuthorProfile) {
                 $firstName = $update['callback_query']['from']['first_name'] ?? ('Staff #' . $userId);
                 $newAuthor = new Author();
@@ -54,22 +53,11 @@ class ControlPanelScreen extends BaseMachinimaScreen
         }
 
         // Regardless of action (if it's panel or create_public_page), we render the panel.
-        $userObj = $this->em->find(User::class, $userId);
-        if ($userObj) {
-            $states = $this->em->getRepository(UserState::class)->findBy(['user' => $userObj]);
-            foreach ($states as $state) {
-                $this->em->remove($state);
-            }
-            $this->em->flush();
-        }
+        $this->userStateRepo->clear($userId);
 
-        $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage();
+        $currentPage = $this->userRepo->getCurrentPage($userId);
         if (!is_null($currentPage)) {
-            $user = $this->em->find(User::class, $userId);
-            if ($user) {
-                $user->setCurrentPage(null);
-                $this->em->flush();
-            }
+            $this->userRepo->resetCurrentPage($userId);
         }
 
         $keyboard = ['inline_keyboard' => []];
@@ -80,7 +68,7 @@ class ControlPanelScreen extends BaseMachinimaScreen
             ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
         ];
 
-        $myAuthorProfile = $this->em->getRepository(Author::class)->findOneBy(['telegramUserId' => $userId]);
+        $myAuthorProfile = $this->authorRepo->findByTelegramId($userId);
 
         if ($myAuthorProfile) {
             $keyboard['inline_keyboard'][] = [

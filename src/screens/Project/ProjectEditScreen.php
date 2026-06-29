@@ -22,8 +22,7 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Project;
 
 use morfeditorial\BaseMachinimaScreen;
-use App\Entity\User;
-use App\Entity\UserState;
+
 
 class ProjectEditScreen extends BaseMachinimaScreen
 {
@@ -35,12 +34,8 @@ class ProjectEditScreen extends BaseMachinimaScreen
         }
 
         $userId = $update['message']['from']['id'] ?? 0;
-        if ($userId) {
-            $tempUser = $this->em->find(User::class, $userId);
-            $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'editing_project_field']) : null;
-            if ($tempState) {
-                return true;
-            }
+        if ($userId && $this->userStateRepo->get($userId, 'editing_project_field')) {
+            return true;
         }
 
         return false;
@@ -70,14 +65,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
             $sub_action = isset($parsed['params'][1]) ? $parsed['params'][1] : null;
 
             if (null === $sub_action) {
-                $userObj = $this->em->find(User::class, $userId);
-                if ($userObj) {
-                    $states = $this->em->getRepository(UserState::class)->findBy(['user' => $userObj]);
-                    foreach ($states as $state) {
-                        $this->em->remove($state);
-                    }
-                    $this->em->flush();
-                }
+                $this->userStateRepo->clear($userId);
                 $project = $content_service->getContentById($project_id);
                 if ($project) {
                     $keyboard = [
@@ -120,21 +108,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
                     ];
                     $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('select_project_type_message'), $keyboard);
                 } else {
-                    $tmpUser = $this->em->find(User::class, $userId);
-                    if (!$tmpUser) {
-                        $tmpUser = new User();
-                        $tmpUser->setId($userId);
-                        $this->em->persist($tmpUser);
-                    }
-                    $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'editing_project_field']);
-                    if (!$tmpState) {
-                        $tmpState = new UserState();
-                        $tmpState->setUser($tmpUser);
-                        $tmpState->setStateKey('editing_project_field');
-                        $this->em->persist($tmpState);
-                    }
-                    $tmpState->setStateValue(json_encode(['project_id' => $project_id, 'field' => $field]));
-                    $this->em->flush();
+                    $this->userStateRepo->set($userId, ['project_id' => $project_id, 'field' => $field], 'editing_project_field');
                     $msg_key = 'cover' === $field ? 'upload_project_cover_message' : 'enter_new_value_message';
                     $keyboard = [
                         'inline_keyboard' => [
@@ -159,18 +133,11 @@ class ProjectEditScreen extends BaseMachinimaScreen
                 $updateCopy['callback_query']['data'] = $this->makePayload('project', 'edit', (string)$project_id);
                 $this->handle($updateCopy);
             }
-        } elseif ($state_data = ($this->em->find(User::class, $userId) ? ($this->em->getRepository(UserState::class)->findOneBy(['user' => $this->em->find(User::class, $userId), 'stateKey' => 'editing_project_field']) ? json_decode($this->em->getRepository(UserState::class)->findOneBy(['user' => $this->em->find(User::class, $userId), 'stateKey' => 'editing_project_field'])->getStateValue(), true) : null) : null)) {
+        } elseif ($state_data = $this->userStateRepo->get($userId, 'editing_project_field')) {
             if ($message_id) {
                 $this->client->request('deleteMessage', ['chat_id' => $chatId, 'message_id' => $message_id]);
             }
-            $userObj = $this->em->find(User::class, $userId);
-            if ($userObj) {
-                $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'editing_project_field']);
-                if ($state) {
-                    $this->em->remove($state);
-                    $this->em->flush();
-                }
-            }
+            $this->userStateRepo->clear($userId, 'editing_project_field');
 
             $project_id = $state_data['project_id'];
             $field = $state_data['field'];

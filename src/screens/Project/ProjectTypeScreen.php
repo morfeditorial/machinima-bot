@@ -22,8 +22,7 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Project;
 
 use morfeditorial\BaseMachinimaScreen;
-use App\Entity\User;
-use App\Entity\UserState;
+
 
 class ProjectTypeScreen extends BaseMachinimaScreen
 {
@@ -49,26 +48,10 @@ class ProjectTypeScreen extends BaseMachinimaScreen
         $parsed = $this->parsePayload($action);
         $type = $parsed['params'][0] ?? null;
 
-        $tmpUser = $this->em->find(User::class, $userId);
-        $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_project_description']) : null;
-        $state_data = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
+        $state_data = $this->userStateRepo->get($userId, 'awaiting_project_description');
 
         if ($state_data && $type) {
-            $tmpUser = $this->em->find(User::class, $userId);
-            if (!$tmpUser) {
-                $tmpUser = new User();
-                $tmpUser->setId($userId);
-                $this->em->persist($tmpUser);
-            }
-            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_project_description']);
-            if (!$tmpState) {
-                $tmpState = new UserState();
-                $tmpState->setUser($tmpUser);
-                $tmpState->setStateKey('awaiting_project_description');
-                $this->em->persist($tmpState);
-            }
-            $tmpState->setStateValue(json_encode(array_merge($state_data, ['type' => $type])));
-            $this->em->flush();
+            $this->userStateRepo->set($userId, array_merge($state_data, ['type' => $type]), 'awaiting_project_description');
             $keyboard = [
                 'inline_keyboard' => [
                     [

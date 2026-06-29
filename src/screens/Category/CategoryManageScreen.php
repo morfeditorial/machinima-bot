@@ -23,7 +23,6 @@ namespace morfeditorial\screens\Category;
 
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\User;
-use App\Entity\UserState;
 
 class CategoryManageScreen extends BaseMachinimaScreen
 {
@@ -44,14 +43,7 @@ class CategoryManageScreen extends BaseMachinimaScreen
             return;
         }
 
-        $user = $this->em->find(User::class, $userId);
-        if ($user) {
-            $states = $this->em->getRepository(UserState::class)->findBy(['user' => $user]);
-            foreach ($states as $state) {
-                $this->em->remove($state);
-            }
-            $this->em->flush();
-        }
+        $this->userStateRepo->clear($userId);
 
         $payload = $this->parsePayload($action);
         $parentId = isset($payload['params'][0]) && $payload['params'][0] !== '' ? (int) $payload['params'][0] : null;

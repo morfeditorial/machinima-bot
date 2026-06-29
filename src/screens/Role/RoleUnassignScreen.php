@@ -23,7 +23,7 @@ namespace morfeditorial\screens\Role;
 
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\User;
-use App\Entity\UserState;
+
 
 class RoleUnassignScreen extends BaseMachinimaScreen
 {
@@ -36,9 +36,8 @@ class RoleUnassignScreen extends BaseMachinimaScreen
 
         $userId = $update['message']['from']['id'] ?? 0;
         if ($userId) {
-            $tempUser = $this->em->find(User::class, $userId);
-            $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'awaiting_user_id_to_remove_role']) : null;
-            if ($tempState) {
+            $stateValue = $this->userStateRepo->get($userId, 'awaiting_user_id_to_remove_role');
+            if ($stateValue !== null) {
                 return true;
             }
         }
@@ -65,21 +64,7 @@ class RoleUnassignScreen extends BaseMachinimaScreen
 
             if ('ask_user' === $subAction) {
                 $role_name = $parsed['params'][1] ?? '';
-                $tmpUser = $this->em->find(User::class, $userId);
-                if (!$tmpUser) {
-                    $tmpUser = new User();
-                    $tmpUser->setId($userId);
-                    $this->em->persist($tmpUser);
-                }
-                $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_user_id_to_remove_role']);
-                if (!$tmpState) {
-                    $tmpState = new UserState();
-                    $tmpState->setUser($tmpUser);
-                    $tmpState->setStateKey('awaiting_user_id_to_remove_role');
-                    $this->em->persist($tmpState);
-                }
-                $tmpState->setStateValue(json_encode(['role_name' => $role_name]));
-                $this->em->flush();
+                $this->userStateRepo->set($userId, ['role_name' => $role_name], 'awaiting_user_id_to_remove_role');
 
                 $keyboard = [
                     'inline_keyboard' => [
@@ -97,9 +82,7 @@ class RoleUnassignScreen extends BaseMachinimaScreen
         }
 
         if ($text) {
-            $tmpUser = $this->em->find(User::class, $userId);
-            $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_user_id_to_remove_role']) : null;
-            $state_data = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
+            $state_data = $this->userStateRepo->get($userId, 'awaiting_user_id_to_remove_role');
             if ($state_data) {
                 $role_service = $this->getRoleService();
                 $target_user_id = (int) $text;
@@ -118,14 +101,7 @@ class RoleUnassignScreen extends BaseMachinimaScreen
                     $this->client->sendMessage($chatId, $this->translate('remove_role_failed_message'));
                 }
 
-                $userObj = $this->em->find(User::class, $userId);
-                if ($userObj) {
-                    $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'awaiting_user_id_to_remove_role']);
-                    if ($state) {
-                        $this->em->remove($state);
-                        $this->em->flush();
-                    }
-                }
+                $this->userStateRepo->clear($userId, 'awaiting_user_id_to_remove_role');
 
                 // Return to view screen
                 $viewScreen = new RoleViewScreen();

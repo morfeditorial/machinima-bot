@@ -23,8 +23,7 @@ namespace morfeditorial\screens\Author;
 
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
-use App\Entity\User;
-use App\Entity\UserState;
+
 
 class AuthorAddScreen extends BaseMachinimaScreen
 {
@@ -37,9 +36,7 @@ class AuthorAddScreen extends BaseMachinimaScreen
         }
 
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
-        $tempUser = $this->em->find(User::class, $userId);
-        $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'default']) : null;
-        $state = $tempState ? json_decode($tempState->getStateValue(), true) : null;
+        $state = $this->userStateRepo->get($userId, 'default');
         if (isset($update['message']) && $state === 'awaiting_author_name_creation') {
             return true;
         }
@@ -62,21 +59,7 @@ class AuthorAddScreen extends BaseMachinimaScreen
                 return;
             }
 
-            $tmpUser = $this->em->find(User::class, $userId);
-            if (!$tmpUser) {
-                $tmpUser = new User();
-                $tmpUser->setId($userId);
-                $this->em->persist($tmpUser);
-            }
-            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'default']);
-            if (!$tmpState) {
-                $tmpState = new UserState();
-                $tmpState->setUser($tmpUser);
-                $tmpState->setStateKey('default');
-                $this->em->persist($tmpState);
-            }
-            $tmpState->setStateValue(json_encode('awaiting_author_name_creation'));
-            $this->em->flush();
+            $this->userStateRepo->set($userId, 'awaiting_author_name_creation', 'default');
             $visualsLinks = $this->getVisualsLinks();
 
             $keyboard = [
@@ -102,14 +85,7 @@ class AuthorAddScreen extends BaseMachinimaScreen
                 $this->client->deleteMessage($chatId, $messageId);
             }
 
-            $userObj = $this->em->find(User::class, $userId);
-            if ($userObj) {
-                $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'default']);
-                if ($state) {
-                    $this->em->remove($state);
-                    $this->em->flush();
-                }
-            }
+            $this->userStateRepo->clear($userId, 'default');
 
             $newAuthor = new Author();
             $newAuthor->setName(trim($text));

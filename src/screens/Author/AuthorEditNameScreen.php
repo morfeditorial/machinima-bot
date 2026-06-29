@@ -23,8 +23,7 @@ namespace morfeditorial\screens\Author;
 
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
-use App\Entity\User;
-use App\Entity\UserState;
+
 
 class AuthorEditNameScreen extends BaseMachinimaScreen
 {
@@ -38,14 +37,11 @@ class AuthorEditNameScreen extends BaseMachinimaScreen
         }
 
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
-        $tempUser = $this->em->find(User::class, $userId);
-        $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'default']) : null;
-        $state = $tempState ? json_decode($tempState->getStateValue(), true) : null;
+        $state = $this->userStateRepo->get($userId, 'default');
         if (isset($update['message']) && is_array($state) && ($state['author_id'] ?? false) && ($state['__state'] ?? '') === 'change_name') {
             return true;
         }
-        $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'change_name']) : null;
-        $stateCheck = $tempState ? json_decode($tempState->getStateValue(), true) : null;
+        $stateCheck = $this->userStateRepo->get($userId, 'change_name');
         if (isset($update['message']) && is_array($stateCheck) && isset($stateCheck['author_id'])) {
             return true;
         }
@@ -72,21 +68,7 @@ class AuthorEditNameScreen extends BaseMachinimaScreen
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
-            $tmpUser = $this->em->find(User::class, $userId);
-            if (!$tmpUser) {
-                $tmpUser = new User();
-                $tmpUser->setId($userId);
-                $this->em->persist($tmpUser);
-            }
-            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'change_name']);
-            if (!$tmpState) {
-                $tmpState = new UserState();
-                $tmpState->setUser($tmpUser);
-                $tmpState->setStateKey('change_name');
-                $this->em->persist($tmpState);
-            }
-            $tmpState->setStateValue(json_encode(['author_id' => $authorId]));
-            $this->em->flush();
+            $this->userStateRepo->set($userId, ['author_id' => $authorId], 'change_name');
 
             $visualsLinks = $this->getVisualsLinks();
 
@@ -108,13 +90,8 @@ class AuthorEditNameScreen extends BaseMachinimaScreen
                 $this->client->deleteMessage($chatId, $messageId);
             }
 
-            $tmpUser = $this->em->find(User::class, $userId);
-            $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'change_name']) : null;
-            $state = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
-            if ($tmpUser && $tmpState) {
-                $this->em->remove($tmpState);
-                $this->em->flush();
-            }
+            $state = $this->userStateRepo->get($userId, 'change_name');
+            $this->userStateRepo->clear($userId, 'change_name');
 
             $authorId = (int)($state['author_id'] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
@@ -133,7 +110,7 @@ class AuthorEditNameScreen extends BaseMachinimaScreen
             }
             $authorStatus = $this->em->find(Author::class, $authorId)?->getState() === 'private';
 
-            $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage();
+            $currentPage = $this->userRepo->getCurrentPage($userId);
 
             $keyboard = [
                 'inline_keyboard' => [

@@ -23,9 +23,6 @@ namespace morfeditorial\commands;
 
 use morfeditorial\BaseMachinimaCommand;
 use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
-use App\Entity\User;
-use App\Entity\UserState;
-use App\Entity\Author;
 
 class AdminPanelCommand extends BaseMachinimaCommand
 {
@@ -53,19 +50,7 @@ class AdminPanelCommand extends BaseMachinimaCommand
 
         if (!$chatId || !$userId) return;
 
-        $user = $this->em->find(User::class, $userId);
-        if (!$user) {
-            $user = new User();
-            $user->setId($userId);
-            $this->em->persist($user);
-        }
-
-        $states = $this->em->getRepository(UserState::class)->findBy(['user' => $user]);
-        foreach ($states as $state) {
-            $this->em->remove($state);
-        }
-
-        $currentPanel = $user->getCurrentPanel();
+        $currentPanel = $this->userRepo->getCurrentPanel($userId);
         if (!is_null($currentPanel)) {
             try {
                 $this->client->deleteMessage($chatId, $currentPanel);
@@ -73,12 +58,9 @@ class AdminPanelCommand extends BaseMachinimaCommand
             }
         }
 
-        $user->setCurrentPanel($messageId + 1);
-
-        if (!is_null($user->getCurrentPage())) {
-            $user->setCurrentPage(null);
-        }
-
+        $this->userStateRepo->clear($userId);
+        $this->userRepo->setCurrentPanel($userId, $messageId + 1);
+        $this->userRepo->resetCurrentPage($userId);
         $this->em->flush();
 
         $keyboard = ['inline_keyboard' => []];
@@ -88,7 +70,7 @@ class AdminPanelCommand extends BaseMachinimaCommand
             ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
         ];
 
-        $myAuthorProfile = $this->em->getRepository(Author::class)->findOneBy(['telegramUserId' => $userId]);
+        $myAuthorProfile = $this->authorRepo->findByTelegramId($userId);
 
         if ($myAuthorProfile) {
             $keyboard['inline_keyboard'][] = [

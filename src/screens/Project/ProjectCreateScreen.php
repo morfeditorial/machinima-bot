@@ -23,7 +23,6 @@ namespace morfeditorial\screens\Project;
 
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\User;
-use App\Entity\UserState;
 
 class ProjectCreateScreen extends BaseMachinimaScreen
 {
@@ -36,18 +35,13 @@ class ProjectCreateScreen extends BaseMachinimaScreen
 
         $userId = $update['message']['from']['id'] ?? 0;
         if ($userId) {
-            $tempUser = $this->em->find(User::class, $userId);
-            $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'default']) : null;
-            $state = $tempState ? json_decode($tempState->getStateValue(), true) : null;
+            $state = $this->userStateRepo->get($userId, 'default');
             if (in_array($state, ['awaiting_project_title'], true)) {
                 return true;
             }
-            $descState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'awaiting_project_description']) : null;
-            if ($descState) return true;
-            $urlState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'awaiting_project_url']) : null;
-            if ($urlState) return true;
-            $coverState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'awaiting_project_cover']) : null;
-            if ($coverState) return true;
+            if ($this->userStateRepo->get($userId, 'awaiting_project_description')) return true;
+            if ($this->userStateRepo->get($userId, 'awaiting_project_url')) return true;
+            if ($this->userStateRepo->get($userId, 'awaiting_project_cover')) return true;
         }
 
         return false;
@@ -70,21 +64,7 @@ class ProjectCreateScreen extends BaseMachinimaScreen
         $visuals_links = $this->getVisualsLinks();
 
         if (strpos($action, 'project:create') === 0) {
-            $tmpUser = $this->em->find(User::class, $userId);
-            if (!$tmpUser) {
-                $tmpUser = new User();
-                $tmpUser->setId($userId);
-                $this->em->persist($tmpUser);
-            }
-            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'default']);
-            if (!$tmpState) {
-                $tmpState = new UserState();
-                $tmpState->setUser($tmpUser);
-                $tmpState->setStateKey('default');
-                $this->em->persist($tmpState);
-            }
-            $tmpState->setStateValue(json_encode('awaiting_project_title'));
-            $this->em->flush();
+            $this->userStateRepo->set($userId, 'awaiting_project_title', 'default');
             $keyboard = [
                 'inline_keyboard' => [
                     [
@@ -96,33 +76,14 @@ class ProjectCreateScreen extends BaseMachinimaScreen
             return;
         }
 
-        $tmpUser = $this->em->find(User::class, $userId);
-        $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'default']) : null;
-        $default_state = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
+        $default_state = $this->userStateRepo->get($userId, 'default');
 
         if ('awaiting_project_title' === $default_state) {
             if ($message_id) {
                 $this->client->request('deleteMessage', ['chat_id' => $chatId, 'message_id' => $message_id]);
             }
-            if ($tmpUser && $tmpState) {
-                $this->em->remove($tmpState);
-                $this->em->flush();
-            }
-            $tmpUser = $this->em->find(User::class, $userId);
-            if (!$tmpUser) {
-                $tmpUser = new User();
-                $tmpUser->setId($userId);
-                $this->em->persist($tmpUser);
-            }
-            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_project_description']);
-            if (!$tmpState) {
-                $tmpState = new UserState();
-                $tmpState->setUser($tmpUser);
-                $tmpState->setStateKey('awaiting_project_description');
-                $this->em->persist($tmpState);
-            }
-            $tmpState->setStateValue(json_encode(['title' => $text]));
-            $this->em->flush();
+            $this->userStateRepo->clear($userId, 'default');
+            $this->userStateRepo->set($userId, ['title' => $text], 'awaiting_project_description');
 
             $keyboard = [
                 'inline_keyboard' => [
@@ -139,33 +100,12 @@ class ProjectCreateScreen extends BaseMachinimaScreen
                 ],
             ];
             $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('select_project_type_message'), $keyboard);
-        } elseif ($state_data = ($this->em->find(User::class, $userId) ? ($this->em->getRepository(UserState::class)->findOneBy(['user' => $this->em->find(User::class, $userId), 'stateKey' => 'awaiting_project_description']) ? json_decode($this->em->getRepository(UserState::class)->findOneBy(['user' => $this->em->find(User::class, $userId), 'stateKey' => 'awaiting_project_description'])->getStateValue(), true) : null) : null)) {
+        } elseif ($state_data = $this->userStateRepo->get($userId, 'awaiting_project_description')) {
             if ($message_id) {
                 $this->client->request('deleteMessage', ['chat_id' => $chatId, 'message_id' => $message_id]);
             }
-            $userObj = $this->em->find(User::class, $userId);
-            if ($userObj) {
-                $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'awaiting_project_description']);
-                if ($state) {
-                    $this->em->remove($state);
-                    $this->em->flush();
-                }
-            }
-            $tmpUser = $this->em->find(User::class, $userId);
-            if (!$tmpUser) {
-                $tmpUser = new User();
-                $tmpUser->setId($userId);
-                $this->em->persist($tmpUser);
-            }
-            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_project_url']);
-            if (!$tmpState) {
-                $tmpState = new UserState();
-                $tmpState->setUser($tmpUser);
-                $tmpState->setStateKey('awaiting_project_url');
-                $this->em->persist($tmpState);
-            }
-            $tmpState->setStateValue(json_encode(array_merge($state_data, ['description' => $text])));
-            $this->em->flush();
+            $this->userStateRepo->clear($userId, 'awaiting_project_description');
+            $this->userStateRepo->set($userId, array_merge($state_data, ['description' => $text]), 'awaiting_project_url');
 
             $keyboard = [
                 'inline_keyboard' => [
@@ -175,33 +115,12 @@ class ProjectCreateScreen extends BaseMachinimaScreen
                 ],
             ];
             $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('enter_project_url_message'), $keyboard);
-        } elseif ($state_data = ($this->em->find(User::class, $userId) ? ($this->em->getRepository(UserState::class)->findOneBy(['user' => $this->em->find(User::class, $userId), 'stateKey' => 'awaiting_project_url']) ? json_decode($this->em->getRepository(UserState::class)->findOneBy(['user' => $this->em->find(User::class, $userId), 'stateKey' => 'awaiting_project_url'])->getStateValue(), true) : null) : null)) {
+        } elseif ($state_data = $this->userStateRepo->get($userId, 'awaiting_project_url')) {
             if ($message_id) {
                 $this->client->request('deleteMessage', ['chat_id' => $chatId, 'message_id' => $message_id]);
             }
-            $userObj = $this->em->find(User::class, $userId);
-            if ($userObj) {
-                $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'awaiting_project_url']);
-                if ($state) {
-                    $this->em->remove($state);
-                    $this->em->flush();
-                }
-            }
-            $tmpUser = $this->em->find(User::class, $userId);
-            if (!$tmpUser) {
-                $tmpUser = new User();
-                $tmpUser->setId($userId);
-                $this->em->persist($tmpUser);
-            }
-            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_project_cover']);
-            if (!$tmpState) {
-                $tmpState = new UserState();
-                $tmpState->setUser($tmpUser);
-                $tmpState->setStateKey('awaiting_project_cover');
-                $this->em->persist($tmpState);
-            }
-            $tmpState->setStateValue(json_encode(array_merge($state_data, ['url' => $text])));
-            $this->em->flush();
+            $this->userStateRepo->clear($userId, 'awaiting_project_url');
+            $this->userStateRepo->set($userId, array_merge($state_data, ['url' => $text]), 'awaiting_project_cover');
 
             $keyboard = [
                 'inline_keyboard' => [
@@ -211,7 +130,7 @@ class ProjectCreateScreen extends BaseMachinimaScreen
                 ],
             ];
             $this->renderPanel($chatId, $userId, $visuals_links[1], $this->translate('upload_project_cover_message'), $keyboard);
-        } elseif ($state_data = ($this->em->find(User::class, $userId) ? ($this->em->getRepository(UserState::class)->findOneBy(['user' => $this->em->find(User::class, $userId), 'stateKey' => 'awaiting_project_cover']) ? json_decode($this->em->getRepository(UserState::class)->findOneBy(['user' => $this->em->find(User::class, $userId), 'stateKey' => 'awaiting_project_cover'])->getStateValue(), true) : null) : null)) {
+        } elseif ($state_data = $this->userStateRepo->get($userId, 'awaiting_project_cover')) {
             if ($photo) {
                 $file_id = end($photo)['file_id'];
                 if ($message_id) {
@@ -229,14 +148,7 @@ class ProjectCreateScreen extends BaseMachinimaScreen
                     'created_by' => $userId,
                 ]);
 
-                $userObj = $this->em->find(User::class, $userId);
-                if ($userObj) {
-                    $states = $this->em->getRepository(UserState::class)->findBy(['user' => $userObj]);
-                    foreach ($states as $state) {
-                        $this->em->remove($state);
-                    }
-                    $this->em->flush();
-                }
+                $this->userStateRepo->clear($userId);
                 $this->client->sendMessage($chatId, str_replace('{title}', htmlspecialchars($state_data['title']), $this->translate('project_created_message')));
 
                 $updateCopy = $update;

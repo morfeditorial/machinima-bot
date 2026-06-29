@@ -22,8 +22,6 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Author;
 
 use morfeditorial\BaseMachinimaScreen;
-use App\Entity\User;
-use App\Entity\UserState;
 use App\Entity\Author;
 
 class AuthorProfileScreen extends BaseMachinimaScreen
@@ -89,14 +87,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
 
     private function renderProfile(int $chatId, int $userId, int $authorId): void
     {
-        $userObj = $this->em->find(User::class, $userId);
-        if ($userObj) {
-            $states = $this->em->getRepository(UserState::class)->findBy(['user' => $userObj]);
-            foreach ($states as $state) {
-                $this->em->remove($state);
-            }
-            $this->em->flush();
-        }
+        $this->userStateRepo->clear($userId);
 
         $author = $this->em->find(Author::class, $authorId);
 
@@ -111,7 +102,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
 
         if (null !== $author) {
             $authorStatus = $author->getState() === 'private';
-            $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage();
+            $currentPage = $this->userRepo->getCurrentPage($userId);
 
             $keyboard = [
                 'inline_keyboard' => [

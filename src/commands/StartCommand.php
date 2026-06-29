@@ -53,15 +53,7 @@ class StartCommand extends BaseMachinimaCommand
             return;
         }
 
-        // Викликаємо стару звичну бізнес-логіку
-        $user = $this->em->find(User::class, $userId);
-        if ($user) {
-            $states = $this->em->getRepository(UserState::class)->findBy(['user' => $user]);
-            foreach ($states as $state) {
-                $this->em->remove($state);
-            }
-            $this->em->flush();
-        }
+        $this->userStateRepo->clear($userId);
 
         $photoUrl = $this->getVisualsLinks()[0];
 

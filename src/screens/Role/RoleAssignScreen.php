@@ -23,7 +23,7 @@ namespace morfeditorial\screens\Role;
 
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\User;
-use App\Entity\UserState;
+
 
 class RoleAssignScreen extends BaseMachinimaScreen
 {
@@ -38,9 +38,8 @@ class RoleAssignScreen extends BaseMachinimaScreen
         $userId = $update['message']['from']['id'] ?? 0;
         
         if ($text && $userId) {
-            $tempUser = $this->em->find(User::class, $userId);
-            $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'awaiting_user_id_for_role']) : null;
-            if ($tempState) {
+            $stateValue = $this->userStateRepo->get($userId, 'awaiting_user_id_for_role');
+            if ($stateValue !== null) {
                 return true;
             }
         }
@@ -79,21 +78,7 @@ class RoleAssignScreen extends BaseMachinimaScreen
 
         if ('ask_user' === $subAction) {
             $role_name = $payload['params'][1] ?? '';
-            $tmpUser = $this->em->find(User::class, $userId);
-            if (!$tmpUser) {
-                $tmpUser = new User();
-                $tmpUser->setId($userId);
-                $this->em->persist($tmpUser);
-            }
-            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_user_id_for_role']);
-            if (!$tmpState) {
-                $tmpState = new UserState();
-                $tmpState->setUser($tmpUser);
-                $tmpState->setStateKey('awaiting_user_id_for_role');
-                $this->em->persist($tmpState);
-            }
-            $tmpState->setStateValue(json_encode(['role_name' => $role_name]));
-            $this->em->flush();
+            $this->userStateRepo->set($userId, ['role_name' => $role_name], 'awaiting_user_id_for_role');
 
             $keyboard = [
                 'inline_keyboard' => [
@@ -123,9 +108,7 @@ class RoleAssignScreen extends BaseMachinimaScreen
             return;
         }
 
-        $tmpUser = $this->em->find(User::class, $userId);
-        $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_user_id_for_role']) : null;
-        $state_data = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
+        $state_data = $this->userStateRepo->get($userId, 'awaiting_user_id_for_role');
         if ($state_data) {
             $target_user_id = (int) $text;
 
@@ -145,14 +128,7 @@ class RoleAssignScreen extends BaseMachinimaScreen
                 $this->client->sendMessage($chatId, str_replace(['{roleName}', '{userId}'], [htmlspecialchars($role_name), $target_user_id], $this->translate('role_assignment_failure_message')));
             }
 
-            $userObj = $this->em->find(User::class, $userId);
-            if ($userObj) {
-                $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'awaiting_user_id_for_role']);
-                if ($state) {
-                    $this->em->remove($state);
-                    $this->em->flush();
-                }
-            }
+            $this->userStateRepo->clear($userId, 'awaiting_user_id_for_role');
         }
     }
 }

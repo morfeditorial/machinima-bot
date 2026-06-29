@@ -23,7 +23,7 @@ namespace morfeditorial\screens\Role;
 
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\User;
-use App\Entity\UserState;
+
 
 class RoleUserManageScreen extends BaseMachinimaScreen
 {
@@ -36,9 +36,8 @@ class RoleUserManageScreen extends BaseMachinimaScreen
 
         $userId = $update['message']['from']['id'] ?? 0;
         if ($userId) {
-            $tempUser = $this->em->find(User::class, $userId);
-            $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'awaiting_user_id_for_management']) : null;
-            if ($tempState) {
+            $stateValue = $this->userStateRepo->get($userId, 'awaiting_user_id_for_management');
+            if ($stateValue !== null) {
                 return true;
             }
         }
@@ -72,21 +71,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
             $roleName = $parsed['params'][2] ?? '';
 
             if ('ask_user' === $subAction) {
-                $tmpUser = $this->em->find(User::class, $userId);
-                if (!$tmpUser) {
-                    $tmpUser = new User();
-                    $tmpUser->setId($userId);
-                    $this->em->persist($tmpUser);
-                }
-                $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_user_id_for_management']);
-                if (!$tmpState) {
-                    $tmpState = new UserState();
-                    $tmpState->setUser($tmpUser);
-                    $tmpState->setStateKey('awaiting_user_id_for_management');
-                    $this->em->persist($tmpState);
-                }
-                $tmpState->setStateValue(json_encode(['active' => true]));
-                $this->em->flush();
+                $this->userStateRepo->set($userId, ['active' => true], 'awaiting_user_id_for_management');
                 $internalAction = 'ask_user';
             } elseif ('do_add' === $subAction) {
                 $result = $role_service->assignRole($targetUserId, $roleName);
@@ -108,9 +93,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
                 $internalAction = $subAction;
             }
         } elseif ($text) {
-            $tmpUser = $this->em->find(User::class, $userId);
-            $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'awaiting_user_id_for_management']) : null;
-            $state_data = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
+            $state_data = $this->userStateRepo->get($userId, 'awaiting_user_id_for_management');
             if (false !== $state_data) {
                 $targetUserId = (int) $text;
 
@@ -127,14 +110,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
                     ]);
                 }
 
-                $userObj = $this->em->find(User::class, $userId);
-                if ($userObj) {
-                    $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'awaiting_user_id_for_management']);
-                    if ($state) {
-                        $this->em->remove($state);
-                        $this->em->flush();
-                    }
-                }
+                $this->userStateRepo->clear($userId, 'awaiting_user_id_for_management');
                 $internalAction = 'detail';
             }
         }

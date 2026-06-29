@@ -23,7 +23,6 @@ namespace morfeditorial\screens\Role;
 
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\User;
-use App\Entity\UserState;
 
 class RoleCreateScreen extends BaseMachinimaScreen
 {
@@ -36,13 +35,8 @@ class RoleCreateScreen extends BaseMachinimaScreen
 
         $text = $update['message']['text'] ?? '';
         $userId = $update['message']['from']['id'] ?? 0;
-        if ($text && $userId) {
-            $tempUser = $this->em->find(User::class, $userId);
-            $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'default']) : null;
-            $state = $tempState ? json_decode($tempState->getStateValue(), true) : null;
-            if ($state === 'awaiting_role_creation') {
-                return true;
-            }
+        if ($text && $userId && $this->userStateRepo->get($userId, 'default') === 'awaiting_role_creation') {
+            return true;
         }
 
         return false;
@@ -77,21 +71,7 @@ class RoleCreateScreen extends BaseMachinimaScreen
         $subAction = $payload['params'][0] ?? '';
 
         if (empty($subAction)) {
-            $tmpUser = $this->em->find(User::class, $userId);
-            if (!$tmpUser) {
-                $tmpUser = new User();
-                $tmpUser->setId($userId);
-                $this->em->persist($tmpUser);
-            }
-            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'default']);
-            if (!$tmpState) {
-                $tmpState = new UserState();
-                $tmpState->setUser($tmpUser);
-                $tmpState->setStateKey('default');
-                $this->em->persist($tmpState);
-            }
-            $tmpState->setStateValue(json_encode('awaiting_role_creation'));
-            $this->em->flush();
+            $this->userStateRepo->set($userId, 'awaiting_role_creation', 'default');
             $keyboard = [
                 'inline_keyboard' => [
                     [
@@ -193,9 +173,7 @@ class RoleCreateScreen extends BaseMachinimaScreen
             return;
         }
 
-        $tmpUser = $this->em->find(User::class, $userId);
-        $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'default']) : null;
-        $default_state = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
+        $default_state = $this->userStateRepo->get($userId, 'default');
 
         if ('awaiting_role_creation' === $default_state) {
             if ($this->getRoleService()->getRoleByName($text)) {
@@ -204,14 +182,7 @@ class RoleCreateScreen extends BaseMachinimaScreen
             }
 
             $this->getRoleService()->createRole($text);
-            $userObj = $this->em->find(User::class, $userId);
-            if ($userObj) {
-                $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'default']);
-                if ($state) {
-                    $this->em->remove($state);
-                    $this->em->flush();
-                }
-            }
+            $this->userStateRepo->clear($userId, 'default');
 
             $all_roles = $this->getRoleService()->getAllRolesSorted();
             $keyboard = ['inline_keyboard' => []];
