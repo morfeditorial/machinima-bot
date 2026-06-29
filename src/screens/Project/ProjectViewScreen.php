@@ -25,13 +25,13 @@ use morfeditorial\BaseMachinimaScreen;
 
 class ProjectViewScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
-        return strpos($action, 'project:view') === 0 || strpos($action, 'project:transition') === 0;
+        return 0 === strpos($action, 'project:view') || 0 === strpos($action, 'project:transition');
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -100,7 +100,7 @@ class ProjectViewScreen extends BaseMachinimaScreen
                 }
 
                 $cover = $project['cover_file_id'] ?: $visuals_links[1];
-                
+
                 $this->renderPanel($chatId, $userId, $cover, $message_text, $keyboard);
             }
         } elseif ('transition' === $subAction) {

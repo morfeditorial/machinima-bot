@@ -21,15 +21,15 @@ declare(strict_types=1);
 
 namespace morfeditorial;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Contracts\Service\Attribute\Required;
-use Morfeditorial\TelegramBotBundle\Screen\AbstractScreen as BundleAbstractScreen;
-use App\Service\RoleService;
+use App\Repository\AuthorRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserStateRepository;
-use App\Repository\AuthorRepository;
+use App\Service\RoleService;
+use Doctrine\ORM\EntityManagerInterface;
+use Morfeditorial\TelegramBotBundle\Screen\AbstractScreen as BundleAbstractScreen;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 abstract class BaseMachinimaScreen extends BundleAbstractScreen
 {
@@ -41,7 +41,7 @@ abstract class BaseMachinimaScreen extends BundleAbstractScreen
     protected AuthorRepository $authorRepo;
 
     #[Required]
-    public function setDependencies(ContainerInterface $container, Security $security, EntityManagerInterface $em, UserRepository $userRepo, UserStateRepository $userStateRepo, AuthorRepository $authorRepo): void
+    public function setDependencies(ContainerInterface $container, Security $security, EntityManagerInterface $em, UserRepository $userRepo, UserStateRepository $userStateRepo, AuthorRepository $authorRepo) : void
     {
         $this->container = $container;
         $this->security = $security;
@@ -51,7 +51,7 @@ abstract class BaseMachinimaScreen extends BundleAbstractScreen
         $this->authorRepo = $authorRepo;
     }
 
-    public function getContainer(): ContainerInterface
+    public function getContainer() : ContainerInterface
     {
         return $this->container;
     }
@@ -61,17 +61,17 @@ abstract class BaseMachinimaScreen extends BundleAbstractScreen
         return $this->container->get('bot_translator');
     }
 
-    public function translate(string $key, array $params = []): string
+    public function translate(string $key, array $params = []) : string
     {
         return $this->getTranslator()->translate($key, $params);
     }
 
-    public function getRoleService(): RoleService
+    public function getRoleService() : RoleService
     {
         return $this->container->get(RoleService::class);
     }
 
-    public function isGranted(string $role_name): bool
+    public function isGranted(string $role_name) : bool
     {
         return $this->security->isGranted($role_name);
     }
@@ -81,7 +81,7 @@ abstract class BaseMachinimaScreen extends BundleAbstractScreen
         return $this->container->get('visuals_links');
     }
 
-    protected function parsePayload(string $payload): array
+    protected function parsePayload(string $payload) : array
     {
         $parts = explode(':', $payload);
         $domain = array_shift($parts) ?? '';
@@ -94,13 +94,13 @@ abstract class BaseMachinimaScreen extends BundleAbstractScreen
         ];
     }
 
-    protected function makePayload(string $domain, string $action, ...$params): string
+    protected function makePayload(string $domain, string $action, ...$params) : string
     {
         $parts = [$domain, $action, ...$params];
         return implode(':', $parts);
     }
 
-    protected function renderPanel(int $chatId, int $userId, string $visual, string $caption, array $keyboard, bool $safe = false): void
+    protected function renderPanel(int $chatId, int $userId, string $visual, string $caption, array $keyboard, bool $safe = false) : void
     {
         $currentPanel = $this->userRepo->getCurrentPanel($userId);
 

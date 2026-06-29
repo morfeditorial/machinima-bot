@@ -30,7 +30,7 @@ class Translator
     /**
      * Constructor to initialize translations and user locale.
      *
-     * @param string $user_locale  The locale to be used for translations.
+     * @param string $user_locale The locale to be used for translations.
      */
     public function __construct(string $user_locale = 'en')
     {

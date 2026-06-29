@@ -22,17 +22,16 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Category;
 
 use morfeditorial\BaseMachinimaScreen;
-use App\Entity\User;
 
 class CategoryManageScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         return str_starts_with($action, 'category:manage');
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -46,7 +45,7 @@ class CategoryManageScreen extends BaseMachinimaScreen
         $this->userStateRepo->clear($userId);
 
         $payload = $this->parsePayload($action);
-        $parentId = isset($payload['params'][0]) && $payload['params'][0] !== '' ? (int) $payload['params'][0] : null;
+        $parentId = isset($payload['params'][0]) && '' !== $payload['params'][0] ? (int) $payload['params'][0] : null;
 
         $content_service = $this->container->get('content_service');
 

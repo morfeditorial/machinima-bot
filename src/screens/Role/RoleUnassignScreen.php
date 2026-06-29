@@ -22,11 +22,10 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\BaseMachinimaScreen;
-use App\Entity\User;
 
 class RoleUnassignScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         if (str_starts_with($action, 'role:unassign')) {
@@ -36,7 +35,7 @@ class RoleUnassignScreen extends BaseMachinimaScreen
         $userId = $update['message']['from']['id'] ?? 0;
         if ($userId) {
             $stateValue = $this->userStateRepo->get($userId, 'awaiting_user_id_to_remove_role');
-            if ($stateValue !== null) {
+            if (null !== $stateValue) {
                 return true;
             }
         }
@@ -44,7 +43,7 @@ class RoleUnassignScreen extends BaseMachinimaScreen
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;

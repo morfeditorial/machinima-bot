@@ -25,13 +25,13 @@ use morfeditorial\BaseMachinimaScreen;
 
 class ProjectTypeScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
-        return strpos($action, 'project:set_type') === 0;
+        return 0 === strpos($action, 'project:set_type');
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;

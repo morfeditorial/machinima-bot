@@ -22,7 +22,6 @@ declare(strict_types=1);
 namespace morfeditorial\utils;
 
 use morfeditorial\Translator;
-use App\Entity\Author;
 
 class KeyboardHelper
 {

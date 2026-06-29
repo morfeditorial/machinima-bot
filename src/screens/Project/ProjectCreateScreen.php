@@ -22,14 +22,13 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Project;
 
 use morfeditorial\BaseMachinimaScreen;
-use App\Entity\User;
 
 class ProjectCreateScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
-        if (strpos($action, 'project:create') === 0) {
+        if (0 === strpos($action, 'project:create')) {
             return true;
         }
 
@@ -39,15 +38,21 @@ class ProjectCreateScreen extends BaseMachinimaScreen
             if (in_array($state, ['awaiting_project_title'], true)) {
                 return true;
             }
-            if ($this->userStateRepo->get($userId, 'awaiting_project_description')) return true;
-            if ($this->userStateRepo->get($userId, 'awaiting_project_url')) return true;
-            if ($this->userStateRepo->get($userId, 'awaiting_project_cover')) return true;
+            if ($this->userStateRepo->get($userId, 'awaiting_project_description')) {
+                return true;
+            }
+            if ($this->userStateRepo->get($userId, 'awaiting_project_url')) {
+                return true;
+            }
+            if ($this->userStateRepo->get($userId, 'awaiting_project_cover')) {
+                return true;
+            }
         }
 
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -63,7 +68,7 @@ class ProjectCreateScreen extends BaseMachinimaScreen
 
         $visuals_links = $this->getVisualsLinks();
 
-        if (strpos($action, 'project:create') === 0) {
+        if (0 === strpos($action, 'project:create')) {
             $this->userStateRepo->set($userId, 'awaiting_project_title', 'default');
             $keyboard = [
                 'inline_keyboard' => [

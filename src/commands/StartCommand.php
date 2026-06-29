@@ -23,8 +23,6 @@ namespace morfeditorial\commands;
 
 use morfeditorial\BaseMachinimaCommand;
 use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
-use App\Entity\User;
-use App\Entity\UserState;
 
 class StartCommand extends BaseMachinimaCommand
 {
@@ -34,17 +32,17 @@ class StartCommand extends BaseMachinimaCommand
         $this->setAliases(['start', 'begin', 'initiate']);
     }
 
-    public function getCommand(): string
+    public function getCommand() : string
     {
         return 'start'; // Диспетчер шукатиме саме цю команду
     }
 
-    public function getDescriptionKey(): string
+    public function getDescriptionKey() : string
     {
         return 'start_command_description';
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['message']['chat']['id'] ?? 0;
         $userId = $update['message']['from']['id'] ?? 0;

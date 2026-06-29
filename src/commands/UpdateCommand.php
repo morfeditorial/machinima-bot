@@ -33,20 +33,22 @@ class UpdateCommand extends BaseMachinimaCommand
         $this->setHiddenFromMenu(true);
     }
 
-    public function getCommand(): string
+    public function getCommand() : string
     {
         return 'update';
     }
 
-    public function getDescriptionKey(): string
+    public function getDescriptionKey() : string
     {
         return 'update_command_description';
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['message']['chat']['id'] ?? 0;
-        if (!$chatId) return;
+        if (!$chatId) {
+            return;
+        }
 
         if (!$this->isGranted('ROLE_ADMIN')) {
             $this->client->sendMessage($chatId, $this->translate("no_permission_message"));

@@ -32,23 +32,25 @@ class AdminPanelCommand extends BaseMachinimaCommand
         $this->setAliases(['menu', 'admin_panel']);
     }
 
-    public function getCommand(): string
+    public function getCommand() : string
     {
         return 'admin_panel';
     }
 
-    public function getDescriptionKey(): string
+    public function getDescriptionKey() : string
     {
         return 'main_menu_command_description';
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['message']['chat']['id'] ?? 0;
         $userId = $update['message']['from']['id'] ?? 0;
         $messageId = $update['message']['message_id'] ?? 0;
 
-        if (!$chatId || !$userId) return;
+        if (!$chatId || !$userId) {
+            return;
+        }
 
         $currentPanel = $this->userRepo->getCurrentPanel($userId);
         if (!is_null($currentPanel)) {

@@ -25,10 +25,10 @@ use morfeditorial\BaseMachinimaScreen;
 
 class ProjectEditScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
-        if (strpos($action, 'project:edit') === 0) {
+        if (0 === strpos($action, 'project:edit')) {
             return true;
         }
 
@@ -40,7 +40,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -58,7 +58,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
         $content_service = $this->container->get('content_service');
         $visuals_links = $this->getVisualsLinks();
 
-        if (strpos($action, 'project:edit') === 0) {
+        if (0 === strpos($action, 'project:edit')) {
             $parsed = $this->parsePayload($action);
             $project_id = isset($parsed['params'][0]) ? (int)$parsed['params'][0] : 0;
             $sub_action = isset($parsed['params'][1]) ? $parsed['params'][1] : null;

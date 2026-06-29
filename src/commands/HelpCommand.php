@@ -32,20 +32,22 @@ class HelpCommand extends BaseMachinimaCommand
         $this->setAliases(['help']);
     }
 
-    public function getCommand(): string
+    public function getCommand() : string
     {
         return 'help';
     }
 
-    public function getDescriptionKey(): string
+    public function getDescriptionKey() : string
     {
         return 'help_command_description';
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['message']['chat']['id'] ?? 0;
-        if (!$chatId) return;
+        if (!$chatId) {
+            return;
+        }
 
         $this->client->sendMessage($chatId, $this->translate('help_message'));
     }

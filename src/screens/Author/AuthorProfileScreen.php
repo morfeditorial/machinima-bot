@@ -21,37 +21,37 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Author;
 
-use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
+use morfeditorial\BaseMachinimaScreen;
 
 class AuthorProfileScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         $payload = $this->parsePayload($action);
-        
-        if ($payload['domain'] === 'author' && in_array($payload['action'], ['profile', 'set_private', 'unlink_telegram'])) {
+
+        if ('author' === $payload['domain'] && in_array($payload['action'], ['profile', 'set_private', 'unlink_telegram'])) {
             return true;
         }
 
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
         $action = $update['callback_query']['data'] ?? '';
-        
+
         $payload = $this->parsePayload($action);
         $route = $payload['action'];
         $params = $payload['params'];
 
-        if ($route === 'profile') {
+        if ('profile' === $route) {
             $authorId = (int)($params[0] ?? 0);
             $this->renderProfile($chatId, $userId, $authorId);
-        } elseif ($route === 'set_private') {
+        } elseif ('set_private' === $route) {
             $authorId = (int)($params[0] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
 
@@ -63,7 +63,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             }
 
             if (null !== $author) {
-                $isPrivate = $author->getState() === 'private';
+                $isPrivate = 'private' === $author->getState();
                 $privAuthor = $this->em->find(Author::class, $authorId);
                 if ($privAuthor) {
                     $privAuthor->setState(!$isPrivate ? 'private' : 'public');
@@ -71,7 +71,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
                 }
                 $this->renderProfile($chatId, $userId, $authorId);
             }
-        } elseif ($route === 'unlink_telegram') {
+        } elseif ('unlink_telegram' === $route) {
             if (!$this->isGranted('ROLE_ADMIN')) {
                 return;
             }
@@ -85,7 +85,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
         }
     }
 
-    private function renderProfile(int $chatId, int $userId, int $authorId): void
+    private function renderProfile(int $chatId, int $userId, int $authorId) : void
     {
         $this->userStateRepo->clear($userId);
 
@@ -101,7 +101,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
         $visualsLinks = $this->getVisualsLinks();
 
         if (null !== $author) {
-            $authorStatus = $author->getState() === 'private';
+            $authorStatus = 'private' === $author->getState();
             $currentPage = $this->userRepo->getCurrentPage($userId);
 
             $keyboard = [

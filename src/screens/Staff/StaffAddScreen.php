@@ -21,12 +21,12 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Staff;
 
-use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
+use morfeditorial\BaseMachinimaScreen;
 
 class StaffAddScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -46,7 +46,7 @@ class StaffAddScreen extends BaseMachinimaScreen
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -104,7 +104,7 @@ class StaffAddScreen extends BaseMachinimaScreen
             if (isset($update['callback_query']['id'])) {
                 $this->client->answerCallbackQuery($update['callback_query']['id']);
             }
-        } elseif ($text !== '') {
+        } elseif ('' !== $text) {
             $state_data = $this->userStateRepo->get($userId, 'awaiting_staff_role');
 
             if ($state_data) {

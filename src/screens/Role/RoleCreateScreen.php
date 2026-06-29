@@ -22,11 +22,10 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\BaseMachinimaScreen;
-use App\Entity\User;
 
 class RoleCreateScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         if (str_starts_with($action, 'role:create')) {
@@ -35,14 +34,14 @@ class RoleCreateScreen extends BaseMachinimaScreen
 
         $text = $update['message']['text'] ?? '';
         $userId = $update['message']['from']['id'] ?? 0;
-        if ($text && $userId && $this->userStateRepo->get($userId, 'default') === 'awaiting_role_creation') {
+        if ($text && $userId && 'awaiting_role_creation' === $this->userStateRepo->get($userId, 'default')) {
             return true;
         }
 
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $action = $update['callback_query']['data'] ?? '';
         if ($action) {
@@ -52,7 +51,7 @@ class RoleCreateScreen extends BaseMachinimaScreen
         }
     }
 
-    private function handleCallback(array $update): void
+    private function handleCallback(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? 0;
@@ -86,7 +85,7 @@ class RoleCreateScreen extends BaseMachinimaScreen
             $child_name = $payload['params'][2] ?? '';
 
             $this->getRoleService()->addParentChild($parent_name, $child_name);
-            
+
             if (isset($update['callback_query']['id'])) {
                 $this->client->answerCallbackQuery($update['callback_query']['id'], [
                     'text' => str_replace(['{parent}', '{child}'], [$parent_name, $child_name], $this->translate('parent_added_message'))
@@ -163,7 +162,7 @@ class RoleCreateScreen extends BaseMachinimaScreen
         }
     }
 
-    private function handleMessage(array $update): void
+    private function handleMessage(array $update) : void
     {
         $chatId = $update['message']['chat']['id'] ?? 0;
         $userId = $update['message']['from']['id'] ?? 0;

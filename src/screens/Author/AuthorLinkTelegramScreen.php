@@ -21,17 +21,17 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Author;
 
-use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
+use morfeditorial\BaseMachinimaScreen;
 
 class AuthorLinkTelegramScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         $payload = $this->parsePayload($action);
-        
-        if ($payload['domain'] === 'author' && $payload['action'] === 'link_telegram') {
+
+        if ('author' === $payload['domain'] && 'link_telegram' === $payload['action']) {
             return true;
         }
 
@@ -44,7 +44,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -53,7 +53,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
 
         $payload = $this->parsePayload($action);
 
-        if ($payload['domain'] === 'author' && $payload['action'] === 'link_telegram') {
+        if ('author' === $payload['domain'] && 'link_telegram' === $payload['action']) {
             $authorId = (int)($payload['params'][0] ?? 0);
 
             if (!$this->isGranted('ROLE_ADMIN')) {
@@ -114,7 +114,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
             if (null !== $existingAuthor) {
                 $this->client->sendMessage($chatId, $this->translate('telegram_already_linked'));
                 $this->userStateRepo->clear($userId, 'link_telegram');
-                
+
                 $profileScreen = new AuthorProfileScreen();
                 $profileScreen->setDependencies($this->container, $this->security);
                 $fakeUpdate = $update;

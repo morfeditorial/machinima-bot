@@ -21,33 +21,33 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Author;
 
+use App\Entity\Author;
 use morfeditorial\BaseMachinimaScreen;
 use morfeditorial\utils\KeyboardHelper;
-use App\Entity\Author;
 
 class AuthorListScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         $payload = $this->parsePayload($action);
-        
-        if ($payload['domain'] === 'author' && $payload['action'] === 'list') {
+
+        if ('author' === $payload['domain'] && 'list' === $payload['action']) {
             return true;
         }
 
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
         $action = $update['callback_query']['data'] ?? '';
-        
+
         $payload = $this->parsePayload($action);
 
-        if ($payload['domain'] === 'author' && $payload['action'] === 'list') {
+        if ('author' === $payload['domain'] && 'list' === $payload['action']) {
             $page = (int)($payload['params'][0] ?? 1);
             $this->userRepo->setCurrentPage($userId, 'author:list:' . $page);
 

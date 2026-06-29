@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace morfeditorial;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Contracts\Service\Attribute\Required;
-use Morfeditorial\TelegramBotBundle\Command\AbstractCommand as BundleAbstractCommand;
-use App\Service\RoleService;
+use App\Repository\AuthorRepository;
 use App\Repository\UserRepository;
 use App\Repository\UserStateRepository;
-use App\Repository\AuthorRepository;
+use App\Service\RoleService;
+use Doctrine\ORM\EntityManagerInterface;
+use Morfeditorial\TelegramBotBundle\Command\AbstractCommand as BundleAbstractCommand;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 abstract class BaseMachinimaCommand extends BundleAbstractCommand
 {
@@ -27,7 +27,7 @@ abstract class BaseMachinimaCommand extends BundleAbstractCommand
     protected bool $hidden_from_menu = false;
 
     #[Required]
-    public function setDependencies(ContainerInterface $container, Security $security, EntityManagerInterface $em, UserRepository $userRepo, UserStateRepository $userStateRepo, AuthorRepository $authorRepo): void
+    public function setDependencies(ContainerInterface $container, Security $security, EntityManagerInterface $em, UserRepository $userRepo, UserStateRepository $userStateRepo, AuthorRepository $authorRepo) : void
     {
         $this->container = $container;
         $this->security = $security;
@@ -47,12 +47,12 @@ abstract class BaseMachinimaCommand extends BundleAbstractCommand
         return $this->getTranslator()->translate($key);
     }
 
-    public function getRoleService(): RoleService
+    public function getRoleService() : RoleService
     {
         return $this->container->get(RoleService::class);
     }
 
-    public function isGranted(string $role_name): bool
+    public function isGranted(string $role_name) : bool
     {
         return $this->security->isGranted($role_name);
     }
@@ -62,39 +62,39 @@ abstract class BaseMachinimaCommand extends BundleAbstractCommand
         return $this->container->get('visuals_links');
     }
 
-    public function setDescription(string $description): void
+    public function setDescription(string $description) : void
     {
         $this->description = $description;
     }
 
-    public function getDescription(): string
+    public function getDescription() : string
     {
         return $this->description;
     }
 
-    public function setAliases(array $aliases): void
+    public function setAliases(array $aliases) : void
     {
         $this->aliases = $aliases;
     }
 
-    public function getAliases(): array
+    public function getAliases() : array
     {
         return $this->aliases;
     }
 
-    abstract public function getDescriptionKey(): string;
+    abstract public function getDescriptionKey() : string;
 
-    public function setHiddenFromMenu(bool $hidden_from_menu): void
+    public function setHiddenFromMenu(bool $hidden_from_menu) : void
     {
         $this->hidden_from_menu = $hidden_from_menu;
     }
 
-    public function isHiddenFromMenu(): bool
+    public function isHiddenFromMenu() : bool
     {
         return $this->hidden_from_menu;
     }
 
-    protected function getArgs(array $update): array
+    protected function getArgs(array $update) : array
     {
         $text = $update['message']['text'] ?? '';
         $parts = explode(' ', trim(preg_replace("/\s+/", ' ', $text)));

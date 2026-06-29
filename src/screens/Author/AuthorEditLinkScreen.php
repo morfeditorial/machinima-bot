@@ -21,17 +21,17 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Author;
 
-use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
+use morfeditorial\BaseMachinimaScreen;
 
 class AuthorEditLinkScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         $payload = $this->parsePayload($action);
-        
-        if ($payload['domain'] === 'author' && in_array($payload['action'], ['edit_link', 'add_link'])) {
+
+        if ('author' === $payload['domain'] && in_array($payload['action'], ['edit_link', 'add_link'])) {
             return true;
         }
 
@@ -44,7 +44,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -53,7 +53,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
 
         $payload = $this->parsePayload($action);
 
-        if ($payload['domain'] === 'author' && in_array($payload['action'], ['edit_link', 'add_link'])) {
+        if ('author' === $payload['domain'] && in_array($payload['action'], ['edit_link', 'add_link'])) {
             $authorId = (int)($payload['params'][0] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
 
@@ -103,7 +103,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
                 $linkAuthor->setChannelLink(trim($text));
                 $this->em->flush();
             }
-            $authorStatus = $this->em->find(Author::class, $authorId)?->getState() === 'private';
+            $authorStatus = 'private' === $this->em->find(Author::class, $authorId)?->getState();
 
             $currentPage = $this->userRepo->getCurrentPage($userId);
             $backCallback = $currentPage ? $currentPage : 'admin:panel';

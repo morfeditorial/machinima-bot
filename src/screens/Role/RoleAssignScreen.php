@@ -22,11 +22,10 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\BaseMachinimaScreen;
-use App\Entity\User;
 
 class RoleAssignScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         if (str_starts_with($action, 'role:assign')) {
@@ -35,10 +34,10 @@ class RoleAssignScreen extends BaseMachinimaScreen
 
         $text = $update['message']['text'] ?? '';
         $userId = $update['message']['from']['id'] ?? 0;
-        
+
         if ($text && $userId) {
             $stateValue = $this->userStateRepo->get($userId, 'awaiting_user_id_for_role');
-            if ($stateValue !== null) {
+            if (null !== $stateValue) {
                 return true;
             }
         }
@@ -46,10 +45,10 @@ class RoleAssignScreen extends BaseMachinimaScreen
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $action = $update['callback_query']['data'] ?? '';
-        
+
         if ($action) {
             $this->handleCallback($update);
         } else {
@@ -57,7 +56,7 @@ class RoleAssignScreen extends BaseMachinimaScreen
         }
     }
 
-    private function handleCallback(array $update): void
+    private function handleCallback(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? 0;
@@ -97,7 +96,7 @@ class RoleAssignScreen extends BaseMachinimaScreen
         }
     }
 
-    private function handleMessage(array $update): void
+    private function handleMessage(array $update) : void
     {
         $chatId = $update['message']['chat']['id'] ?? 0;
         $userId = $update['message']['from']['id'] ?? 0;

@@ -22,11 +22,10 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Category;
 
 use morfeditorial\BaseMachinimaScreen;
-use App\Entity\User;
 
 class CategoryCreateScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -42,7 +41,7 @@ class CategoryCreateScreen extends BaseMachinimaScreen
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -76,7 +75,7 @@ class CategoryCreateScreen extends BaseMachinimaScreen
             if (isset($update['callback_query']['id'])) {
                 $this->client->answerCallbackQuery($update['callback_query']['id']);
             }
-        } elseif ($text !== '') {
+        } elseif ('' !== $text) {
             $state_data = $this->userStateRepo->get($userId, 'awaiting_category_name');
 
             if ($state_data) {
@@ -93,7 +92,7 @@ class CategoryCreateScreen extends BaseMachinimaScreen
 
                 $this->client->sendMessage($chatId, str_replace('{name}', htmlspecialchars($name), $this->translate('category_added_message')));
                 $this->userStateRepo->clear($userId, 'awaiting_category_name');
-                
+
                 $back_callback = $parent_id ? $this->makePayload('category', 'manage', (string)$parent_id) : $this->makePayload('category', 'manage');
                 $keyboard = [
                     'inline_keyboard' => [

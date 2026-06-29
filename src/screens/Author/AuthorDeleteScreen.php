@@ -21,41 +21,41 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Author;
 
+use App\Entity\Author;
 use morfeditorial\BaseMachinimaScreen;
 use morfeditorial\utils\KeyboardHelper;
-use App\Entity\Author;
 
 class AuthorDeleteScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         $payload = $this->parsePayload($action);
-        
-        if ($payload['domain'] === 'author' && in_array($payload['action'], ['delete', 'delete_page', 'to_delete', 'delete_confirm', 'delete_confirmation'])) {
+
+        if ('author' === $payload['domain'] && in_array($payload['action'], ['delete', 'delete_page', 'to_delete', 'delete_confirm', 'delete_confirmation'])) {
             return true;
         }
 
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
         $action = $update['callback_query']['data'] ?? '';
-        
+
         $payload = $this->parsePayload($action);
         $route = $payload['action'];
         $params = $payload['params'];
 
-        if ($route === 'delete' || $route === 'delete_page') {
+        if ('delete' === $route || 'delete_page' === $route) {
             if (!$this->isGranted('ROLE_MODERATOR')) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
 
-            $page = $route === 'delete_page' ? (int)($params[0] ?? 1) : 1;
+            $page = 'delete_page' === $route ? (int)($params[0] ?? 1) : 1;
             $this->userRepo->setCurrentPage($userId, 'delete_page_' . $page);
 
             $visualsLinks = $this->getVisualsLinks();
@@ -75,9 +75,9 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             $messageText = empty($authors) ? $this->translate('empty_authors_list_message') : $this->translate('delete_author_message');
 
             $this->renderPanel($chatId, $userId, $visualsLinks[1], $messageText, $keyboard);
-        } elseif ($route === 'to_delete') {
+        } elseif ('to_delete' === $route) {
             $this->confirmDelete($chatId, $userId, (int)($params[0] ?? 0));
-        } elseif ($route === 'delete_confirm' || $route === 'delete_confirmation') {
+        } elseif ('delete_confirm' === $route || 'delete_confirmation' === $route) {
             $this->doDelete($chatId, $userId, (int)($params[0] ?? 0));
         }
     }

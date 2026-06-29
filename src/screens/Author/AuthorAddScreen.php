@@ -21,29 +21,29 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Author;
 
-use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
+use morfeditorial\BaseMachinimaScreen;
 
 class AuthorAddScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         $payload = $this->parsePayload($action);
-        if ($payload['domain'] === 'author' && $payload['action'] === 'add') {
+        if ('author' === $payload['domain'] && 'add' === $payload['action']) {
             return true;
         }
 
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
         $state = $this->userStateRepo->get($userId, 'default');
-        if (isset($update['message']) && $state === 'awaiting_author_name_creation') {
+        if (isset($update['message']) && 'awaiting_author_name_creation' === $state) {
             return true;
         }
 
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -52,7 +52,7 @@ class AuthorAddScreen extends BaseMachinimaScreen
 
         $payload = $this->parsePayload($action);
 
-        if ($payload['domain'] === 'author' && $payload['action'] === 'add') {
+        if ('author' === $payload['domain'] && 'add' === $payload['action']) {
             if (!$this->isGranted('ROLE_MODERATOR')) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
@@ -91,7 +91,7 @@ class AuthorAddScreen extends BaseMachinimaScreen
             $this->em->persist($newAuthor);
             $this->em->flush();
             $authorId = $newAuthor->getId();
-            $authorStatus = $this->em->find(Author::class, $authorId)?->getState() === 'private';
+            $authorStatus = 'private' === $this->em->find(Author::class, $authorId)?->getState();
 
             $keyboard = [
                 'inline_keyboard' => [

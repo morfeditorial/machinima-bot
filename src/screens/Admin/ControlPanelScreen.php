@@ -21,18 +21,18 @@ declare(strict_types=1);
 
 namespace morfeditorial\screens\Admin;
 
-use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
+use morfeditorial\BaseMachinimaScreen;
 
 class ControlPanelScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
-        return str_starts_with($action, 'admin:panel') || str_starts_with($action, 'admin:create_public_page') || $action === 'panel';
+        return str_starts_with($action, 'admin:panel') || str_starts_with($action, 'admin:create_public_page') || 'panel' === $action;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;

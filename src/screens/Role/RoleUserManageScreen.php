@@ -22,11 +22,10 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\BaseMachinimaScreen;
-use App\Entity\User;
 
 class RoleUserManageScreen extends BaseMachinimaScreen
 {
-    public function supports(array $update): bool
+    public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
         if (str_starts_with($action, 'role:user')) {
@@ -36,7 +35,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
         $userId = $update['message']['from']['id'] ?? 0;
         if ($userId) {
             $stateValue = $this->userStateRepo->get($userId, 'awaiting_user_id_for_management');
-            if ($stateValue !== null) {
+            if (null !== $stateValue) {
                 return true;
             }
         }
@@ -44,7 +43,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
         return false;
     }
 
-    public function handle(array $update): void
+    public function handle(array $update) : void
     {
         $chatId = $update['callback_query']['message']['chat']['id'] ?? $update['message']['chat']['id'] ?? 0;
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
@@ -60,10 +59,10 @@ class RoleUserManageScreen extends BaseMachinimaScreen
         $visuals_links = $this->getVisualsLinks();
 
         $parsed = $this->parsePayload($action);
-        
+
         $internalAction = '';
         $targetUserId = 0;
-        
+
         if ($action && str_starts_with($action, 'role:user')) {
             $subAction = $parsed['params'][0] ?? 'ask_user';
             $targetUserId = (int) ($parsed['params'][1] ?? 0);
@@ -122,7 +121,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
                     ],
                 ],
             ];
-            
+
             $caption = $this->translate('enter_user_id_for_management_message');
             $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             return;
@@ -149,7 +148,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
                     ],
                 ],
             ];
-            
+
             $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             return;
         }
@@ -168,7 +167,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
                 ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'user', 'detail', (string)$targetUserId)],
             ];
             $caption = str_replace('{userId}', (string)$targetUserId, $this->translate('select_role_to_add_message'));
-            
+
             $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             return;
         }
@@ -184,7 +183,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
                 ['text' => $this->translate('go_back'), 'callback_data' => $this->makePayload('role', 'user', 'detail', (string)$targetUserId)],
             ];
             $caption = str_replace('{userId}', (string)$targetUserId, $this->translate('select_role_to_remove_message'));
-            
+
             $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             return;
         }
