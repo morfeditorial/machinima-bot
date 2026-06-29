@@ -22,6 +22,8 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Project;
 
 use morfeditorial\BaseMachinimaScreen;
+use App\Entity\User;
+use App\Entity\UserState;
 
 class ProjectListScreen extends BaseMachinimaScreen
 {
@@ -37,19 +39,31 @@ class ProjectListScreen extends BaseMachinimaScreen
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
         $action = $update['callback_query']['data'] ?? '';
 
-        $user_service = $this->getUserService();
-        $user_state_service = $this->getUserStateService();
         $content_service = $this->container->get('content_service');
         $visuals_links = $this->getVisualsLinks();
 
-        $user_state_service->clearState($userId);
+        $userObj = $this->em->find(User::class, $userId);
+        if ($userObj) {
+            $states = $this->em->getRepository(UserState::class)->findBy(['user' => $userObj]);
+            foreach ($states as $state) {
+                $this->em->remove($state);
+            }
+            $this->em->flush();
+        }
         $parsed = $this->parsePayload($action);
         $page = isset($parsed['params'][0]) ? (int)$parsed['params'][0] : 1;
         if ($page < 1) {
             $page = 1;
         }
 
-        $user_service->setCurrentPage($userId, $this->makePayload('project', 'list', (string)$page));
+        $user = $this->em->find(User::class, $userId);
+        if (!$user) {
+            $user = new User();
+            $user->setId($userId);
+            $this->em->persist($user);
+        }
+        $user->setCurrentPage($this->makePayload('project', 'list', (string)$page));
+        $this->em->flush();
 
         $all_projects = $content_service->getAllContent();
         $projects_per_page = 5;
