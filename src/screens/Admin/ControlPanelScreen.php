@@ -22,6 +22,9 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Admin;
 
 use morfeditorial\BaseMachinimaScreen;
+use App\Entity\Author;
+use App\Entity\User;
+use App\Entity\UserState;
 
 class ControlPanelScreen extends BaseMachinimaScreen
 {
@@ -39,21 +42,34 @@ class ControlPanelScreen extends BaseMachinimaScreen
         $text = $update['message']['text'] ?? '';
 
         if (str_starts_with($action, 'admin:create_public_page')) {
-            $authorService = $this->getContainer()->get('author_service');
-            $myAuthorProfile = $authorService->getAuthorByTelegramId($userId);
+            $myAuthorProfile = $this->em->getRepository(Author::class)->findOneBy(['telegramUserId' => $userId]);
             if (! $myAuthorProfile) {
-                // Fetch first name from telegram or just use "Staff #ID"
                 $firstName = $update['callback_query']['from']['first_name'] ?? ('Staff #' . $userId);
-                $authorService->createAuthor($firstName, $userId);
+                $newAuthor = new Author();
+                $newAuthor->setName(trim($firstName));
+                $newAuthor->setTelegramUserId($userId);
+                $this->em->persist($newAuthor);
+                $this->em->flush();
             }
         }
 
         // Regardless of action (if it's panel or create_public_page), we render the panel.
-        $this->getUserStateService()->clearState($userId);
+        $userObj = $this->em->find(User::class, $userId);
+        if ($userObj) {
+            $states = $this->em->getRepository(UserState::class)->findBy(['user' => $userObj]);
+            foreach ($states as $state) {
+                $this->em->remove($state);
+            }
+            $this->em->flush();
+        }
 
-        $currentPage = $this->getUserService()->getCurrentPage($userId);
+        $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage();
         if (!is_null($currentPage)) {
-            $this->getUserService()->resetCurrentPage($userId);
+            $user = $this->em->find(User::class, $userId);
+            if ($user) {
+                $user->setCurrentPage(null);
+                $this->em->flush();
+            }
         }
 
         $keyboard = ['inline_keyboard' => []];
@@ -64,12 +80,11 @@ class ControlPanelScreen extends BaseMachinimaScreen
             ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
         ];
 
-        $authorService = $this->getContainer()->get('author_service');
-        $myAuthorProfile = $authorService->getAuthorByTelegramId($userId);
+        $myAuthorProfile = $this->em->getRepository(Author::class)->findOneBy(['telegramUserId' => $userId]);
 
         if ($myAuthorProfile) {
             $keyboard['inline_keyboard'][] = [
-                ['text' => '📝 ' . $this->translate('public_page'), 'callback_data' => 'author:profile:' . $myAuthorProfile['id']],
+                ['text' => '📝 ' . $this->translate('public_page'), 'callback_data' => 'author:profile:' . $myAuthorProfile->getId()],
             ];
         } else {
             $keyboard['inline_keyboard'][] = [
