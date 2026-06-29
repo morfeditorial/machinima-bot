@@ -23,6 +23,8 @@ namespace morfeditorial\commands;
 
 use morfeditorial\BaseMachinimaCommand;
 use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
+use App\Entity\User;
+use App\Entity\UserState;
 
 class StartCommand extends BaseMachinimaCommand
 {
@@ -52,7 +54,14 @@ class StartCommand extends BaseMachinimaCommand
         }
 
         // Викликаємо стару звичну бізнес-логіку
-        $this->getUserStateService()->clearState($userId);
+        $user = $this->em->find(User::class, $userId);
+        if ($user) {
+            $states = $this->em->getRepository(UserState::class)->findBy(['user' => $user]);
+            foreach ($states as $state) {
+                $this->em->remove($state);
+            }
+            $this->em->flush();
+        }
 
         $photoUrl = $this->getVisualsLinks()[0];
 
