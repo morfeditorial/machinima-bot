@@ -24,7 +24,6 @@ namespace morfeditorial\screens\Author;
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\Author;
 
-
 class AuthorEditNameScreen extends BaseMachinimaScreen
 {
     public function supports(array $update): bool

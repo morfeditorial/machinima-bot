@@ -24,7 +24,6 @@ namespace morfeditorial\screens\Role;
 use morfeditorial\BaseMachinimaScreen;
 use App\Entity\User;
 
-
 class RoleUserManageScreen extends BaseMachinimaScreen
 {
     public function supports(array $update): bool

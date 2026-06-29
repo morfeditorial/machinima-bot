@@ -23,8 +23,6 @@ namespace morfeditorial\screens\Role;
 
 use morfeditorial\BaseMachinimaScreen;
 
-
-
 class RoleControlScreen extends BaseMachinimaScreen
 {
     public function supports(array $update): bool

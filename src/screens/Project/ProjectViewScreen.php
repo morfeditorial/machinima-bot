@@ -23,7 +23,6 @@ namespace morfeditorial\screens\Project;
 
 use morfeditorial\BaseMachinimaScreen;
 
-
 class ProjectViewScreen extends BaseMachinimaScreen
 {
     public function supports(array $update): bool

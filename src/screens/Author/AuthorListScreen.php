@@ -25,7 +25,6 @@ use morfeditorial\BaseMachinimaScreen;
 use morfeditorial\utils\KeyboardHelper;
 use App\Entity\Author;
 
-
 class AuthorListScreen extends BaseMachinimaScreen
 {
     public function supports(array $update): bool
