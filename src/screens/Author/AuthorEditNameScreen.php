@@ -22,6 +22,9 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Author;
 
 use morfeditorial\BaseMachinimaScreen;
+use App\Entity\Author;
+use App\Entity\User;
+use App\Entity\UserState;
 
 class AuthorEditNameScreen extends BaseMachinimaScreen
 {
@@ -35,16 +38,14 @@ class AuthorEditNameScreen extends BaseMachinimaScreen
         }
 
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
-        $state = $this->getUserStateService()->getState($userId);
+        $tempUser = $this->em->find(User::class, $userId);
+        $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'default']) : null;
+        $state = $tempState ? json_decode($tempState->getStateValue(), true) : null;
         if (isset($update['message']) && is_array($state) && ($state['author_id'] ?? false) && ($state['__state'] ?? '') === 'change_name') {
             return true;
         }
-        // Actually, if state isn't a keyed array with __state, let's just check the method return value if it's the exact state array or if getstate checks state context. 
-        // In original code, it was: `$userStateService->getState($this->userId, 'change_name');` which means it fetched data if state === 'change_name'.
-        // The implementation of UserStateService: `getState(int $userId, string $expectedState = null)` returns array or null or string.
-        // I'll assume if getState() returns array and it matches or if the current state name matches.
-        // Let's use `$this->getUserStateService()->getState($userId, 'change_name') !== null` as the check if that's supported.
-        $stateCheck = $this->getUserStateService()->getState($userId, 'change_name');
+        $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'change_name']) : null;
+        $stateCheck = $tempState ? json_decode($tempState->getStateValue(), true) : null;
         if (isset($update['message']) && is_array($stateCheck) && isset($stateCheck['author_id'])) {
             return true;
         }
@@ -63,16 +64,29 @@ class AuthorEditNameScreen extends BaseMachinimaScreen
 
         if ($payload['domain'] === 'author' && $payload['action'] === 'change_name') {
             $authorId = (int)($payload['params'][0] ?? 0);
-            $authorService = $this->getAuthorService();
-            $author = $authorService->getAuthorById($authorId);
+            $author = $this->em->find(Author::class, $authorId);
 
-            $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
+            $isOwnProfile = $author && (int) $author->getTelegramUserId() === $userId;
 
             if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
-            $this->getUserStateService()->setState($userId, ['author_id' => $authorId], 'change_name');
+            $tmpUser = $this->em->find(User::class, $userId);
+            if (!$tmpUser) {
+                $tmpUser = new User();
+                $tmpUser->setId($userId);
+                $this->em->persist($tmpUser);
+            }
+            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'change_name']);
+            if (!$tmpState) {
+                $tmpState = new UserState();
+                $tmpState->setUser($tmpUser);
+                $tmpState->setStateKey('change_name');
+                $this->em->persist($tmpState);
+            }
+            $tmpState->setStateValue(json_encode(['author_id' => $authorId]));
+            $this->em->flush();
 
             $visualsLinks = $this->getVisualsLinks();
 
@@ -94,25 +108,32 @@ class AuthorEditNameScreen extends BaseMachinimaScreen
                 $this->client->deleteMessage($chatId, $messageId);
             }
 
-            $userStateService = $this->getUserStateService();
-            $state = $userStateService->getState($userId, 'change_name');
-            $userStateService->clearState($userId, 'change_name');
+            $tmpUser = $this->em->find(User::class, $userId);
+            $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'change_name']) : null;
+            $state = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
+            if ($tmpUser && $tmpState) {
+                $this->em->remove($tmpState);
+                $this->em->flush();
+            }
 
             $authorId = (int)($state['author_id'] ?? 0);
-            $authorService = $this->getAuthorService();
-            $author = $authorService->getAuthorById($authorId);
+            $author = $this->em->find(Author::class, $authorId);
 
-            $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
+            $isOwnProfile = $author && (int) $author->getTelegramUserId() === $userId;
 
             if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
 
-            $authorService->updateAuthorName($authorId, $text);
-            $authorStatus = $authorService->isPrivate($authorId);
+            $nameAuthor = $this->em->find(Author::class, $authorId);
+            if ($nameAuthor) {
+                $nameAuthor->setName(trim($text));
+                $this->em->flush();
+            }
+            $authorStatus = $this->em->find(Author::class, $authorId)?->getState() === 'private';
 
-            $currentPage = $this->getUserService()->getCurrentPage($userId);
+            $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage();
 
             $keyboard = [
                 'inline_keyboard' => [
@@ -122,7 +143,7 @@ class AuthorEditNameScreen extends BaseMachinimaScreen
                     ],
                     [
                         ['text' => $this->translate('change_bio'), 'callback_data' => 'author:set_about:' . $authorId],
-                        ['text' => ($author['channel_link'] ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'author:add_link:' . $authorId],
+                        ['text' => ($author->getChannelLink() ? $this->translate('change_link') : $this->translate('add_link')), 'callback_data' => 'author:add_link:' . $authorId],
                     ],
                 ],
             ];
@@ -143,9 +164,9 @@ class AuthorEditNameScreen extends BaseMachinimaScreen
                 ['{author}', '{oldName}', '{biography}', '{link}'],
                 [
                     htmlspecialchars($text),
-                    htmlspecialchars($author['name']),
-                    ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')),
-                    ($author['channel_link'] ? htmlspecialchars($author['channel_link']) : $this->translate('link_not_set'))
+                    htmlspecialchars($author->getName()),
+                    ($author->getBiography() ? htmlspecialchars($author->getBiography()) : $this->translate('bio_not_set')),
+                    ($author->getChannelLink() ? htmlspecialchars($author->getChannelLink()) : $this->translate('link_not_set'))
                 ],
                 $this->translate('name_changed_message')
             );
