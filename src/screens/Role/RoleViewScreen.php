@@ -22,6 +22,8 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Role;
 
 use morfeditorial\BaseMachinimaScreen;
+use App\Entity\User;
+use App\Entity\UserState;
 
 class RoleViewScreen extends BaseMachinimaScreen
 {
@@ -45,7 +47,14 @@ class RoleViewScreen extends BaseMachinimaScreen
         $role_service = $this->getRoleService();
         $visuals_links = $this->getVisualsLinks();
 
-        $this->getUserStateService()->clearState($userId);
+        $userObj = $this->em->find(User::class, $userId);
+        if ($userObj) {
+            $states = $this->em->getRepository(UserState::class)->findBy(['user' => $userObj]);
+            foreach ($states as $state) {
+                $this->em->remove($state);
+            }
+            $this->em->flush();
+        }
 
         $parsed = $this->parsePayload($action);
         $subAction = $parsed['params'][0] ?? '';
