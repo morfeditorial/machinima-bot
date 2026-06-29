@@ -22,6 +22,9 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Author;
 
 use morfeditorial\BaseMachinimaScreen;
+use App\Entity\Author;
+use App\Entity\User;
+use App\Entity\UserState;
 
 class AuthorEditLinkScreen extends BaseMachinimaScreen
 {
@@ -35,7 +38,9 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
         }
 
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
-        $stateCheck = $this->getUserStateService()->getState($userId, 'add_author_link');
+        $tempUser = $this->em->find(User::class, $userId);
+        $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'add_author_link']) : null;
+        $stateCheck = $tempState ? json_decode($tempState->getStateValue(), true) : null;
         if (isset($update['message']) && is_array($stateCheck) && isset($stateCheck['author_id'])) {
             return true;
         }
@@ -54,16 +59,29 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
 
         if ($payload['domain'] === 'author' && in_array($payload['action'], ['edit_link', 'add_link'])) {
             $authorId = (int)($payload['params'][0] ?? 0);
-            $authorService = $this->getAuthorService();
-            $author = $authorService->getAuthorById($authorId);
+            $author = $this->em->find(Author::class, $authorId);
 
-            $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
+            $isOwnProfile = $author && (int) $author->getTelegramUserId() === $userId;
 
             if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
-            $this->getUserStateService()->setState($userId, ['author_id' => $authorId], 'add_author_link');
+            $tmpUser = $this->em->find(User::class, $userId);
+            if (!$tmpUser) {
+                $tmpUser = new User();
+                $tmpUser->setId($userId);
+                $this->em->persist($tmpUser);
+            }
+            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'add_author_link']);
+            if (!$tmpState) {
+                $tmpState = new UserState();
+                $tmpState->setUser($tmpUser);
+                $tmpState->setStateKey('add_author_link');
+                $this->em->persist($tmpState);
+            }
+            $tmpState->setStateValue(json_encode(['author_id' => $authorId]));
+            $this->em->flush();
 
             $visualsLinks = $this->getVisualsLinks();
 
@@ -85,25 +103,32 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
                 $this->client->deleteMessage($chatId, $messageId);
             }
 
-            $userStateService = $this->getUserStateService();
-            $state = $userStateService->getState($userId, 'add_author_link');
-            $userStateService->clearState($userId, 'add_author_link');
+            $tmpUser = $this->em->find(User::class, $userId);
+            $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'add_author_link']) : null;
+            $state = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
+            if ($tmpUser && $tmpState) {
+                $this->em->remove($tmpState);
+                $this->em->flush();
+            }
 
             $authorId = (int)($state['author_id'] ?? 0);
-            $authorService = $this->getAuthorService();
-            $author = $authorService->getAuthorById($authorId);
+            $author = $this->em->find(Author::class, $authorId);
 
-            $isOwnProfile = $author && (int) $author['telegram_user_id'] === $userId;
+            $isOwnProfile = $author && (int) $author->getTelegramUserId() === $userId;
 
             if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
 
-            $authorService->setChannelLink($authorId, $text);
-            $authorStatus = $authorService->isPrivate($authorId);
+            $linkAuthor = $this->em->find(Author::class, $authorId);
+            if ($linkAuthor) {
+                $linkAuthor->setChannelLink(trim($text));
+                $this->em->flush();
+            }
+            $authorStatus = $this->em->find(Author::class, $authorId)?->getState() === 'private';
 
-            $currentPage = $this->getUserService()->getCurrentPage($userId);
+            $currentPage = $this->em->find(User::class, $userId)?->getCurrentPage();
             $backCallback = $currentPage ? $currentPage : 'admin:panel';
 
             $keyboard = [
@@ -113,7 +138,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
                         ['text' => ($authorStatus ? $this->translate('make_public') : $this->translate('make_private')), 'callback_data' => 'author:set_private:' . $authorId],
                     ],
                     [
-                        ['text' => ($author['biography'] ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'author:edit_bio:' . $authorId],
+                        ['text' => ($author->getBiography() ? $this->translate('change_bio') : $this->translate('add_bio')), 'callback_data' => 'author:edit_bio:' . $authorId],
                         ['text' => $this->translate('change_link'), 'callback_data' => 'author:edit_link:' . $authorId],
                     ],
                 ],
@@ -134,8 +159,8 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
             $successText = str_replace(
                 ['{author}', '{biography}', '{link}'],
                 [
-                    htmlspecialchars($author['name']),
-                    ($author['biography'] ? htmlspecialchars($author['biography']) : $this->translate('bio_not_set')),
+                    htmlspecialchars($author->getName()),
+                    ($author->getBiography() ? htmlspecialchars($author->getBiography()) : $this->translate('bio_not_set')),
                     htmlspecialchars($text)
                 ],
                 $this->translate('link_changed_message')
