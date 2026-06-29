@@ -9,6 +9,7 @@
     "type": "symfony-bundle",
     "require": {
         "php": ">=8.2",
+        "symfony/http-kernel": "^8.1",
         "symfony/dependency-injection": "^8.1",
         "symfony/workflow": "^8.1",
         "morfeditorial/telegram-bot-bundle": "*@dev"

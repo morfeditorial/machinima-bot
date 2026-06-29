@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "71d3c687c5ed6bc0faba19d4eb4d5d99",
+    "content-hash": "2085ad3c7d90ab1905acde382433aae7",
     "packages": [
         {
             "name": "morfeditorial/telegram-bot-bundle",
@@ -12,7 +12,7 @@
             "dist": {
                 "type": "path",
                 "url": "../telegram-bot-bundle",
-                "reference": "82366e210a54a0e86329be6b1dc5b9b8a1574ded"
+                "reference": "5b2f02adac611e32d86128eb538f221e4d13f513"
             },
             "require": {
                 "php": ">=8.2",
