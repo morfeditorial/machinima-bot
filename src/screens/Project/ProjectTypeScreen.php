@@ -43,7 +43,6 @@ class ProjectTypeScreen extends BaseMachinimaScreen
         }
 
         $user_state_service = $this->getUserStateService();
-        $user_service = $this->getUserService();
         $visuals_links = $this->getVisualsLinks();
 
         $parsed = $this->parsePayload($action);

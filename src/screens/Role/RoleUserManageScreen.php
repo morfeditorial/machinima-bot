@@ -56,10 +56,8 @@ class RoleUserManageScreen extends BaseMachinimaScreen
         }
 
         $role_service = $this->getRoleService();
-        $user_service = $this->getUserService();
         $user_state_service = $this->getUserStateService();
         $visuals_links = $this->getVisualsLinks();
-        $current_panel = $user_service->getCurrentPanel($userId);
 
         $parsed = $this->parsePayload($action);
         

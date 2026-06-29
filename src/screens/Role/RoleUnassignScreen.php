@@ -56,7 +56,6 @@ class RoleUnassignScreen extends BaseMachinimaScreen
         }
 
         $user_state_service = $this->getUserStateService();
-        $user_service = $this->getUserService();
         $visuals_links = $this->getVisualsLinks();
         if ($action && str_starts_with($action, 'role:unassign')) {
             $parsed = $this->parsePayload($action);

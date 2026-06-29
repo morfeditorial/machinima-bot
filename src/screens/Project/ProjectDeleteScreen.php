@@ -43,7 +43,6 @@ class ProjectDeleteScreen extends BaseMachinimaScreen
             return;
         }
 
-        $user_service = $this->getUserService();
         $content_service = $this->container->get('content_service');
         $visuals_links = $this->getVisualsLinks();
 

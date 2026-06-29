@@ -63,9 +63,7 @@ class ProjectCreateScreen extends BaseMachinimaScreen
         }
 
         $user_state_service = $this->getUserStateService();
-        $user_service = $this->getUserService();
         $visuals_links = $this->getVisualsLinks();
-        $current_panel = $user_service->getCurrentPanel($userId);
 
         if (strpos($action, 'project:create') === 0) {
             $user_state_service->setState($userId, 'awaiting_project_title');

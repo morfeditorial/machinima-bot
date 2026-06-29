@@ -44,8 +44,6 @@ class RoleRemoveScreen extends BaseMachinimaScreen
         }
 
         $role_service = $this->getRoleService();
-        $user_service = $this->getUserService();
-        $current_panel = $user_service->getCurrentPanel($userId);
         $visuals_links = $this->getVisualsLinks();
 
         $parsed = $this->parsePayload($action);

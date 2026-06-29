@@ -42,6 +42,8 @@ class StaffManageScreen extends BaseMachinimaScreen
             return;
         }
 
+        $this->getUserStateService()->clearState($userId);
+
         $payload = $this->parsePayload($action);
         $projectId = isset($payload['params'][0]) ? (int) $payload['params'][0] : 0;
 

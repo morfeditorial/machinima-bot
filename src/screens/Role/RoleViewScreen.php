@@ -43,9 +43,9 @@ class RoleViewScreen extends BaseMachinimaScreen
         }
 
         $role_service = $this->getRoleService();
-        $user_service = $this->getUserService();
         $visuals_links = $this->getVisualsLinks();
-        $current_panel = $user_service->getCurrentPanel($userId);
+
+        $this->getUserStateService()->clearState($userId);
 
         $parsed = $this->parsePayload($action);
         $subAction = $parsed['params'][0] ?? '';

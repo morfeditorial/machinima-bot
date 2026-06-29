@@ -58,11 +58,9 @@ class ProjectEditScreen extends BaseMachinimaScreen
             return;
         }
 
-        $user_service = $this->getUserService();
         $user_state_service = $this->getUserStateService();
         $content_service = $this->container->get('content_service');
         $visuals_links = $this->getVisualsLinks();
-        $current_panel = $user_service->getCurrentPanel($userId);
 
         if (strpos($action, 'project:edit') === 0) {
             $parsed = $this->parsePayload($action);
@@ -70,6 +68,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
             $sub_action = isset($parsed['params'][1]) ? $parsed['params'][1] : null;
 
             if (null === $sub_action) {
+                $user_state_service->clearState($userId);
                 $project = $content_service->getContentById($project_id);
                 if ($project) {
                     $keyboard = [
