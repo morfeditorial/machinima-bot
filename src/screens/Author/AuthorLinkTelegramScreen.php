@@ -22,6 +22,9 @@ declare(strict_types=1);
 namespace morfeditorial\screens\Author;
 
 use morfeditorial\BaseMachinimaScreen;
+use App\Entity\Author;
+use App\Entity\User;
+use App\Entity\UserState;
 
 class AuthorLinkTelegramScreen extends BaseMachinimaScreen
 {
@@ -35,7 +38,9 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
         }
 
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
-        $stateCheck = $this->getUserStateService()->getState($userId, 'link_telegram');
+        $tempUser = $this->em->find(User::class, $userId);
+        $tempState = $tempUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tempUser, 'stateKey' => 'link_telegram']) : null;
+        $stateCheck = $tempState ? json_decode($tempState->getStateValue(), true) : null;
         if (isset($update['message']) && is_array($stateCheck) && isset($stateCheck['author_id'])) {
             return true;
         }
@@ -59,7 +64,21 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
-            $this->getUserStateService()->setState($userId, ['author_id' => $authorId], 'link_telegram');
+            $tmpUser = $this->em->find(User::class, $userId);
+            if (!$tmpUser) {
+                $tmpUser = new User();
+                $tmpUser->setId($userId);
+                $this->em->persist($tmpUser);
+            }
+            $tmpState = $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'link_telegram']);
+            if (!$tmpState) {
+                $tmpState = new UserState();
+                $tmpState->setUser($tmpUser);
+                $tmpState->setStateKey('link_telegram');
+                $this->em->persist($tmpState);
+            }
+            $tmpState->setStateValue(json_encode(['author_id' => $authorId]));
+            $this->em->flush();
 
             $visualsLinks = $this->getVisualsLinks();
 
@@ -76,11 +95,20 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
         }
 
         if (isset($update['message'])) {
-            $stateData = $this->getUserStateService()->getState($userId, 'link_telegram');
+            $tmpUser = $this->em->find(User::class, $userId);
+            $tmpState = $tmpUser ? $this->em->getRepository(UserState::class)->findOneBy(['user' => $tmpUser, 'stateKey' => 'link_telegram']) : null;
+            $stateData = $tmpState ? json_decode($tmpState->getStateValue(), true) : null;
             $authorId = (int)($stateData['author_id'] ?? 0);
 
             if (!$this->isGranted('ROLE_ADMIN') || 0 === $authorId) {
-                $this->getUserStateService()->clearState($userId, 'link_telegram');
+                $userObj = $this->em->find(User::class, $userId);
+                if ($userObj) {
+                    $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'link_telegram']);
+                    if ($state) {
+                        $this->em->remove($state);
+                        $this->em->flush();
+                    }
+                }
                 return;
             }
 
@@ -91,7 +119,14 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
 
             $telegramId = (int) trim($text);
             if ($telegramId <= 0) {
-                $this->getUserStateService()->clearState($userId, 'link_telegram');
+                $userObj = $this->em->find(User::class, $userId);
+                if ($userObj) {
+                    $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'link_telegram']);
+                    if ($state) {
+                        $this->em->remove($state);
+                        $this->em->flush();
+                    }
+                }
                 // The old code instantiates AuthorProfileScreen and calls render.
                 // In new architecture, we might need to simulate an update or redirect.
                 // We'll simulate a callback to author:profile
@@ -109,11 +144,17 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
                 return;
             }
 
-            $authorService = $this->getAuthorService();
-            $existingAuthor = $authorService->getAuthorByTelegramId($telegramId);
+            $existingAuthor = $this->em->getRepository(Author::class)->findOneBy(['telegramUserId' => $telegramId]);
             if (null !== $existingAuthor) {
                 $this->client->sendMessage($chatId, $this->translate('telegram_already_linked'));
-                $this->getUserStateService()->clearState($userId, 'link_telegram');
+                $userObj = $this->em->find(User::class, $userId);
+                if ($userObj) {
+                    $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'link_telegram']);
+                    if ($state) {
+                        $this->em->remove($state);
+                        $this->em->flush();
+                    }
+                }
                 
                 $profileScreen = new AuthorProfileScreen();
                 $profileScreen->setDependencies($this->container, $this->security);
@@ -128,8 +169,19 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
                 return;
             }
 
-            $authorService->setTelegramId($authorId, $telegramId);
-            $this->getUserStateService()->clearState($userId, 'link_telegram');
+            $tgAuthor = $this->em->find(Author::class, $authorId);
+            if ($tgAuthor) {
+                $tgAuthor->setTelegramUserId($telegramId);
+                $this->em->flush();
+            }
+            $userObj = $this->em->find(User::class, $userId);
+            if ($userObj) {
+                $state = $this->em->getRepository(UserState::class)->findOneBy(['user' => $userObj, 'stateKey' => 'link_telegram']);
+                if ($state) {
+                    $this->em->remove($state);
+                    $this->em->flush();
+                }
+            }
 
             $profileScreen = new AuthorProfileScreen();
             $profileScreen->setDependencies($this->container, $this->security);
