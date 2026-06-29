@@ -6,6 +6,4 @@ namespace Morfeditorial;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class MachinimaBotBundle extends Bundle
-{
-}
+class MachinimaBotBundle extends Bundle {}
