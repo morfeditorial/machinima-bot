@@ -56,7 +56,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             }
 
             $page = 'delete_page' === $route ? (int)($params[0] ?? 1) : 1;
-            $this->userRepo->setCurrentPage($userId, 'delete_page_' . $page);
+            $this->userRepo->setCurrentPage($userId, 'author:delete_page:' . $page);
 
             $visualsLinks = $this->getVisualsLinks();
 
@@ -99,7 +99,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
         }
 
         $currentPage = $this->userRepo->getCurrentPage($userId);
-        $prefix = preg_match("/^delete_page_(\d+)$/", $currentPage ?? '', $matches) ? 'author:delete_page:' . $matches[1] : 'author:profile:' . $authorId;
+        $prefix = (str_starts_with($currentPage ?? '', 'author:delete_page:')) ? $currentPage : 'author:profile:' . $authorId;
 
         $visualsLinks = $this->getVisualsLinks();
 
@@ -140,7 +140,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
         }
 
         $currentPage = $this->userRepo->getCurrentPage($userId) ?? 'admin:panel';
-        $backCallback = preg_match("/^delete_page_(\d+)$/", $currentPage, $matches) ? 'author:delete_page:' . $matches[1] : 'admin:panel';
+        $backCallback = (str_starts_with($currentPage, 'author:delete_page:')) ? $currentPage : 'admin:panel';
 
         $visualsLinks = $this->getVisualsLinks();
 
