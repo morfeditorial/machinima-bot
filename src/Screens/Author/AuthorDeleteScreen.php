@@ -99,7 +99,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
         }
 
         $currentPage = $this->userRepo->getCurrentPage($userId);
-        $prefix = preg_match("/^delete_page_(\d+)$/", $currentPage ?? 'delete_page_1', $matches) ? 'author:delete_page:' . $matches[1] : 'author:profile:' . $authorId;
+        $prefix = preg_match("/^delete_page_(\d+)$/", $currentPage ?? '', $matches) ? 'author:delete_page:' . $matches[1] : 'author:profile:' . $authorId;
 
         $visualsLinks = $this->getVisualsLinks();
 
