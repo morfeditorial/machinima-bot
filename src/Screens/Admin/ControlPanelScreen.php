@@ -29,7 +29,7 @@ class ControlPanelScreen extends BaseMachinimaScreen
     public function supports(array $update) : bool
     {
         $action = $update['callback_query']['data'] ?? '';
-        return str_starts_with($action, 'admin:panel') || str_starts_with($action, 'admin:create_public_page') || 'panel' === $action;
+        return str_starts_with($action, 'admin:panel') || str_starts_with($action, 'admin:create_public_page');
     }
 
     public function handle(array $update) : void
