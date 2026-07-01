@@ -123,14 +123,23 @@ abstract class BaseMachinimaScreen extends BundleAbstractScreen
         ];
 
         if ($currentPanel) {
-            if ($safe) {
-                try {
-                    $this->client->request('editMessageMedia', $editParams);
-                } catch (\Throwable) {
-                    $this->client->sendPhoto($chatId, $visual, $sendParams);
-                }
-            } else {
+            try {
                 $this->client->request('editMessageMedia', $editParams);
+            } catch (\Morfeditorial\TelegramBotBundle\Exception\TelegramApiException $e) {
+                if ($e->isMessageNotModified()) {
+                    return; // Ignore duplicate clicks
+                }
+                if ($safe) {
+                    $this->client->sendPhoto($chatId, $visual, $sendParams);
+                } else {
+                    throw $e;
+                }
+            } catch (\Throwable $e) {
+                if ($safe) {
+                    $this->client->sendPhoto($chatId, $visual, $sendParams);
+                } else {
+                    throw $e;
+                }
             }
         } else {
             $this->client->sendPhoto($chatId, $visual, $sendParams);
