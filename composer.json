@@ -1,11 +1,5 @@
 {
     "name": "morfeditorial/machinima-bot",
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../telegram-bot-bundle"
-        }
-    ],
     "type": "symfony-bundle",
     "require": {
         "php": ">=8.2",

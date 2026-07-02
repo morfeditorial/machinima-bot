@@ -4,15 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2085ad3c7d90ab1905acde382433aae7",
+    "content-hash": "7a660185df3de348dcd64f7abd7db3df",
     "packages": [
         {
             "name": "morfeditorial/telegram-bot-bundle",
             "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ChernegaSergiy/telegram-bot-bundle.git",
+                "reference": "4f3d9af778941e0561544b42004514c6f2b74b73"
+            },
             "dist": {
-                "type": "path",
-                "url": "../telegram-bot-bundle",
-                "reference": "e1d6b9752619eeda9c5e3047380271ac54cdd20b"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ChernegaSergiy/telegram-bot-bundle/zipball/4f3d9af778941e0561544b42004514c6f2b74b73",
+                "reference": "4f3d9af778941e0561544b42004514c6f2b74b73",
+                "shasum": ""
             },
             "require": {
                 "php": ">=8.2",
@@ -24,12 +30,14 @@
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95"
             },
+            "default-branch": true,
             "type": "symfony-bundle",
             "autoload": {
                 "psr-4": {
                     "Morfeditorial\\TelegramBotBundle\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "LicenseRef-CSSM-Unlimited-2.0"
             ],
@@ -40,9 +48,21 @@
                 }
             ],
             "description": "A universal Symfony Bundle for building Telegram bots with screens and commands routing.",
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/ChernegaSergiy/telegram-bot-bundle/issues",
+                "source": "https://github.com/ChernegaSergiy/telegram-bot-bundle/tree/main"
+            },
+            "funding": [
+                {
+                    "url": "https://opencollective.com/cssm",
+                    "type": "open_collective"
+                },
+                {
+                    "url": "https://www.patreon.com/ChernegaSergiy",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2026-07-02T00:14:46+00:00"
         },
         {
             "name": "psr/container",
