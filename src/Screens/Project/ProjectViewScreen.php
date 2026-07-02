@@ -69,20 +69,22 @@ class ProjectViewScreen extends BaseMachinimaScreen
                 $message_text .= "🏷 Категорії: " . htmlspecialchars($categories_text) . "\n";
                 $message_text .= "\n👥 Команда:" . ($staff_text ?: " \u{2014}");
 
-                $keyboard = [
-                    'inline_keyboard' => [
-                        [
-                            ['text' => $this->translate('edit_project'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id)],
-                            ['text' => $this->translate('manage_staff'), 'callback_data' => $this->makePayload('staff', 'manage', (string)$project_id)],
-                        ],
-                        [
-                            ['text' => $this->translate('select_categories_for_project'), 'callback_data' => 'select_project_categories:' . $project_id],
-                            ['text' => $this->translate('delete_this_project'), 'callback_data' => $this->makePayload('project', 'delete', (string)$project_id)],
-                        ],
-                        [
-                            ['text' => $this->translate('go_back'), 'callback_data' => $this->userRepo->getCurrentPage($userId) ?? $this->makePayload('project', 'list')],
-                        ],
-                    ],
+                $can_manage = $content_service->canManageProject($userId, $project_id, $this->isGranted('ROLE_MODERATOR'));
+                $keyboard = ['inline_keyboard' => []];
+
+                if ($can_manage) {
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $this->translate('edit_project'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id)],
+                        ['text' => $this->translate('manage_staff'), 'callback_data' => $this->makePayload('staff', 'manage', (string)$project_id)],
+                    ];
+                    $keyboard['inline_keyboard'][] = [
+                        ['text' => $this->translate('select_categories_for_project'), 'callback_data' => 'select_project_categories:' . $project_id],
+                        ['text' => $this->translate('delete_this_project'), 'callback_data' => $this->makePayload('project', 'delete', (string)$project_id)],
+                    ];
+                }
+
+                $keyboard['inline_keyboard'][] = [
+                    ['text' => $this->translate('go_back'), 'callback_data' => $this->userRepo->getCurrentPage($userId) ?? $this->makePayload('project', 'list')],
                 ];
 
                 $transition_buttons = [];

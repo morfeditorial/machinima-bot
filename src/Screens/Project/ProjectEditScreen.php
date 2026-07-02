@@ -58,9 +58,21 @@ class ProjectEditScreen extends BaseMachinimaScreen
         $content_service = $this->container->get('content_service');
         $visuals_links = $this->getVisualsLinks();
 
+        $project_id = 0;
+        $state_data = null;
         if (0 === strpos($action, 'project:edit')) {
             $parsed = $this->parsePayload($action);
             $project_id = isset($parsed['params'][0]) ? (int)$parsed['params'][0] : 0;
+        } elseif ($state_data = $this->userStateRepo->get($userId, 'editing_project_field')) {
+            $project_id = (int)$state_data['project_id'];
+        }
+
+        if ($project_id > 0 && !$content_service->canManageProject($userId, $project_id, $this->isGranted('ROLE_MODERATOR'))) {
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+            return;
+        }
+
+        if (0 === strpos($action, 'project:edit')) {
             $sub_action = isset($parsed['params'][1]) ? $parsed['params'][1] : null;
 
             if (null === $sub_action) {
@@ -132,7 +144,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
                 $updateCopy['callback_query']['data'] = $this->makePayload('project', 'edit', (string)$project_id);
                 $this->handle($updateCopy);
             }
-        } elseif ($state_data = $this->userStateRepo->get($userId, 'editing_project_field')) {
+        } elseif ($state_data) {
             if ($message_id) {
                 $this->client->request('deleteMessage', ['chat_id' => $chatId, 'message_id' => $message_id]);
             }

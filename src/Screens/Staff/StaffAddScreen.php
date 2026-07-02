@@ -58,10 +58,27 @@ class StaffAddScreen extends BaseMachinimaScreen
             return;
         }
 
+        $projectId = 0;
+        $state_data = null;
+        $payload = [];
         if (str_starts_with($action, 'staff:add')) {
             $payload = $this->parsePayload($action);
-            $subAction = $payload['params'][0] ?? '';
             $projectId = isset($payload['params'][1]) ? (int) $payload['params'][1] : 0;
+        } elseif ('' !== $text) {
+            $state_data = $this->userStateRepo->get($userId, 'awaiting_staff_role');
+            if ($state_data) {
+                $projectId = (int)$state_data['project_id'];
+            }
+        }
+
+        $content_service = $this->container->get('content_service');
+        if ($projectId > 0 && !$content_service->canManageProject($userId, $projectId, $this->isGranted('ROLE_MODERATOR'))) {
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+            return;
+        }
+
+        if (str_starts_with($action, 'staff:add')) {
+            $subAction = $payload['params'][0] ?? '';
 
             if ('select_author' === $subAction) {
                 $page = 1;
@@ -105,8 +122,6 @@ class StaffAddScreen extends BaseMachinimaScreen
                 $this->client->answerCallbackQuery($update['callback_query']['id']);
             }
         } elseif ('' !== $text) {
-            $state_data = $this->userStateRepo->get($userId, 'awaiting_staff_role');
-
             if ($state_data) {
                 $message_id = $update['message']['message_id'] ?? null;
                 if ($message_id) {
@@ -114,7 +129,6 @@ class StaffAddScreen extends BaseMachinimaScreen
                 }
 
                 $this->userStateRepo->clear($userId, 'awaiting_staff_role');
-                $content_service = $this->container->get('content_service');
 
                 $project_id = $state_data['project_id'];
                 $author_id = $state_data['author_id'];

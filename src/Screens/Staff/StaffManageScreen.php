@@ -48,6 +48,12 @@ class StaffManageScreen extends BaseMachinimaScreen
         $projectId = isset($payload['params'][0]) ? (int) $payload['params'][0] : 0;
 
         $content_service = $this->container->get('content_service');
+
+        if ($projectId > 0 && !$content_service->canManageProject($userId, $projectId, $this->isGranted('ROLE_MODERATOR'))) {
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+            return;
+        }
+
         $staff = $content_service->getStaffByContentId($projectId);
 
         $keyboard = ['inline_keyboard' => []];

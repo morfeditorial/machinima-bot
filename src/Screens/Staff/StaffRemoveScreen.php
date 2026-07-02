@@ -48,6 +48,12 @@ class StaffRemoveScreen extends BaseMachinimaScreen
         $authorId = isset($payload['params'][2]) ? (int) $payload['params'][2] : 0;
         $role = isset($payload['params'][3]) ? base64_decode($payload['params'][3]) : '';
 
+        $content_service = $this->container->get('content_service');
+        if ($projectId > 0 && !$content_service->canManageProject($userId, $projectId, $this->isGranted('ROLE_MODERATOR'))) {
+            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+            return;
+        }
+
         if ('confirm' === $subAction) {
             $keyboard = [
                 'inline_keyboard' => [
