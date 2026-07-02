@@ -3,6 +3,12 @@
     "description": "The official Telegram Bot for the Machinima platform.",
     "type": "symfony-bundle",
     "license": "LicenseRef-CSSM-Unlimited-2.0",
+    "authors": [
+        {
+            "name": "Serhii Cherneha",
+            "email": "chernegasergiy3@gmail.com"
+        }
+    ],
     "require": {
         "php": ">=8.2",
         "symfony/http-kernel": "^8.1",
