@@ -126,7 +126,7 @@ abstract class BaseMachinimaScreen extends BundleAbstractScreen
             try {
                 $this->client->request('editMessageMedia', $editParams);
             } catch (\Morfeditorial\TelegramBotBundle\Exception\TelegramApiException $e) {
-                if ($e->isMessageNotModified()) {
+                if (str_contains(strtolower($e->getTelegramDescription()), 'message is not modified')) {
                     return; // Ignore duplicate clicks
                 }
                 if ($safe) {
