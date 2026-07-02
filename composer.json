@@ -1,5 +1,6 @@
 {
     "name": "morfeditorial/machinima-bot",
+    "description": "The official Telegram Bot for the Machinima platform.",
     "type": "symfony-bundle",
     "require": {
         "php": ">=8.2",
