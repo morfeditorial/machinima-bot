@@ -12,7 +12,7 @@
             "dist": {
                 "type": "path",
                 "url": "../telegram-bot-bundle",
-                "reference": "5b2f02adac611e32d86128eb538f221e4d13f513"
+                "reference": "e1d6b9752619eeda9c5e3047380271ac54cdd20b"
             },
             "require": {
                 "php": ">=8.2",
@@ -21,19 +21,23 @@
                 "symfony/http-client": "^7.0|^8.0",
                 "symfony/http-kernel": "^7.0|^8.0"
             },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "1.0-dev"
-                }
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.95"
             },
+            "type": "symfony-bundle",
             "autoload": {
                 "psr-4": {
                     "Morfeditorial\\TelegramBotBundle\\": "src/"
                 }
             },
             "license": [
-                "MIT"
+                "LicenseRef-CSSM-Unlimited-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Serhii Cherneha",
+                    "email": "chernegasergiy3@gmail.com"
+                }
             ],
             "description": "A universal Symfony Bundle for building Telegram bots with screens and commands routing.",
             "transport-options": {
