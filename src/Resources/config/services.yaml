@@ -13,6 +13,10 @@ services:
         resource: '../../Commands/'
         public: true
 
+    Morfeditorial\Service\:
+        resource: '../../Service/'
+        public: true
+
     Morfeditorial\Translator:
         public: true
 
