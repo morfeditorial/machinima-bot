@@ -4,6 +4,7 @@ services:
         autoconfigure: true
         bind:
             $botToken: '%env(TELEGRAM_BOT_TOKEN)%'
+            $botUsername: '%env(TELEGRAM_BOT_USERNAME)%'
 
     Morfeditorial\Screens\:
         resource: '../../Screens/'
@@ -16,6 +17,10 @@ services:
     Morfeditorial\Service\:
         resource: '../../Service/'
         public: true
+
+    Morfeditorial\Twig\BotLinkExtension:
+        tags:
+            - 'twig.extension'
 
     Morfeditorial\Translator:
         public: true
