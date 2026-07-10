@@ -1,4 +1,16 @@
+<div align="center">
+
+<img src="assets/images/morf-logo.svg" alt="MORF" width="320" />
+
 # MachinimaBot
+
+*A Telegram bot written in PHP for managing machinimators.*
+
+[Features](#features) · [Requirements](#requirements) · [Installation](#installation) · [Usage](#usage) · [Contributing](#contributing)
+
+---
+
+</div>
 
 **MachinimaBot** is a Telegram bot written in PHP. It is designed to interact with users on Telegram, providing various functionalities based on the commands it receives.
 
