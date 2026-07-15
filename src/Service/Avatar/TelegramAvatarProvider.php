@@ -2,7 +2,7 @@
 
 namespace Morfeditorial\Service\Avatar;
 
-use App\Service\Avatar\AvatarProviderInterface;
+use Morfeditorial\MachinimaCoreBundle\Service\Avatar\AvatarProviderInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 

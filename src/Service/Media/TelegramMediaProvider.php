@@ -2,7 +2,7 @@
 
 namespace Morfeditorial\Service\Media;
 
-use App\Service\Media\MediaProviderInterface;
+use Morfeditorial\MachinimaCoreBundle\Service\Media\MediaProviderInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
