@@ -21,9 +21,9 @@ declare(strict_types=1);
 
 namespace Morfeditorial;
 
-use App\Repository\AuthorRepository;
-use App\Repository\UserRepository;
-use App\Repository\UserStateRepository;
+use Morfeditorial\MachinimaCoreBundle\Repository\AuthorRepository;
+use Morfeditorial\MachinimaCoreBundle\Repository\UserRepository;
+use Morfeditorial\MachinimaCoreBundle\Repository\UserStateRepository;
 use App\Service\RoleService;
 use Doctrine\ORM\EntityManagerInterface;
 use Morfeditorial\TelegramBotBundle\Screen\AbstractScreen as BundleAbstractScreen;
