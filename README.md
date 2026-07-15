@@ -10,7 +10,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/morfeditorial/machinima-bot.svg?label=Downloads&logo=packagist)](https://packagist.org/packages/morfeditorial/machinima-bot)
 [![License](https://img.shields.io/packagist/l/morfeditorial/machinima-bot.svg?label=Licence&logo=open-source-initiative)](https://packagist.org/packages/morfeditorial/machinima-bot)
 
-[Features](#features) · [Requirements](#requirements) · [Installation](#installation) · [Usage](#usage) · [Contributing](#contributing)
+[Features](#features) · [Architecture](#architecture) · [Requirements](#requirements) · [Installation](#installation) · [Usage](#usage) · [Contributing](#contributing)
 
 ---
 
@@ -27,6 +27,15 @@
 - **Environment-Based Configuration**: Easy setup using environment variables and a `.env` file.
 - **Flexible Update Handling**: Supports both Webhook mode and continuous polling for updates.
 - **Machinimator Management Commands**: Provides commands and tools for managing machinimators.
+
+## Architecture
+
+This bundle implements a screen-and-command pattern on top of the [`morfeditorial/telegram-bot-bundle`](https://github.com/ChernegaSergiy/telegram-bot-bundle) abstraction layer. It contains **no domain entities or repositories of its own** — all data access is delegated to [`morfeditorial/machinima-core`](https://github.com/ChernegaSergiy/machinima-core) via its shared services (`AuthorRepository`, `UserRepository`, `RoleService`, etc.).
+
+- **Commands** (`src/Commands/`) — Telegram bot commands (`/start`, `/help`, role assignment, admin panel entry point) that extend `BaseMachinimaCommand` and interact with the user through messages.
+- **Screens** (`src/Screens/`) — interactive inline-keyboard panels for domain management (authors, projects, categories, roles, staff), organised by domain subdirectory. Each screen extends `BaseMachinimaScreen` and renders a visual panel with callback-driven navigation.
+- **Webhook Controller** (`src/Controller/Webhook/`) — receives Telegram updates via `POST /webhook/telegram`, authenticates the calling user through the Security token storage, sets the locale, and delegates to the `UpdateDispatcher` from `telegram-bot-bundle`.
+- **Service Providers** (`src/Service/`) — Telegram-specific implementations of core contracts such as `AvatarProviderInterface` and `MediaProviderInterface`, which resolve avatars and media through the Telegram Bot API.
 
 ## Requirements
 
