@@ -21,6 +21,6 @@ declare(strict_types=1);
 
 namespace Morfeditorial\MachinimaBotBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
-class MachinimaBotBundle extends Bundle {}
+class MachinimaBotBundle extends AbstractBundle {}
