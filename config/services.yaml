@@ -15,6 +15,25 @@ services:
     Morfeditorial\MachinimaBotBundle\Service\:
         resource: '../src/Service/'
 
+    visuals_links:
+        class: ArrayObject
+        arguments:
+            - [
+                'https://i.ibb.co/mC7sv0W/01.png',
+                'https://i.ibb.co/ygqgFMV/02.png',
+                'https://i.ibb.co/1KysC55/03.png',
+                'https://i.ibb.co/64vFVfS/04.png',
+                'https://i.ibb.co/TLDzmVf/05.png',
+                'https://i.ibb.co/85LB6PW/06.png',
+                'https://i.ibb.co/fDbmdMM/07.png',
+                'https://i.ibb.co/tqMNGtX/08.png',
+                'https://i.ibb.co/xF1QQXk/09.png',
+                'https://i.ibb.co/LPYBSBX/10.png',
+                'https://i.ibb.co/Fn2HJJQ/11.png',
+                'https://i.ibb.co/TYPWsLQ/12.png'
+              ]
+        public: true
+
     Morfeditorial\MachinimaBotBundle\Twig\BotLinkExtension:
         tags:
             - 'twig.extension'
