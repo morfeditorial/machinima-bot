@@ -26,70 +26,27 @@
 
 ## Requirements
 
-- PHP 7.4 or higher
+- PHP 8.2 or higher
 - Composer for dependency management
+- Symfony Framework 7.1+
 
 ## Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/ChernegaSergiy/machinima-bot.git
-   cd machinima-bot
-   ```
+This package is intended to be used as a bundle within the `machinima-app` host application. Require it via Composer:
 
-3. Install dependencies using Composer:
-   ```bash
-   composer install
-   ```
-
-4. Copy the `.env.example` file to `.env` and set your Telegram bot token:
-   ```bash
-   cp .env.example .env
-   ```
-   Edit the `.env` file to include your `BOT_TOKEN`.
+```bash
+composer require morfeditorial/machinima-bot
+```
 
 ## Usage
 
-Run the bot:
+The bot runs as part of the host application ecosystem. To run the Telegram bot polling loop locally, use the Symfony console:
 
 ```bash
-php bot.php
+php bin/console morf:bot:poll
 ```
 
-If you want the bot to work on Webhook, uncomment the Webhook section in `bot.php`:
-
-```php
-// $update = json_decode(file_get_contents("php://input"), true);
-// if ($update) {
-//     $bot->handleUpdate($update);
-// }
-```
-
-## System Initialization
-
-The following output shows the initialization process of the Morf Editorial System, which serves as the backbone of MachinimaBot. It verifies the configuration, environment variables, and initializes the bot core before entering the main loop.
-
-```text
-    _______   _______    _______   _______
-   /       \\/       \\//       \//       \
-  /        //        ///        //      __/
- /         /         /        _/        _/
- \__/__/__/\________/\____/___/\_______/
-
- Morf Editorial System v1.0
- Copyright (c) 2023 CSSM Group
- https://cssm.pp.ua/
-
-Initializing Morf Editorial System...
-Loading configuration...
-Configuration loaded successfully.
-Checking environment variables...
-Environment variables verified.
-Initializing bot core...
-Bot core initialized successfully.
-Morf Editorial System is now online.
-Entering main loop...
-```
+For production, the bot interacts with Telegram via the configured Webhook route in the host app.
 
 ## Contributing
 
