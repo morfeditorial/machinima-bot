@@ -5,7 +5,6 @@
 # Caches and logs
 /var/
 /logs/
-machinimators.db
 
 # Environment variables
 .env
