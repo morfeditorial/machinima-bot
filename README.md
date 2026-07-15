@@ -23,10 +23,10 @@
 
 ## Features
 
-- **Real-Time Telegram Interaction**: Responds to user messages and commands in real time.
-- **Environment-Based Configuration**: Easy setup using environment variables and a `.env` file.
-- **Flexible Update Handling**: Supports both Webhook mode and continuous polling for updates.
-- **Machinimator Management Commands**: Provides commands and tools for managing machinimators.
+- **Interactive Screen-Based UI**: Provides a rich admin panel experience directly inside Telegram using inline keyboards with callback-driven navigation, visual panels with images, and domain-organised screen flows (authors, projects, categories, roles, staff).
+- **Role & Permission Management**: Full RBAC workflow via Telegram — create, assign, and revoke roles for platform users, powered by the shared `RoleService` from `machinima-core`.
+- **Flexible Update Handling**: Supports both a production-ready Webhook endpoint (`POST /webhook/telegram`) and a long-polling CLI command for local development, with automatic user authentication and locale detection on every incoming update.
+- **Content Administration Commands**: A set of slash-commands (`/start`, `/help`, `/admin`, role management) that serve as entry points into the screen-based management panels, each with built-in i18n support through the bundle's `Translator`.
 
 ## Architecture
 
