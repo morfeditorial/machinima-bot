@@ -12,7 +12,7 @@
 
 </div>
 
-**MachinimaBot** is a Telegram bot written in PHP. It is designed to interact with users on Telegram, providing various functionalities based on the commands it receives.
+**machinima-bot** is the official Telegram management bundle for the Machinima platform. It provides role and content management features for the platform's administrators.
 
 ![Bot Control Panel Appearance](assets/images/IMG_20250213_144644_598.png)
 > *Screenshot of the admin panel showing the management capabilities of the Telegram bot.*
