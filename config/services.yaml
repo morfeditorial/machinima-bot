@@ -14,7 +14,6 @@ services:
 
     Morfeditorial\MachinimaBotBundle\Service\:
         resource: '../src/Service/'
-        public: true
 
     Morfeditorial\MachinimaBotBundle\Twig\BotLinkExtension:
         tags:
