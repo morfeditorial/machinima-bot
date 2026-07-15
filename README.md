@@ -27,7 +27,7 @@
 
 ## Architecture
 
-This bundle implements a screen-and-command pattern on top of the [`morfeditorial/telegram-bot-bundle`](https://github.com/ChernegaSergiy/telegram-bot-bundle) abstraction layer. It contains **no domain entities or repositories of its own** — all data access is delegated to [`morfeditorial/machinima-core`](https://github.com/ChernegaSergiy/machinima-core) via its shared services (`AuthorRepository`, `UserRepository`, `RoleService`, etc.).
+This bundle implements a screen-and-command pattern on top of the [`morfeditorial/telegram-bot-bundle`](https://github.com/morfeditorial/telegram-bot-bundle) abstraction layer. It contains **no domain entities or repositories of its own** — all data access is delegated to [`morfeditorial/machinima-core`](https://github.com/morfeditorial/machinima-core) via its shared services (`AuthorRepository`, `UserRepository`, `RoleService`, etc.).
 
 - **Commands** (`src/Commands/`) — Telegram bot commands (`/start`, `/help`, role assignment, admin panel entry point) that extend `BaseMachinimaCommand` and interact with the user through messages.
 - **Screens** (`src/Screens/`) — interactive inline-keyboard panels for domain management (authors, projects, categories, roles, staff), organised by domain subdirectory. Each screen extends `BaseMachinimaScreen` and renders a visual panel with callback-driven navigation.
