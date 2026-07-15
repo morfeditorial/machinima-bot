@@ -7,7 +7,7 @@ namespace Morfeditorial;
 use Morfeditorial\MachinimaCoreBundle\Repository\AuthorRepository;
 use Morfeditorial\MachinimaCoreBundle\Repository\UserRepository;
 use Morfeditorial\MachinimaCoreBundle\Repository\UserStateRepository;
-use App\Service\RoleService;
+use Morfeditorial\MachinimaCoreBundle\Service\RoleService;
 use Doctrine\ORM\EntityManagerInterface;
 use Morfeditorial\TelegramBotBundle\Command\AbstractCommand as BundleAbstractCommand;
 use Symfony\Bundle\SecurityBundle\Security;
