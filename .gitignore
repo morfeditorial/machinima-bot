@@ -1,6 +1,25 @@
-﻿# .gitignore
-.env
-/logs/
+# Composer
 /vendor/
-.php-cs-fixer.cache
+/composer.lock
+
+# Caches and logs
+/var/
+/logs/
 machinimators.db
+
+# Environment variables
+.env
+.env.*
+
+# IDEs
+.idea/
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Testing and Code Quality
+.phpunit.result.cache
+.php-cs-fixer.cache
+.php-cs-fixer.php
