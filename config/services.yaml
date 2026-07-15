@@ -8,7 +8,6 @@ services:
 
     Morfeditorial\MachinimaBotBundle\Screens\:
         resource: '../src/Screens/'
-        public: true
 
     Morfeditorial\MachinimaBotBundle\Commands\:
         resource: '../src/Commands/'
