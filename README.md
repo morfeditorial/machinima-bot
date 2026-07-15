@@ -18,9 +18,6 @@
 
 **machinima-bot** is the official Telegram management bundle for the Machinima platform. It provides role and content management features for the platform's administrators.
 
-![Bot Control Panel Appearance](assets/images/IMG_20250213_144644_598.png)
-> *Screenshot of the admin panel showing the management capabilities of the Telegram bot.*
-
 ## Features
 
 - **Interactive Screen-Based UI**: Provides a rich admin panel experience directly inside Telegram using inline keyboards with callback-driven navigation, visual panels with images, and domain-organised screen flows (authors, projects, categories, roles, staff).
@@ -60,6 +57,9 @@ php bin/console morf:bot:poll
 ```
 
 For production, the bot interacts with Telegram via the configured Webhook route in the host app.
+
+![Bot Control Panel Appearance](assets/images/IMG_20250213_144644_598.png)
+> *Screenshot of the admin panel showing the management capabilities of the Telegram bot.*
 
 ## Contributing
 
