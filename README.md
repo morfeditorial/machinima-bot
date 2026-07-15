@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/images/morf-logo.svg" alt="MORF" width="320" />
+<img src="assets/images/morf-logo.svg" alt="Morf Editorial" width="320" />
 
 # machinima-bot
 
