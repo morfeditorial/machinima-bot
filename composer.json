@@ -14,7 +14,7 @@
         "symfony/http-kernel": "^8.1",
         "symfony/dependency-injection": "^8.1",
         "morfeditorial/machinima-core": "dev-main",
-        "morfeditorial/telegram-bot-bundle": "*@dev"
+        "morfeditorial/telegram-bot-bundle": "dev-main"
     },
     "autoload": {
         "psr-4": {
