@@ -19,7 +19,7 @@
 
 declare(strict_types=1);
 
-namespace Morfeditorial;
+namespace Morfeditorial\MachinimaBotBundle;
 
 class Translator
 {

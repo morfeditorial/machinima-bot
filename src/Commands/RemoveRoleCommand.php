@@ -19,9 +19,9 @@
 
 declare(strict_types=1);
 
-namespace Morfeditorial\Commands;
+namespace Morfeditorial\MachinimaBotBundle\Commands;
 
-use Morfeditorial\BaseMachinimaCommand;
+use Morfeditorial\MachinimaBotBundle\BaseMachinimaCommand;
 use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
 
 class RemoveRoleCommand extends BaseMachinimaCommand

@@ -1,10 +1,10 @@
 <?php
 
-namespace Morfeditorial\Controller\Webhook;
+namespace Morfeditorial\MachinimaBotBundle\Controller\Webhook;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Morfeditorial\TelegramBotBundle\Routing\UpdateDispatcher;
-use Morfeditorial\Translator;
+use Morfeditorial\MachinimaBotBundle\Translator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -6,25 +6,25 @@ services:
             $botToken: '%env(TELEGRAM_BOT_TOKEN)%'
             $botUsername: '%env(TELEGRAM_BOT_USERNAME)%'
 
-    Morfeditorial\Screens\:
+    Morfeditorial\MachinimaBotBundle\Screens\:
         resource: '../../Screens/'
         public: true
 
-    Morfeditorial\Commands\:
+    Morfeditorial\MachinimaBotBundle\Commands\:
         resource: '../../Commands/'
         public: true
 
-    Morfeditorial\Service\:
+    Morfeditorial\MachinimaBotBundle\Service\:
         resource: '../../Service/'
         public: true
 
-    Morfeditorial\Twig\BotLinkExtension:
+    Morfeditorial\MachinimaBotBundle\Twig\BotLinkExtension:
         tags:
             - 'twig.extension'
 
-    Morfeditorial\Translator:
+    Morfeditorial\MachinimaBotBundle\Translator:
         public: true
 
     bot_translator:
-        alias: Morfeditorial\Translator
+        alias: Morfeditorial\MachinimaBotBundle\Translator
         public: true

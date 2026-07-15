@@ -19,11 +19,11 @@
 
 declare(strict_types=1);
 
-namespace Morfeditorial\Screens\Author;
+namespace Morfeditorial\MachinimaBotBundle\Screens\Author;
 
-use Morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
 use Morfeditorial\MachinimaCoreBundle\Entity\Author;
-use Morfeditorial\Utils\KeyboardHelper;
+use Morfeditorial\MachinimaBotBundle\Utils\KeyboardHelper;
 
 class AuthorListScreen extends BaseMachinimaScreen
 {

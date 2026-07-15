@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Morfeditorial\DependencyInjection;
+namespace Morfeditorial\MachinimaBotBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

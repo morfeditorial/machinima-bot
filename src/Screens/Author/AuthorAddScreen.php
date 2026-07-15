@@ -19,9 +19,9 @@
 
 declare(strict_types=1);
 
-namespace Morfeditorial\Screens\Author;
+namespace Morfeditorial\MachinimaBotBundle\Screens\Author;
 
-use Morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
 use Morfeditorial\MachinimaCoreBundle\Entity\Author;
 
 class AuthorAddScreen extends BaseMachinimaScreen

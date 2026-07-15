@@ -1,6 +1,6 @@
 <?php
 
-namespace Morfeditorial\Service\Media;
+namespace Morfeditorial\MachinimaBotBundle\Service\Media;
 
 use Morfeditorial\MachinimaCoreBundle\Service\Media\MediaProviderInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;

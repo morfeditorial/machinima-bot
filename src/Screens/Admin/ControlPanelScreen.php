@@ -19,9 +19,9 @@
 
 declare(strict_types=1);
 
-namespace Morfeditorial\Screens\Admin;
+namespace Morfeditorial\MachinimaBotBundle\Screens\Admin;
 
-use Morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
 use Morfeditorial\MachinimaCoreBundle\Entity\Author;
 
 class ControlPanelScreen extends BaseMachinimaScreen

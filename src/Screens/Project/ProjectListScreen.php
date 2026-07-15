@@ -19,9 +19,9 @@
 
 declare(strict_types=1);
 
-namespace Morfeditorial\Screens\Project;
+namespace Morfeditorial\MachinimaBotBundle\Screens\Project;
 
-use Morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
 
 class ProjectListScreen extends BaseMachinimaScreen
 {

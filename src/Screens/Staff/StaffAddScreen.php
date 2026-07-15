@@ -19,9 +19,9 @@
 
 declare(strict_types=1);
 
-namespace Morfeditorial\Screens\Staff;
+namespace Morfeditorial\MachinimaBotBundle\Screens\Staff;
 
-use Morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
 use Morfeditorial\MachinimaCoreBundle\Entity\Author;
 
 class StaffAddScreen extends BaseMachinimaScreen
@@ -87,7 +87,7 @@ class StaffAddScreen extends BaseMachinimaScreen
                 }
 
                 $allAuthors = $this->em->getRepository(Author::class)->findAll();
-                $keyboard = \Morfeditorial\Utils\KeyboardHelper::generateAuthorsKeyboard(
+                $keyboard = \Morfeditorial\MachinimaBotBundle\Utils\KeyboardHelper::generateAuthorsKeyboard(
                     $this->getTranslator(),
                     $allAuthors,
                     $page,

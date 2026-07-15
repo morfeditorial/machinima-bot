@@ -21,7 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Morfeditorial\\": "src/"
+            "Morfeditorial\\MachinimaBotBundle\\": "src/"
         }
     },
     "minimum-stability": "stable",

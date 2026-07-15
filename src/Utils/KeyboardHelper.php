@@ -19,9 +19,9 @@
 
 declare(strict_types=1);
 
-namespace Morfeditorial\Utils;
+namespace Morfeditorial\MachinimaBotBundle\Utils;
 
-use Morfeditorial\Translator;
+use Morfeditorial\MachinimaBotBundle\Translator;
 
 class KeyboardHelper
 {

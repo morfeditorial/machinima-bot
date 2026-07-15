@@ -1,6 +1,6 @@
 <?php
 
-namespace Morfeditorial\Service\Avatar;
+namespace Morfeditorial\MachinimaBotBundle\Service\Avatar;
 
 use Morfeditorial\MachinimaCoreBundle\Service\Avatar\AvatarProviderInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;

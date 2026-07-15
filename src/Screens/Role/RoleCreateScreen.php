@@ -19,9 +19,9 @@
 
 declare(strict_types=1);
 
-namespace Morfeditorial\Screens\Role;
+namespace Morfeditorial\MachinimaBotBundle\Screens\Role;
 
-use Morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
 
 class RoleCreateScreen extends BaseMachinimaScreen
 {

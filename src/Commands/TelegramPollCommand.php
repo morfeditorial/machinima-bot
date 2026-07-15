@@ -1,11 +1,11 @@
 <?php
 
-namespace Morfeditorial\Commands;
+namespace Morfeditorial\MachinimaBotBundle\Commands;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Morfeditorial\TelegramBotBundle\Client\TelegramClient;
 use Morfeditorial\TelegramBotBundle\Routing\UpdateDispatcher;
-use Morfeditorial\Translator;
+use Morfeditorial\MachinimaBotBundle\Translator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
