@@ -6,6 +6,9 @@
 
 *Telegram bot bundle for the Machinima platform.*
 
+[![Latest Stable Version](https://img.shields.io/packagist/v/morfeditorial/machinima-bot.svg?label=Packagist&logo=packagist)](https://packagist.org/packages/morfeditorial/machinima-bot)
+[![Total Downloads](https://img.shields.io/packagist/dt/morfeditorial/machinima-bot.svg?label=Downloads&logo=packagist)](https://packagist.org/packages/morfeditorial/machinima-bot)
+
 [Features](#features) · [Requirements](#requirements) · [Installation](#installation) · [Usage](#usage) · [Contributing](#contributing)
 
 ---
