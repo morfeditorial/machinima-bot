@@ -4,7 +4,7 @@
 
 # machinima-bot
 
-*A Telegram bot written in PHP for managing machinimators.*
+*Telegram bot bundle for the Machinima platform.*
 
 [Features](#features) · [Requirements](#requirements) · [Installation](#installation) · [Usage](#usage) · [Contributing](#contributing)
 
