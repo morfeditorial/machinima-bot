@@ -17,6 +17,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace Morfeditorial\MachinimaBotBundle\Controller\Webhook;
 
 use Doctrine\ORM\EntityManagerInterface;

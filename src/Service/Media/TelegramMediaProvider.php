@@ -17,6 +17,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace Morfeditorial\MachinimaBotBundle\Service\Media;
 
 use Morfeditorial\MachinimaCoreBundle\Service\Media\MediaProviderInterface;

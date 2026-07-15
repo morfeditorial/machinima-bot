@@ -17,6 +17,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace Morfeditorial\MachinimaBotBundle\Service\Avatar;
 
 use Morfeditorial\MachinimaCoreBundle\Service\Avatar\AvatarProviderInterface;
