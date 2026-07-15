@@ -2,7 +2,7 @@
 
 <img src="assets/images/morf-logo.svg" alt="MORF" width="320" />
 
-# MachinimaBot
+# machinima-bot
 
 *A Telegram bot written in PHP for managing machinimators.*
 
