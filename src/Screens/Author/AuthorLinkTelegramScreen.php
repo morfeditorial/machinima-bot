@@ -21,8 +21,8 @@ declare(strict_types=1);
 
 namespace Morfeditorial\Screens\Author;
 
-use Morfeditorial\MachinimaCoreBundle\Entity\Author;
 use Morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\MachinimaCoreBundle\Entity\Author;
 
 class AuthorLinkTelegramScreen extends BaseMachinimaScreen
 {

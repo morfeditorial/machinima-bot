@@ -21,8 +21,8 @@ declare(strict_types=1);
 
 namespace Morfeditorial\Screens\Staff;
 
-use Morfeditorial\MachinimaCoreBundle\Entity\Author;
 use Morfeditorial\BaseMachinimaScreen;
+use Morfeditorial\MachinimaCoreBundle\Entity\Author;
 
 class StaffAddScreen extends BaseMachinimaScreen
 {
