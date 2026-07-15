@@ -7,15 +7,15 @@ services:
             $botUsername: '%env(TELEGRAM_BOT_USERNAME)%'
 
     Morfeditorial\MachinimaBotBundle\Screens\:
-        resource: '../../Screens/'
+        resource: '../src/Screens/'
         public: true
 
     Morfeditorial\MachinimaBotBundle\Commands\:
-        resource: '../../Commands/'
+        resource: '../src/Commands/'
         public: true
 
     Morfeditorial\MachinimaBotBundle\Service\:
-        resource: '../../Service/'
+        resource: '../src/Service/'
         public: true
 
     Morfeditorial\MachinimaBotBundle\Twig\BotLinkExtension:
