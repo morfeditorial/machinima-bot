@@ -22,6 +22,8 @@ declare(strict_types=1);
 namespace Morfeditorial\MachinimaBotBundle\Screens\Project;
 
 use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
+use Morfeditorial\MachinimaCoreBundle\Entity\Content;
+use Morfeditorial\MachinimaCoreBundle\Security\Voter\PostVoter;
 
 class ProjectDeleteScreen extends BaseMachinimaScreen
 {
@@ -50,14 +52,15 @@ class ProjectDeleteScreen extends BaseMachinimaScreen
         $project_id = isset($parsed['params'][0]) ? (int)$parsed['params'][0] : 0;
         $subAction = isset($parsed['params'][1]) ? $parsed['params'][1] : 'prompt';
 
-        if (!$content_service->canManageProject($userId, $project_id, $this->isGranted('ROLE_MODERATOR'))) {
+        $project = $this->em->find(Content::class, $project_id);
+        if (!$project || !$this->isGranted(PostVoter::DELETE, $project)) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
 
         if ('prompt' === $subAction) {
-            $project = $content_service->getContentById($project_id);
-            if ($project) {
+            $projectData = $content_service->getContentById($project_id);
+            if ($projectData) {
                 $keyboard = [
                     'inline_keyboard' => [
                         [
@@ -69,7 +72,7 @@ class ProjectDeleteScreen extends BaseMachinimaScreen
                     ],
                 ];
 
-                $caption = str_replace('{title}', htmlspecialchars($project['title']), $this->translate('confirm_delete_project_message'));
+                $caption = str_replace('{title}', htmlspecialchars($projectData['title']), $this->translate('confirm_delete_project_message'));
 
                 $this->renderPanel($chatId, $userId, $visuals_links[1], $caption, $keyboard);
             }
