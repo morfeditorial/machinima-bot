@@ -22,6 +22,8 @@ declare(strict_types=1);
 namespace Morfeditorial\MachinimaBotBundle\Screens\Project;
 
 use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
+use Morfeditorial\MachinimaCoreBundle\Entity\Content;
+use Morfeditorial\MachinimaCoreBundle\Security\Voter\PostVoter;
 
 class ProjectViewScreen extends BaseMachinimaScreen
 {
@@ -69,10 +71,11 @@ class ProjectViewScreen extends BaseMachinimaScreen
                 $message_text .= "🏷 Категорії: " . htmlspecialchars($categories_text) . "\n";
                 $message_text .= "\n👥 Команда:" . ($staff_text ?: " \u{2014}");
 
-                $can_manage = $content_service->canManageProject($userId, $project_id, $this->isGranted('ROLE_MODERATOR'));
+                $contentEntity = $this->em->find(Content::class, $project_id);
+                $canManage = $contentEntity && $this->isGranted(PostVoter::EDIT, $contentEntity);
                 $keyboard = ['inline_keyboard' => []];
 
-                if ($can_manage) {
+                if ($canManage) {
                     $keyboard['inline_keyboard'][] = [
                         ['text' => $this->translate('edit_project'), 'callback_data' => $this->makePayload('project', 'edit', (string)$project_id)],
                         ['text' => $this->translate('manage_staff'), 'callback_data' => $this->makePayload('staff', 'manage', (string)$project_id)],
