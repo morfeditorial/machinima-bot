@@ -90,8 +90,8 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
                 $this->client->deleteMessage($chatId, $messageId);
             }
 
-            $telegramId = (int) trim($text);
-            if ($telegramId <= 0) {
+            $linkedUserId = (int) trim($text);
+            if ($linkedUserId <= 0) {
                 $this->userStateRepo->clear($userId, 'link_telegram');
                 // The old code instantiates AuthorProfileScreen and calls render.
                 // In new architecture, we might need to simulate an update or redirect.
@@ -110,7 +110,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
                 return;
             }
 
-            $existingAuthor = $this->authorRepo->findByUserId($telegramId);
+            $existingAuthor = $this->authorRepo->findByUserId($linkedUserId);
             if (null !== $existingAuthor) {
                 $this->client->sendMessage($chatId, $this->translate('telegram_already_linked'));
                 $this->userStateRepo->clear($userId, 'link_telegram');
@@ -128,16 +128,16 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
                 return;
             }
 
-            $tgAuthor = $this->em->find(Author::class, $authorId);
-            if ($tgAuthor) {
-                $tgUser = $this->userRepo->find($telegramId);
-                if (!$tgUser) {
-                    $tgUser = new \Morfeditorial\MachinimaCoreBundle\Entity\User();
-                    $tgUser->setId($telegramId);
-                    $this->em->persist($tgUser);
+            $author = $this->em->find(Author::class, $authorId);
+            if ($author) {
+                $linkedUser = $this->userRepo->find($linkedUserId);
+                if (!$linkedUser) {
+                    $linkedUser = new \Morfeditorial\MachinimaCoreBundle\Entity\User();
+                    $linkedUser->setId($linkedUserId);
+                    $this->em->persist($linkedUser);
                     $this->em->flush();
                 }
-                $tgAuthor->setUser($tgUser);
+                $author->setUser($linkedUser);
                 $this->em->flush();
             }
             $this->userStateRepo->clear($userId, 'link_telegram');

@@ -76,9 +76,9 @@ class AuthorProfileScreen extends BaseMachinimaScreen
                 return;
             }
             $authorId = (int)($params[0] ?? 0);
-            $tgAuthor = $this->em->find(Author::class, $authorId);
-            if ($tgAuthor) {
-                $tgAuthor->setUser(null);
+            $author = $this->em->find(Author::class, $authorId);
+            if ($author) {
+                $author->setUser(null);
                 $this->em->flush();
             }
             $this->renderProfile($chatId, $userId, $authorId);
