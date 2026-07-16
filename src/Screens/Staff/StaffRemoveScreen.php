@@ -22,6 +22,8 @@ declare(strict_types=1);
 namespace Morfeditorial\MachinimaBotBundle\Screens\Staff;
 
 use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
+use Morfeditorial\MachinimaCoreBundle\Entity\Content;
+use Morfeditorial\MachinimaCoreBundle\Security\Voter\PostVoter;
 
 class StaffRemoveScreen extends BaseMachinimaScreen
 {
@@ -48,11 +50,15 @@ class StaffRemoveScreen extends BaseMachinimaScreen
         $authorId = isset($payload['params'][2]) ? (int) $payload['params'][2] : 0;
         $role = isset($payload['params'][3]) ? base64_decode($payload['params'][3]) : '';
 
-        $content_service = $this->container->get('content_service');
-        if ($projectId > 0 && !$content_service->canManageProject($userId, $projectId, $this->isGranted('ROLE_MODERATOR'))) {
-            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
-            return;
+        if ($projectId > 0) {
+            $project = $this->em->find(Content::class, $projectId);
+            if (!$project || !$this->isGranted(PostVoter::EDIT, $project)) {
+                $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+                return;
+            }
         }
+
+        $content_service = $this->container->get('content_service');
 
         if ('confirm' === $subAction) {
             $keyboard = [
@@ -68,7 +74,6 @@ class StaffRemoveScreen extends BaseMachinimaScreen
 
             $this->renderPanel($chatId, $userId, $this->getVisualsLinks()[1], $this->translate('confirm_delete_message'), $keyboard);
         } elseif ('execute' === $subAction) {
-            $content_service = $this->container->get('content_service');
             $content_service->removeStaff($projectId, $authorId, $role);
 
             $keyboard = [
