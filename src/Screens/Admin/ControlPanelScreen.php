@@ -40,14 +40,17 @@ class ControlPanelScreen extends BaseMachinimaScreen
         $text = $update['message']['text'] ?? '';
 
         if (str_starts_with($action, 'admin:create_public_page')) {
-            $myAuthorProfile = $this->authorRepo->findByTelegramId($userId);
+            $myAuthorProfile = $this->authorRepo->findByUserId($userId);
             if (! $myAuthorProfile) {
                 $firstName = $update['callback_query']['from']['first_name'] ?? ('Staff #' . $userId);
-                $newAuthor = new Author();
-                $newAuthor->setName(trim($firstName));
-                $newAuthor->setTelegramUserId($userId);
-                $this->em->persist($newAuthor);
-                $this->em->flush();
+                $user = $this->userRepo->find($userId);
+                if (!$user) {
+                    $user = new \Morfeditorial\MachinimaCoreBundle\Entity\User();
+                    $user->setId($userId);
+                    $this->em->persist($user);
+                    $this->em->flush();
+                }
+                $this->authorService->createAuthor(trim($firstName), $user);
             }
         }
 
@@ -67,7 +70,7 @@ class ControlPanelScreen extends BaseMachinimaScreen
             ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
         ];
 
-        $myAuthorProfile = $this->authorRepo->findByTelegramId($userId);
+        $myAuthorProfile = $this->authorRepo->findByUserId($userId);
 
         if ($myAuthorProfile) {
             $keyboard['inline_keyboard'][] = [
