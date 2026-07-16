@@ -110,7 +110,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
                 return;
             }
 
-            $existingAuthor = $this->authorRepo->findByTelegramId($telegramId);
+            $existingAuthor = $this->authorRepo->findByUserId($telegramId);
             if (null !== $existingAuthor) {
                 $this->client->sendMessage($chatId, $this->translate('telegram_already_linked'));
                 $this->userStateRepo->clear($userId, 'link_telegram');
@@ -130,7 +130,14 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
 
             $tgAuthor = $this->em->find(Author::class, $authorId);
             if ($tgAuthor) {
-                $tgAuthor->setTelegramUserId($telegramId);
+                $tgUser = $this->userRepo->find($telegramId);
+                if (!$tgUser) {
+                    $tgUser = new \Morfeditorial\MachinimaCoreBundle\Entity\User();
+                    $tgUser->setId($telegramId);
+                    $this->em->persist($tgUser);
+                    $this->em->flush();
+                }
+                $tgAuthor->setUser($tgUser);
                 $this->em->flush();
             }
             $this->userStateRepo->clear($userId, 'link_telegram');
