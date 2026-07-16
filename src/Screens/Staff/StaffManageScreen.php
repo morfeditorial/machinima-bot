@@ -22,6 +22,8 @@ declare(strict_types=1);
 namespace Morfeditorial\MachinimaBotBundle\Screens\Staff;
 
 use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
+use Morfeditorial\MachinimaCoreBundle\Entity\Content;
+use Morfeditorial\MachinimaCoreBundle\Security\Voter\PostVoter;
 
 class StaffManageScreen extends BaseMachinimaScreen
 {
@@ -47,12 +49,15 @@ class StaffManageScreen extends BaseMachinimaScreen
         $payload = $this->parsePayload($action);
         $projectId = isset($payload['params'][0]) ? (int) $payload['params'][0] : 0;
 
-        $content_service = $this->container->get('content_service');
-
-        if ($projectId > 0 && !$content_service->canManageProject($userId, $projectId, $this->isGranted('ROLE_MODERATOR'))) {
-            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
-            return;
+        if ($projectId > 0) {
+            $project = $this->em->find(Content::class, $projectId);
+            if (!$project || !$this->isGranted(PostVoter::EDIT, $project)) {
+                $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+                return;
+            }
         }
+
+        $content_service = $this->container->get('content_service');
 
         $staff = $content_service->getStaffByContentId($projectId);
 
