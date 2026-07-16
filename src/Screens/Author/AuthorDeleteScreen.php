@@ -24,6 +24,7 @@ namespace Morfeditorial\MachinimaBotBundle\Screens\Author;
 use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
 use Morfeditorial\MachinimaBotBundle\Utils\KeyboardHelper;
 use Morfeditorial\MachinimaCoreBundle\Entity\Author;
+use Morfeditorial\MachinimaCoreBundle\Security\Voter\AuthorVoter;
 
 class AuthorDeleteScreen extends BaseMachinimaScreen
 {
@@ -86,14 +87,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
     {
         $author = $this->em->find(Author::class, $authorId);
 
-        if (null === $author) {
-            $this->client->sendMessage($chatId, $this->translate('author_not_found_message'));
-            return;
-        }
-
-        $isOwnProfile = $author->getUser() && (int) $author->getUser()->getId() === $userId;
-
-        if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
+        if (null === $author || !$this->isGranted(AuthorVoter::DELETE, $author)) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
@@ -121,14 +115,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
     {
         $author = $this->em->find(Author::class, $authorId);
 
-        if (null === $author) {
-            $this->client->sendMessage($chatId, $this->translate('author_not_found_message'));
-            return;
-        }
-
-        $isOwnProfile = $author->getUser() && (int) $author->getUser()->getId() === $userId;
-
-        if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
+        if (null === $author || !$this->isGranted(AuthorVoter::DELETE, $author)) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
