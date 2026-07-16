@@ -61,7 +61,7 @@ class AuthorEditNameScreen extends BaseMachinimaScreen
             $authorId = (int)($payload['params'][0] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
 
-            $isOwnProfile = $author && (int) $author->getTelegramUserId() === $userId;
+            $isOwnProfile = $author && $author->getUser() && (int) $author->getUser()->getId() === $userId;
 
             if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
@@ -95,7 +95,7 @@ class AuthorEditNameScreen extends BaseMachinimaScreen
             $authorId = (int)($state['author_id'] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
 
-            $isOwnProfile = $author && (int) $author->getTelegramUserId() === $userId;
+            $isOwnProfile = $author && $author->getUser() && (int) $author->getUser()->getId() === $userId;
 
             if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
