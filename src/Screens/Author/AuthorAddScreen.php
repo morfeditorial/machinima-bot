@@ -86,10 +86,7 @@ class AuthorAddScreen extends BaseMachinimaScreen
 
             $this->userStateRepo->clear($userId, 'default');
 
-            $newAuthor = new Author();
-            $newAuthor->setName(trim($text));
-            $this->em->persist($newAuthor);
-            $this->em->flush();
+            $newAuthor = $this->authorService->createAuthor(trim($text));
             $authorId = $newAuthor->getId();
             $authorStatus = 'private' === $this->em->find(Author::class, $authorId)?->getState();
 
