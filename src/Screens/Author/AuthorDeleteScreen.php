@@ -87,7 +87,12 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
     {
         $author = $this->em->find(Author::class, $authorId);
 
-        if (null === $author || !$this->isGranted(AuthorVoter::DELETE, $author)) {
+        if (null === $author) {
+            $this->client->sendMessage($chatId, $this->translate('author_not_found_message'));
+            return;
+        }
+
+        if (!$this->isGranted(AuthorVoter::DELETE, $author)) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
@@ -115,7 +120,12 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
     {
         $author = $this->em->find(Author::class, $authorId);
 
-        if (null === $author || !$this->isGranted(AuthorVoter::DELETE, $author)) {
+        if (null === $author) {
+            $this->client->sendMessage($chatId, $this->translate('author_not_found_message'));
+            return;
+        }
+
+        if (!$this->isGranted(AuthorVoter::DELETE, $author)) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

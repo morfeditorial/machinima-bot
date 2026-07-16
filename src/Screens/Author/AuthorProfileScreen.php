@@ -88,7 +88,12 @@ class AuthorProfileScreen extends BaseMachinimaScreen
 
         $author = $this->em->find(Author::class, $authorId);
 
-        if (!$author || !$this->isGranted(AuthorVoter::VIEW, $author)) {
+        if (null === $author) {
+            $this->client->sendMessage($chatId, $this->translate('author_not_found_message'));
+            return;
+        }
+
+        if (!$this->isGranted(AuthorVoter::VIEW, $author)) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
