@@ -25,6 +25,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Morfeditorial\MachinimaCoreBundle\Repository\AuthorRepository;
 use Morfeditorial\MachinimaCoreBundle\Repository\UserRepository;
 use Morfeditorial\MachinimaCoreBundle\Repository\UserStateRepository;
+use Morfeditorial\MachinimaCoreBundle\Service\Author\AuthorService;
 use Morfeditorial\MachinimaCoreBundle\Service\RoleService;
 use Morfeditorial\TelegramBotBundle\Screen\AbstractScreen as BundleAbstractScreen;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -39,9 +40,10 @@ abstract class BaseMachinimaScreen extends BundleAbstractScreen
     protected UserRepository $userRepo;
     protected UserStateRepository $userStateRepo;
     protected AuthorRepository $authorRepo;
+    protected AuthorService $authorService;
 
     #[Required]
-    public function setDependencies(ContainerInterface $container, Security $security, EntityManagerInterface $em, UserRepository $userRepo, UserStateRepository $userStateRepo, AuthorRepository $authorRepo) : void
+    public function setDependencies(ContainerInterface $container, Security $security, EntityManagerInterface $em, UserRepository $userRepo, UserStateRepository $userStateRepo, AuthorRepository $authorRepo, AuthorService $authorService) : void
     {
         $this->container = $container;
         $this->security = $security;
@@ -49,6 +51,7 @@ abstract class BaseMachinimaScreen extends BundleAbstractScreen
         $this->userRepo = $userRepo;
         $this->userStateRepo = $userStateRepo;
         $this->authorRepo = $authorRepo;
+        $this->authorService = $authorService;
     }
 
     public function getContainer() : ContainerInterface
