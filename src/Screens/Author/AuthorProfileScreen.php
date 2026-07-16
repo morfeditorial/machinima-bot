@@ -55,7 +55,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             $authorId = (int)($params[0] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
 
-            $isOwnProfile = $author && (int) $author->getTelegramUserId() === $userId;
+            $isOwnProfile = $author && $author->getUser() && (int) $author->getUser()->getId() === $userId;
 
             if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
@@ -78,7 +78,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             $authorId = (int)($params[0] ?? 0);
             $tgAuthor = $this->em->find(Author::class, $authorId);
             if ($tgAuthor) {
-                $tgAuthor->setTelegramUserId(null);
+                $tgAuthor->setUser(null);
                 $this->em->flush();
             }
             $this->renderProfile($chatId, $userId, $authorId);
@@ -91,7 +91,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
 
         $author = $this->em->find(Author::class, $authorId);
 
-        $isOwnProfile = $author && (int) $author->getTelegramUserId() === $userId;
+        $isOwnProfile = $author && $author->getUser() && (int) $author->getUser()->getId() === $userId;
 
         if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
@@ -118,7 +118,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             ];
 
             if ($this->isGranted('ROLE_ADMIN')) {
-                if ($author->getTelegramUserId()) {
+                if ($author->getUser()) {
                     $keyboard['inline_keyboard'][] = [
                         ['text' => $this->translate('unlink_telegram'), 'callback_data' => 'author:unlink_telegram:' . $authorId],
                     ];
