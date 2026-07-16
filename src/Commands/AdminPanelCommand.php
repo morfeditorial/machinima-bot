@@ -72,7 +72,7 @@ class AdminPanelCommand extends BaseMachinimaCommand
             ['text' => '📦 ' . $this->translate('manage_projects'), 'callback_data' => 'project:list'],
         ];
 
-        $myAuthorProfile = $this->authorRepo->findByTelegramId($userId);
+        $myAuthorProfile = $this->authorRepo->findByUserId($userId);
 
         if ($myAuthorProfile) {
             $keyboard['inline_keyboard'][] = [
