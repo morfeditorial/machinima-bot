@@ -22,6 +22,8 @@ declare(strict_types=1);
 namespace Morfeditorial\MachinimaBotBundle\Screens\Project;
 
 use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
+use Morfeditorial\MachinimaCoreBundle\Entity\Content;
+use Morfeditorial\MachinimaCoreBundle\Security\Voter\PostVoter;
 
 class ProjectEditScreen extends BaseMachinimaScreen
 {
@@ -67,9 +69,12 @@ class ProjectEditScreen extends BaseMachinimaScreen
             $project_id = (int)$state_data['project_id'];
         }
 
-        if ($project_id > 0 && !$content_service->canManageProject($userId, $project_id, $this->isGranted('ROLE_MODERATOR'))) {
-            $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
-            return;
+        if ($project_id > 0) {
+            $project = $this->em->find(Content::class, $project_id);
+            if (!$project || !$this->isGranted(PostVoter::EDIT, $project)) {
+                $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
+                return;
+            }
         }
 
         if (0 === strpos($action, 'project:edit')) {
@@ -77,8 +82,8 @@ class ProjectEditScreen extends BaseMachinimaScreen
 
             if (null === $sub_action) {
                 $this->userStateRepo->clear($userId);
-                $project = $content_service->getContentById($project_id);
-                if ($project) {
+                $projectData = $content_service->getContentById($project_id);
+                if ($projectData) {
                     $keyboard = [
                         'inline_keyboard' => [
                             [
@@ -97,7 +102,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
                             ],
                         ],
                     ];
-                    $cover = $project['cover_file_id'] ?: $visuals_links[1];
+                    $cover = $projectData['cover_file_id'] ?: $visuals_links[1];
                     $this->renderPanel($chatId, $userId, $cover, $this->translate('edit_project'), $keyboard);
                 }
             } elseif ('field' === $sub_action) {
