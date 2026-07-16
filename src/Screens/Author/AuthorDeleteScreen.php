@@ -91,7 +91,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             return;
         }
 
-        $isOwnProfile = (int) $author->getTelegramUserId() === $userId;
+        $isOwnProfile = $author->getUser() && (int) $author->getUser()->getId() === $userId;
 
         if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
@@ -126,7 +126,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             return;
         }
 
-        $isOwnProfile = (int) $author->getTelegramUserId() === $userId;
+        $isOwnProfile = $author->getUser() && (int) $author->getUser()->getId() === $userId;
 
         if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
