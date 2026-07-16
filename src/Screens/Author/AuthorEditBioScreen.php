@@ -23,6 +23,7 @@ namespace Morfeditorial\MachinimaBotBundle\Screens\Author;
 
 use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
 use Morfeditorial\MachinimaCoreBundle\Entity\Author;
+use Morfeditorial\MachinimaCoreBundle\Security\Voter\AuthorVoter;
 
 class AuthorEditBioScreen extends BaseMachinimaScreen
 {
@@ -57,9 +58,7 @@ class AuthorEditBioScreen extends BaseMachinimaScreen
             $authorId = (int)($payload['params'][0] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
 
-            $isOwnProfile = $author && $author->getUser() && (int) $author->getUser()->getId() === $userId;
-
-            if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
+            if (!$author || !$this->isGranted(AuthorVoter::EDIT, $author)) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -94,9 +93,7 @@ class AuthorEditBioScreen extends BaseMachinimaScreen
             $authorId = (int)($state['author_id'] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
 
-            $isOwnProfile = $author && $author->getUser() && (int) $author->getUser()->getId() === $userId;
-
-            if (!$this->isGranted('ROLE_MODERATOR') && !$isOwnProfile) {
+            if (!$author || !$this->isGranted(AuthorVoter::EDIT, $author)) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -124,7 +121,7 @@ class AuthorEditBioScreen extends BaseMachinimaScreen
                 ],
             ];
 
-            if ($this->isGranted('ROLE_MODERATOR')) {
+            if ($this->isGranted(AuthorVoter::DELETE, $author)) {
                 $keyboard['inline_keyboard'][] = [
                     ['text' => $this->translate('delete_this_author'), 'callback_data' => 'author:to_delete:' . $authorId],
                 ];
