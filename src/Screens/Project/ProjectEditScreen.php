@@ -52,7 +52,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
         $photo = $update['message']['photo'] ?? null;
         $callbackQueryId = $update['callback_query']['id'] ?? '';
 
-        if (!$this->isGranted('ROLE_CREATOR')) {
+        if (! $this->isGranted('ROLE_CREATOR')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
@@ -71,7 +71,7 @@ class ProjectEditScreen extends BaseMachinimaScreen
 
         if ($project_id > 0) {
             $project = $this->em->find(Content::class, $project_id);
-            if (!$project || !$this->isGranted(PostVoter::EDIT, $project)) {
+            if (! $project || ! $this->isGranted(PostVoter::EDIT, $project)) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }

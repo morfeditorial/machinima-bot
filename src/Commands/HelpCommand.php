@@ -45,7 +45,7 @@ class HelpCommand extends BaseMachinimaCommand
     public function handle(array $update) : void
     {
         $chatId = $update['message']['chat']['id'] ?? 0;
-        if (!$chatId) {
+        if (! $chatId) {
             return;
         }
 

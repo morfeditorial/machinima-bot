@@ -48,12 +48,12 @@ class AdminPanelCommand extends BaseMachinimaCommand
         $userId = $update['message']['from']['id'] ?? 0;
         $messageId = $update['message']['message_id'] ?? 0;
 
-        if (!$chatId || !$userId) {
+        if (! $chatId || ! $userId) {
             return;
         }
 
         $currentPanel = $this->userRepo->getCurrentPanel($userId);
-        if (!is_null($currentPanel)) {
+        if (! is_null($currentPanel)) {
             try {
                 $this->client->deleteMessage($chatId, $currentPanel);
             } catch (\Throwable $e) {

@@ -157,7 +157,7 @@ class RoleUserManageScreen extends BaseMachinimaScreen
             $allRoles = $role_service->getAllRolesSorted();
             $keyboard = ['inline_keyboard' => []];
             foreach ($allRoles as $role) {
-                if (!in_array($role['role_name'], $userRoles, true)) {
+                if (! in_array($role['role_name'], $userRoles, true)) {
                     $keyboard['inline_keyboard'][] = [
                         ['text' => $role['role_name'], 'callback_data' => $this->makePayload('role', 'user', 'do_add', (string)$targetUserId, $role['role_name'])],
                     ];

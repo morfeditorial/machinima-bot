@@ -40,7 +40,7 @@ class ProjectDeleteScreen extends BaseMachinimaScreen
         $action = $update['callback_query']['data'] ?? '';
         $callbackQueryId = $update['callback_query']['id'] ?? '';
 
-        if (!$this->isGranted('ROLE_CREATOR')) {
+        if (! $this->isGranted('ROLE_CREATOR')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
@@ -53,7 +53,7 @@ class ProjectDeleteScreen extends BaseMachinimaScreen
         $subAction = isset($parsed['params'][1]) ? $parsed['params'][1] : 'prompt';
 
         $project = $this->em->find(Content::class, $project_id);
-        if (!$project || !$this->isGranted(PostVoter::DELETE, $project)) {
+        if (! $project || ! $this->isGranted(PostVoter::DELETE, $project)) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

@@ -39,7 +39,7 @@ class ProjectViewScreen extends BaseMachinimaScreen
         $userId = $update['callback_query']['from']['id'] ?? $update['message']['from']['id'] ?? 0;
         $action = $update['callback_query']['data'] ?? '';
 
-        if (!$this->isGranted('ROLE_CREATOR')) {
+        if (! $this->isGranted('ROLE_CREATOR')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
@@ -63,7 +63,7 @@ class ProjectViewScreen extends BaseMachinimaScreen
 
                 $categories = $content_service->getCategoriesByContentId($project_id);
                 $categories_names = array_column($categories, 'name');
-                $categories_text = !empty($categories_names) ? implode(', ', $categories_names) : "\u{2014}";
+                $categories_text = ! empty($categories_names) ? implode(', ', $categories_names) : "\u{2014}";
 
                 $message_text = "📦 <b>" . htmlspecialchars($project['title']) . "</b>\n";
                 $message_text .= "📝 " . htmlspecialchars($project['description'] ?? '') . "\n";
@@ -100,7 +100,7 @@ class ProjectViewScreen extends BaseMachinimaScreen
                     $transition_buttons[] = ['text' => $this->translate('redraft_project'), 'callback_data' => 'project:transition:' . $project_id . ':re-draft'];
                 }
 
-                if (!empty($transition_buttons)) {
+                if (! empty($transition_buttons)) {
                     array_unshift($keyboard['inline_keyboard'], $transition_buttons);
                 }
 

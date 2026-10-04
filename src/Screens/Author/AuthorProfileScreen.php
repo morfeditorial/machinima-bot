@@ -56,7 +56,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             $authorId = (int)($params[0] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
 
-            if (!$author || !$this->isGranted(AuthorVoter::EDIT, $author)) {
+            if (! $author || ! $this->isGranted(AuthorVoter::EDIT, $author)) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -64,12 +64,12 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             $isPrivate = 'private' === $author->getState();
             $privAuthor = $this->em->find(Author::class, $authorId);
             if ($privAuthor) {
-                $privAuthor->setState(!$isPrivate ? 'private' : 'public');
+                $privAuthor->setState(! $isPrivate ? 'private' : 'public');
                 $this->em->flush();
             }
             $this->renderProfile($chatId, $userId, $authorId);
         } elseif ('unlink_telegram' === $route) {
-            if (!$this->isGranted('ROLE_ADMIN')) {
+            if (! $this->isGranted('ROLE_ADMIN')) {
                 return;
             }
             $authorId = (int)($params[0] ?? 0);
@@ -93,7 +93,7 @@ class AuthorProfileScreen extends BaseMachinimaScreen
             return;
         }
 
-        if (!$this->isGranted(AuthorVoter::VIEW, $author)) {
+        if (! $this->isGranted(AuthorVoter::VIEW, $author)) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

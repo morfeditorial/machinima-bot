@@ -46,11 +46,11 @@ class RemoveRoleCommand extends BaseMachinimaCommand
     public function handle(array $update) : void
     {
         $chatId = $update['message']['chat']['id'] ?? 0;
-        if (!$chatId) {
+        if (! $chatId) {
             return;
         }
 
-        if (!$this->isGranted('ROLE_ADMIN')) {
+        if (! $this->isGranted('ROLE_ADMIN')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

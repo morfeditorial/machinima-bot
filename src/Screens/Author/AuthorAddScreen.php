@@ -53,7 +53,7 @@ class AuthorAddScreen extends BaseMachinimaScreen
         $payload = $this->parsePayload($action);
 
         if ('author' === $payload['domain'] && 'add' === $payload['action']) {
-            if (!$this->isGranted('ROLE_MODERATOR')) {
+            if (! $this->isGranted('ROLE_MODERATOR')) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -74,7 +74,7 @@ class AuthorAddScreen extends BaseMachinimaScreen
         }
 
         if (isset($update['message'])) {
-            if (!$this->isGranted('ROLE_MODERATOR')) {
+            if (! $this->isGranted('ROLE_MODERATOR')) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }

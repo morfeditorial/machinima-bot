@@ -45,7 +45,7 @@ class TelegramAvatarProvider implements AvatarProviderInterface
             ]);
             $data = $response->toArray(false);
 
-            if (!empty($data['result']['photos'][0][0]['file_id'])) {
+            if (! empty($data['result']['photos'][0][0]['file_id'])) {
                 $fileId = $data['result']['photos'][0][0]['file_id'];
 
                 $fileResponse = $this->httpClient->request('GET', "https://api.telegram.org/bot{$this->botToken}/getFile", [
@@ -53,7 +53,7 @@ class TelegramAvatarProvider implements AvatarProviderInterface
                 ]);
                 $fileData = $fileResponse->toArray(false);
 
-                if (!empty($fileData['result']['file_path'])) {
+                if (! empty($fileData['result']['file_path'])) {
                     return "https://api.telegram.org/file/bot{$this->botToken}/".$fileData['result']['file_path'];
                 }
             }

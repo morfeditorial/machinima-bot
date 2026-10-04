@@ -52,7 +52,7 @@ class StaffRemoveScreen extends BaseMachinimaScreen
 
         if ($projectId > 0) {
             $project = $this->em->find(Content::class, $projectId);
-            if (!$project || !$this->isGranted(PostVoter::EDIT, $project)) {
+            if (! $project || ! $this->isGranted(PostVoter::EDIT, $project)) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }

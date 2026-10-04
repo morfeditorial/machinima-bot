@@ -22,7 +22,6 @@ declare(strict_types=1);
 namespace Morfeditorial\MachinimaBotBundle\Screens\Admin;
 
 use Morfeditorial\MachinimaBotBundle\BaseMachinimaScreen;
-use Morfeditorial\MachinimaCoreBundle\Entity\Author;
 
 class ControlPanelScreen extends BaseMachinimaScreen
 {
@@ -44,7 +43,7 @@ class ControlPanelScreen extends BaseMachinimaScreen
             if (! $myAuthorProfile) {
                 $firstName = $update['callback_query']['from']['first_name'] ?? ('Staff #' . $userId);
                 $user = $this->userRepo->find($userId);
-                if (!$user) {
+                if (! $user) {
                     $user = new \Morfeditorial\MachinimaCoreBundle\Entity\User();
                     $user->setId($userId);
                     $this->em->persist($user);
@@ -58,7 +57,7 @@ class ControlPanelScreen extends BaseMachinimaScreen
         $this->userStateRepo->clear($userId);
 
         $currentPage = $this->userRepo->getCurrentPage($userId);
-        if (!is_null($currentPage)) {
+        if (! is_null($currentPage)) {
             $this->userRepo->resetCurrentPage($userId);
         }
 

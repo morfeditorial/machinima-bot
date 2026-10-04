@@ -47,7 +47,7 @@ class StartCommand extends BaseMachinimaCommand
         $chatId = $update['message']['chat']['id'] ?? 0;
         $userId = $update['message']['from']['id'] ?? 0;
 
-        if (!$chatId || !$userId) {
+        if (! $chatId || ! $userId) {
             return;
         }
 

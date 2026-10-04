@@ -51,7 +51,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
         $params = $payload['params'];
 
         if ('delete' === $route || 'delete_page' === $route) {
-            if (!$this->isGranted('ROLE_MODERATOR')) {
+            if (! $this->isGranted('ROLE_MODERATOR')) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -92,7 +92,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             return;
         }
 
-        if (!$this->isGranted(AuthorVoter::DELETE, $author)) {
+        if (! $this->isGranted(AuthorVoter::DELETE, $author)) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
@@ -125,7 +125,7 @@ class AuthorDeleteScreen extends BaseMachinimaScreen
             return;
         }
 
-        if (!$this->isGranted(AuthorVoter::DELETE, $author)) {
+        if (! $this->isGranted(AuthorVoter::DELETE, $author)) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }

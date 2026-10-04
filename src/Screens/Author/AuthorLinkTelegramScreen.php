@@ -56,7 +56,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
         if ('author' === $payload['domain'] && 'link_telegram' === $payload['action']) {
             $authorId = (int)($payload['params'][0] ?? 0);
 
-            if (!$this->isGranted('ROLE_ADMIN')) {
+            if (! $this->isGranted('ROLE_ADMIN')) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -80,7 +80,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
             $stateData = $this->userStateRepo->get($userId, 'link_telegram');
             $authorId = (int)($stateData['author_id'] ?? 0);
 
-            if (!$this->isGranted('ROLE_ADMIN') || 0 === $authorId) {
+            if (! $this->isGranted('ROLE_ADMIN') || 0 === $authorId) {
                 $this->userStateRepo->clear($userId, 'link_telegram');
                 return;
             }
@@ -131,7 +131,7 @@ class AuthorLinkTelegramScreen extends BaseMachinimaScreen
             $author = $this->em->find(Author::class, $authorId);
             if ($author) {
                 $linkedUser = $this->userRepo->find($linkedUserId);
-                if (!$linkedUser) {
+                if (! $linkedUser) {
                     $linkedUser = new \Morfeditorial\MachinimaCoreBundle\Entity\User();
                     $linkedUser->setId($linkedUserId);
                     $this->em->persist($linkedUser);

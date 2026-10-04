@@ -58,7 +58,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
             $authorId = (int)($payload['params'][0] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
 
-            if (!$author || !$this->isGranted(AuthorVoter::EDIT, $author)) {
+            if (! $author || ! $this->isGranted(AuthorVoter::EDIT, $author)) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }
@@ -90,7 +90,7 @@ class AuthorEditLinkScreen extends BaseMachinimaScreen
             $authorId = (int)($state['author_id'] ?? 0);
             $author = $this->em->find(Author::class, $authorId);
 
-            if (!$author || !$this->isGranted(AuthorVoter::EDIT, $author)) {
+            if (! $author || ! $this->isGranted(AuthorVoter::EDIT, $author)) {
                 $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
                 return;
             }

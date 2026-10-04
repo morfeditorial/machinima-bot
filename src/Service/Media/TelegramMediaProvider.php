@@ -46,7 +46,7 @@ class TelegramMediaProvider implements MediaProviderInterface
 
             $fileData = $fileResponse->toArray(false);
 
-            if (!empty($fileData['result']['file_path'])) {
+            if (! empty($fileData['result']['file_path'])) {
                 return "https://api.telegram.org/file/bot{$this->botToken}/".$fileData['result']['file_path'];
             }
         } catch (\Exception $e) {

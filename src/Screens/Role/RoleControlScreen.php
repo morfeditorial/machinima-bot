@@ -37,11 +37,11 @@ class RoleControlScreen extends BaseMachinimaScreen
         $userId = $update['callback_query']['from']['id'] ?? 0;
         $messageId = $update['callback_query']['message']['message_id'] ?? 0;
 
-        if (!$chatId || !$userId) {
+        if (! $chatId || ! $userId) {
             return;
         }
 
-        if (!$this->isGranted('ROLE_ADMIN')) {
+        if (! $this->isGranted('ROLE_ADMIN')) {
             $this->client->sendMessage($chatId, $this->translate('no_permission_message'));
             return;
         }
